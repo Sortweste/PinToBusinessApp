@@ -16,7 +16,9 @@ class BottomNavBar extends StatelessWidget {
       elevation: 5,
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
-      iconSize: 36,
+      iconSize: 32,
+      selectedFontSize: 12,
+      unselectedFontSize: 12,
       onTap: (i) => _navigationProvider.currentPage = i,
       items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
