@@ -8,7 +8,7 @@ class TabsNavigationProvider with ChangeNotifier {
 
   set currentPage(int p){
     this._currentPage = p;
-    _pageController.jumpTo(p);
+    _pageController.jumpToPage(p);
    // _pageController.animateToPage(p, duration: Duration(milliseconds: 125), curve: Curves.easeInExpo);
     notifyListeners();
   }
