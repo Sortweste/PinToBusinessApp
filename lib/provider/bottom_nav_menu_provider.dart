@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TabsNavigationProvider with ChangeNotifier {
-   int _currentPage = 0;
+  int _currentPage = 0;
   PageController _pageController = new PageController();
 
   int get currentPage => this._currentPage;

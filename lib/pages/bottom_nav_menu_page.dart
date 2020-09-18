@@ -1,12 +1,14 @@
-import 'package:demo/pages/tabs/tab1_page.dart';
-import 'package:demo/pages/tabs/tab2_page.dart';
-import 'package:demo/pages/tabs/tab3_page.dart';
-import 'package:demo/pages/tabs/tab4_page.dart';
-import 'package:demo/pages/tabs/tab5_page.dart';
+import 'package:demo/pages/tabs/products_page/products.dart';
+import 'package:demo/pages/tabs/clients_page/clients.dart';
+import 'package:demo/pages/tabs/sales_page/sales.dart';
+import 'package:demo/pages/tabs/profile_page/profile.dart';
+import 'package:demo/pages/tabs/preorder_page/preorder.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/widgets/navigation_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+
 
 class HomePage extends StatefulWidget {
 
@@ -25,11 +27,11 @@ class _HomePageState extends State<HomePage> {
         controller: _navigationProvider.pageController,
          physics: NeverScrollableScrollPhysics(),
          children: [
-           Tab1Page(),
-           Tab2Page(),
-           Tab3Page(),
-           Tab4Page(),
-           Tab5Page(),
+           ProductsPage(),
+           ClientsPage(),
+           SalesPage(),
+           PreorderPage(),
+           ProfilePage(),
          ],
       ),
       bottomNavigationBar: BottomNavBar(),

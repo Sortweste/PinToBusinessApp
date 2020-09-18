@@ -2,22 +2,22 @@ import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Tab2Page extends StatefulWidget {
-  Tab2Page({Key key}) : super(key: key);
+class SalesPage extends StatefulWidget {
+  SalesPage({Key key}) : super(key: key);
 
   @override
-  _Tab2PageState createState() => _Tab2PageState();
+  _SalesPageState createState() => _SalesPageState();
 }
 
-class _Tab2PageState extends State<Tab2Page> {
+class _SalesPageState extends State<SalesPage> {
 
   @override
   Widget build(BuildContext context) {
      final _navigationProvider = Provider.of<TabsNavigationProvider>(context);
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.white,
       body: Center(
-        child: Text('Page'),
+         child: Text('Page'),
       ),
     );
   }

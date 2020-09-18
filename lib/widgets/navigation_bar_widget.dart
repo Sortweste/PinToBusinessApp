@@ -22,24 +22,24 @@ class BottomNavBar extends StatelessWidget {
       onTap: (i) => _navigationProvider.currentPage = i,
       items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Container(child: Text('Home'),),
+            icon: Icon(Icons.shop),
+            title: Container(child: Text('Productos'),),
           ),
            BottomNavigationBarItem(
-            icon: Icon(Icons.panorama_wide_angle),
-            title: Container(child: Text('Home'),),
+            icon: Icon(Icons.people),
+            title: Container(child: Text('Clientes'),),
           ),
            BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            title: Container(child: Text('Home'),),
+            icon: Icon(Icons.attach_money),
+            title: Container(child: Text('Ventas'),),
           ),
            BottomNavigationBarItem(
-            icon: Icon(Icons.filter_9_plus),
-            title: Container(child: Text('Home'),),
+            icon: Icon(Icons.library_books),
+            title: Container(child: Text('Reservas'),),
           ),
            BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            title: Container(child: Text('Home'),),
+            title: Container(child: Text('Perfil'),),
           ),   
         ]
       );
