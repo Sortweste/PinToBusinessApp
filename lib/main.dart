@@ -1,8 +1,11 @@
+import 'package:demo/database/database.dart';
 import 'package:demo/pages/bottom_nav_menu_page.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'pages/bottom_nav_menu_page.dart';
  
 void main() => runApp(MyApp());
  
@@ -12,7 +15,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
-        Provider(create: (_) => CategoriesProvider()),
+        ChangeNotifierProvider(create: (context) => CategoriesProvider()),
+        Provider<CategoriesDao>(create: (_) => AppDatabase().categoriesDao,),
       ],
       child: _MateApp(),
       );
@@ -33,6 +37,8 @@ class _MateApp extends StatelessWidget {
       routes: {
          'home': (BuildContext context) => HomePage(),
       },
+      theme: ThemeData.dark(),
     );
   }
 }
+

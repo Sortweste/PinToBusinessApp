@@ -20,8 +20,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
-    final _navigationProvider = Provider.of<TabsNavigationProvider>(context);
-
+    final _navigationProvider = Provider.of<TabsNavigationProvider>(context, listen:false);
+    print('aja');
     return Scaffold(
       body: PageView(
         controller: _navigationProvider.pageController,
