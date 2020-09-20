@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
         Text('Ocurrió un problema :('),
-        RaisedButton(onPressed: (){ setState(() {
+        /*RaisedButton(onPressed: (){ setState(() {
           
-        });; }, child: Text('Intentelo de nuevo'),),
+        });; }, child: Text('Intentelo de nuevo'),),*/
       ],),
     );
   }

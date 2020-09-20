@@ -37,7 +37,7 @@ class _MateApp extends StatelessWidget {
       routes: {
          'home': (BuildContext context) => HomePage(),
       },
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
     );
   }
 }

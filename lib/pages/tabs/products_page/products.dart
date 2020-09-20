@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:demo/database/database.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/custom_card_view.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/custom_product_dialog.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
-
-import 'local_widgets.dart';
 
 
 class ProductsPage extends StatefulWidget {
@@ -79,7 +79,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
         showDialog(
           context: context,
           builder: (BuildContext context){
-            return CustomProductDialog(title: 'Colores', imageUrl: 'https://lh3.googleusercontent.com/pw/ACtC-3eYAUOA-XQJhRslBlQZvESlOHYx4Ai_82Temdx3ghdqHVEre1xWUp2URWMp9ansxK5GY0uEWPNp5VCTMHHQmyx3oJNlwZbILJh8fZerkx3QCxEpCSl-8EdtDIAZ2kzIgoxEzyDFiuG0uPQzAr1x31Tg=w1103-h827-no',);
+            return CustomProductDialog(title: 'Colores', imageUrl: 'https://lh3.googleusercontent.com/pw/ACtC-3cZWLy5d7yiW_81wpDyjFJ_gtiC0s9u3LOGqn9tJDluEs0OO1-oq7iSTm0asfMh83urAKn0dNSB5SuKo1BeWXk7w8YHEr_6cdi0p1_VoMI6T5vyPlCAbZLBWss2HG5VdSyjbYOu2_r0ajMS2yqSc3VG=w1236-h827-no',);
             }
         );  
       }),
