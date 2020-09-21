@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:demo/database/database.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_card_view.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_product_dialog.dart';
 import 'package:demo/provider/categories_provider.dart';
+import 'package:demo/provider/colores_provider.dart';
+import 'package:demo/widgets/error_widget.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,8 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
       categorias.forEach((element) {
        final categoria = CategoriesCompanion(
          id: moor.Value(element.id),
-         name: moor.Value(element.name)
+         name: moor.Value(element.name),
+         imageurl: moor.Value(element.imageurl)
        );
        catDao.insertCategory(categoria);
      });
@@ -58,6 +60,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
   // ignore: must_call_super
   Widget build(BuildContext context) {
     final _categoriesProvider = Provider.of<CategoriesProvider>(context);
+    final _coloresProvider = Provider.of<ColoresProvider>(context, listen: false);
      final _dao = Provider.of<CategoriesDao>(context);
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -75,11 +78,12 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
+      floatingActionButton: FloatingActionButton(onPressed: () async {
+        final colores = await _coloresProvider.getColores();
         showDialog(
           context: context,
           builder: (BuildContext context){
-            return CustomProductDialog(title: 'Colores', imageUrl: 'https://lh3.googleusercontent.com/pw/ACtC-3cZWLy5d7yiW_81wpDyjFJ_gtiC0s9u3LOGqn9tJDluEs0OO1-oq7iSTm0asfMh83urAKn0dNSB5SuKo1BeWXk7w8YHEr_6cdi0p1_VoMI6T5vyPlCAbZLBWss2HG5VdSyjbYOu2_r0ajMS2yqSc3VG=w1236-h827-no',);
+            return CustomProductDialog(title: 'Colores', imageUrl: 'https://lh3.googleusercontent.com/pw/ACtC-3cZWLy5d7yiW_81wpDyjFJ_gtiC0s9u3LOGqn9tJDluEs0OO1-oq7iSTm0asfMh83urAKn0dNSB5SuKo1BeWXk7w8YHEr_6cdi0p1_VoMI6T5vyPlCAbZLBWss2HG5VdSyjbYOu2_r0ajMS2yqSc3VG=w1236-h827-no',colores: colores,);
             }
         );  
       }),
@@ -96,7 +100,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
         builder: (context, snapshot){
             if(snapshot.hasData){
               final List<Categorie> res = snapshot.data;
-              return (res.length == 0) ? ErrorWidget(context) : _customGridView(snapshot, false);
+              return (res.length == 0) ? TextErrorWidget() : _customGridView(snapshot, false);
             }
              switch (snapshot.connectionState) {
       case ConnectionState.none: return Text('Select lot');
@@ -118,7 +122,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
         builder: (context, snapshot){
             if(snapshot.hasData){
               _fetchCategories(context, snapshot.data);
-              return (snapshot.data.isEmpty) ? ErrorWidget(context) : _customGridView(snapshot, true);
+              return (snapshot.data.isEmpty) ? TextErrorWidget() : _customGridView(snapshot, true);
             }else{
               return Center(
                 child: CircularProgressIndicator(),
@@ -137,7 +141,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
               crossAxisCount: (isPortrait) ? 2 : 3,
               childAspectRatio: 1.0,
               mainAxisSpacing: 1.0,
-              children: categories.data.map((category) => CustomCardView(title: category.name) ).toList()
+              children: categories.data.map((category) => CustomCardView(title: category.name, imageURL: category.imageurl,) ).toList()
             );
         return (flag) ? RefreshIndicator(
             onRefresh: refresh,

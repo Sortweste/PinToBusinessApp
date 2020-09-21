@@ -10,31 +10,24 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 
 
-class CategoriesProvider with ChangeNotifier {
+class ColoresProvider with ChangeNotifier {
 
   final _urlBase = 'pinto-business.herokuapp.com';
 
-  
-
-  Future<List<Categorie>> getCategories() async {
-    final _url = Uri.https(_urlBase, 'api/v1/categories.json');
-    final List<Categorie> categorias = new List<Categorie>();
+  Future<List<Colore>> getColores() async {
+    final _url = Uri.https(_urlBase, 'api/v1/colors.json');
+    final List<Colore> colores = new List<Colore>();
     try {
       final res = await http.get(_url);
       if(res.statusCode == 200){
        final List decodedData = json.decode(res.body);
           decodedData.forEach((element) {
-          final Categorie c = new Categorie(
-            id: element['id'],
-            name: element['name'],
-            imageurl: element['image_url']
-          );
-          categorias.add(c);
+          colores.add(Colore.fromJson(element));
         });
     }
-    return categorias;
+    return colores;
     } catch (e) {
-      return categorias;
+      return colores;
     }
   }
 

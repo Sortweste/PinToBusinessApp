@@ -2,6 +2,8 @@ import 'package:demo/database/database.dart';
 import 'package:demo/pages/bottom_nav_menu_page.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
+import 'package:demo/provider/colores_provider.dart';
+import 'package:demo/provider/products_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +18,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
         ChangeNotifierProvider(create: (context) => CategoriesProvider()),
+        ChangeNotifierProvider(create: (context) => ColoresProvider()),
+        ChangeNotifierProvider(create: (_) => ProductsManager()),
         Provider<CategoriesDao>(create: (_) => AppDatabase().categoriesDao,),
+        Provider<ColoresDao>(create: (_) => AppDatabase().coloresDao,),
       ],
       child: _MateApp(),
       );
@@ -37,7 +42,7 @@ class _MateApp extends StatelessWidget {
       routes: {
          'home': (BuildContext context) => HomePage(),
       },
-      theme: ThemeData.light(),
+      theme: ThemeData.dark(),
     );
   }
 }

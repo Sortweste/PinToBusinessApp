@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class CustomCardView extends StatelessWidget {
 
-  const CustomCardView({this.title, this.image});
+  const CustomCardView({this.title, this.imageURL});
 
   final String title;
-  final String image;
+  final String imageURL;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class CustomCardView extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image:  CacheImage('https://hd.tudocdn.net/874944?w=646&h=284', duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10)),
+                image:  CacheImage(imageURL, duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10)),
                 fit: BoxFit.cover,
               ),
             ),
