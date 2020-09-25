@@ -34,11 +34,10 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase> with _$CategoriesDaoMi
 
   Future<List<Categorie>> getAllCategories() => select(categories).get();
   Stream<List<Categorie>> watchAllCategories() => select(categories).watch();
-  Future insertCategory(Insertable<Categorie> category) => into(categories).insert(category);
-   Future updateCategory(Insertable<Categorie> category) => update(categories).replace(category);
-    Future deleteCategory(Insertable<Categorie> category) => delete(categories).delete(category);
-    Future truncateCategories() => delete(categories).go();
-   
+  Future insertCategory(Insertable<Categorie> category) => into(categories).insert(category, orReplace: true);
+  Future updateCategory(Insertable<Categorie> category) => update(categories).replace(category); 
+  Future deleteCategory(Insertable<Categorie> category) => delete(categories).delete(category);
+  Future truncateCategories() => delete(categories).go();
 }
 
 @UseDao(tables: [Colores])

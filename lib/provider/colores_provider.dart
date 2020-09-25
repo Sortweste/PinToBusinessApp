@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:demo/database/database.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +6,6 @@ import 'package:http/http.dart' as http;
 
 import 'dart:async';
 
-import 'package:provider/provider.dart';
 
 
 class ColoresProvider with ChangeNotifier {

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 final colors = <String, String>{
   '#F5F5DC': 'Beige',

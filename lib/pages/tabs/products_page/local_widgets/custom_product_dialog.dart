@@ -1,13 +1,13 @@
 import 'package:cache_image/cache_image.dart';
 import 'package:demo/database/database.dart';
 import 'package:demo/provider/products_manager_provider.dart';
-import 'package:demo/utils/color_to_name_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
 
+// ignore: must_be_immutable
 class CustomProductDialog extends StatefulWidget {
 
   String title;
@@ -23,7 +23,6 @@ class CustomProductDialog extends StatefulWidget {
 class _CustomProductDialogState extends State<CustomProductDialog> {
   
   Color currentColor = Colors.limeAccent;
-  String _name = '';
   ProductsManager _pManager;
   List<Color> colores_value;
   List<String> names_value;
@@ -35,43 +34,45 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
     colores_value = widget.colores.map((it) => Hexcolor(it.value)).toList();
     //colores_value.map((color) => Hexcolor(color)).toList()
     names_value = widget.colores.map((it) =>  it.name).toList();
-    
     return AlertDialog(
       title: Consumer<ProductsManager>(builder: (context, value, child) => Text('${value.color}', textAlign: TextAlign.center,),),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                flex: 5,
-                child: Container(
-                  width: 70,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 20),
-                    child: Image(
-                      image: CacheImage(widget.imageUrl, duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10)),
+      content: SingleChildScrollView(
+              child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    height: 200,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 20),
+                      child: Image(
+                        image: CacheImage(widget.imageUrl, duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10)),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Icon(Icons.arrow_drop_up),
-                    Consumer<ProductsManager>(builder: (context, value, child) => _customBlockPicker()),
-                    Icon(Icons.arrow_drop_down),
-                  ],
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Icon(Icons.arrow_drop_up),
+                      Consumer<ProductsManager>(builder: (context, value, child) => _customBlockPicker()),
+                      Icon(Icons.arrow_drop_down),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          RaisedButton(onPressed: (){ _pManager.setColorString('asdfa'); }, child: Text('boton'),)
-        ],
+              ],
+            ),
+           // RaisedButton(onPressed: (){ _pManager.setColorString('asdfa'); }, child: Text('boton'),)
+          ],
+        ),
       ),
     ); 
   }
@@ -96,7 +97,7 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
 
   Container _customLayoutBuilder(BuildContext context, List<Color> colors, Widget Function(Color) child){
     return Container(
-      width: 200,
+      width: 50,
       height: 200,
       child: GridView.count(
         scrollDirection: Axis.vertical,

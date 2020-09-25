@@ -16,11 +16,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<CategoriesDao>(create: (_) => AppDatabase().categoriesDao,),
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
-        ChangeNotifierProvider(create: (context) => CategoriesProvider()),
+        ChangeNotifierProxyProvider<CategoriesDao, CategoriesProvider>(
+          create: (context) => CategoriesProvider(null),
+          update: (context, dao, cp) => CategoriesProvider(dao),
+        ),
         ChangeNotifierProvider(create: (context) => ColoresProvider()),
         ChangeNotifierProvider(create: (_) => ProductsManager()),
-        Provider<CategoriesDao>(create: (_) => AppDatabase().categoriesDao,),
         Provider<ColoresDao>(create: (_) => AppDatabase().coloresDao,),
       ],
       child: _MateApp(),

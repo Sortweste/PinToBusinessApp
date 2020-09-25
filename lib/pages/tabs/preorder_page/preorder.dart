@@ -7,10 +7,11 @@ class PreorderPage extends StatefulWidget {
   _PreorderPageState createState() => _PreorderPageState();
 }
 
-class _PreorderPageState extends State<PreorderPage> {
+class _PreorderPageState extends State<PreorderPage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.grey,
       body: Center(
@@ -18,4 +19,7 @@ class _PreorderPageState extends State<PreorderPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -15,7 +15,6 @@ class CustomCardView extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      color: Colors.white,
       child: InkWell(
           onTap: (){ },
           highlightColor: Colors.red,
@@ -25,7 +24,7 @@ class CustomCardView extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image:  CacheImage(imageURL, duration: Duration(seconds: 2), durationExpiration: Duration(seconds: 10)),
+                image: CacheImage(imageURL, cache: true, durationMultiplier: 0, duration: Duration(seconds: 1), durationExpiration: Duration(seconds: 10)),
                 fit: BoxFit.cover,
               ),
             ),

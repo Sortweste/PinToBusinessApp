@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:demo/database/database.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_card_view.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_product_dialog.dart';
@@ -9,7 +10,6 @@ import 'package:demo/widgets/error_widget.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
 
 
 class ProductsPage extends StatefulWidget {
@@ -21,48 +21,59 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClientMixin {
 
-  void _fetchCategories(BuildContext context, List<Categorie> c) {
-    final catDao = Provider.of<CategoriesDao>(context);
-    final List<Categorie> categorias = c;
-    if(categorias.isNotEmpty){
-      catDao.truncateCategories();
-      categorias.forEach((element) {
-       final categoria = CategoriesCompanion(
-         id: moor.Value(element.id),
-         name: moor.Value(element.name),
-         imageurl: moor.Value(element.imageurl)
-       );
-       catDao.insertCategory(categoria);
-     });
-    }
+  GlobalKey<ScaffoldState> scaffoldKey;
+
+
+   showSnackBar(String message) {
+    scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(message),
+    ));
   }
 
   
   @override
   void initState() { 
     super.initState();
-   
+    scaffoldKey = GlobalKey(debugLabel: 'productos');
+     Future.delayed(Duration.zero, (){
+       Provider.of<CategoriesProvider>(context, listen: false).requestCategories();
+     });
   }
+
 
 
    Future<Null> refresh() async {
+     final p = Provider.of<CategoriesProvider>(context, listen: false);
+     final connection = await Connectivity().checkConnectivity();
     final duration = new Duration(
-      seconds: 1
+      seconds: 2
     );
     Timer(duration, () {
-      setState(() {
-      });
+      //setState(() {
+       if(connection != ConnectivityResult.none){
+          p.requestCategories();
+       }
+      //});
     });
-    return Future.delayed(duration);
+   return Future.delayed(duration, (){
+     mostrarSnackBar((connection == ConnectivityResult.none) ? 'No tienes conexión a internet' : 'Categorías actualizadas');
+   });
   }
 
+   mostrarSnackBar(String message) {
+    scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(message, style: TextStyle(color: Colors.white),),
+      backgroundColor: Colors.brown,
+    ));
+   }
+
   @override
-  // ignore: must_call_super
   Widget build(BuildContext context) {
-    final _categoriesProvider = Provider.of<CategoriesProvider>(context);
+    super.build(context);
+    final _categoriesProvider = Provider.of<CategoriesProvider>(context, listen: true);
     final _coloresProvider = Provider.of<ColoresProvider>(context, listen: false);
-     final _dao = Provider.of<CategoriesDao>(context);
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text('Productos',),),
       body: SafeArea(
@@ -70,7 +81,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
           padding: EdgeInsets.all(0.0),
           child: Column(
             children: [
-              InternetWidget(
+            InternetWidget(
                 hasInternet: _showCategories(context, _categoriesProvider), 
                 noInternet: _showCategoriesDB(context, _categoriesProvider),
               ),
@@ -99,15 +110,15 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
         stream: catProvider.watchAllCategories(),
         builder: (context, snapshot){
             if(snapshot.hasData){
-              final List<Categorie> res = snapshot.data;
-              return (res.length == 0) ? TextErrorWidget() : _customGridView(snapshot, false);
+              final List<Categorie> lista = snapshot.data;
+              return (lista.length == 0) ? TextErrorWidget(
+                buttonFunction: (){ 
+                  mostrarSnackBar('No tienes conexión a internet'); 
+                  }) : 
+                  _customGridView(snapshot, true);
+            } else{
+              return TextErrorWidget(buttonFunction: (){ refresh(); });
             }
-             switch (snapshot.connectionState) {
-      case ConnectionState.none: return Text('Select lot');
-      case ConnectionState.waiting: return Text('Awaiting bids...');
-      case ConnectionState.active: return CircularProgressIndicator();
-      case ConnectionState.done: return Text('\$${snapshot.data} (closed)');
-    }
         },
       ),
     );
@@ -118,11 +129,13 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
   Widget _showCategories(BuildContext context, CategoriesProvider _categoriesProvider) {
     return Expanded(
       child: FutureBuilder<List<Categorie>>(
-        future: _categoriesProvider.getCategories(),
+        future: _categoriesProvider.categories,
         builder: (context, snapshot){
             if(snapshot.hasData){
-              _fetchCategories(context, snapshot.data);
-              return (snapshot.data.isEmpty) ? TextErrorWidget() : _customGridView(snapshot, true);
+              return (snapshot.data.isEmpty) ?  TextErrorWidget(buttonFunction: (){ 
+                refresh();   
+              }) : 
+                _customGridView(snapshot, true);
             }else{
               return Center(
                 child: CircularProgressIndicator(),

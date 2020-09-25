@@ -16,9 +16,11 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
+    //super.build(context);
 
     final _navigationProvider = Provider.of<TabsNavigationProvider>(context, listen:false);
     print('aja');
@@ -37,4 +39,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavBar(),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
