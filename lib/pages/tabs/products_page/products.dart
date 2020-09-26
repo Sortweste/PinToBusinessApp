@@ -5,6 +5,7 @@ import 'package:demo/database/database.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_card_view.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_product_dialog.dart';
 import 'package:demo/provider/categories_provider.dart';
+import 'package:demo/provider/tallas_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
 import 'package:demo/widgets/error_widget.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
@@ -66,6 +67,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
     super.build(context);
     final _categoriesProvider = Provider.of<CategoriesProvider>(context, listen: true);
     final _coloresProvider = Provider.of<ColoresProvider>(context, listen: false);
+    final _tallasProvider = Provider.of<TallasProvider>(context, listen: false);
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -85,10 +87,11 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
       ),
       floatingActionButton: FloatingActionButton(onPressed: () async {
         final colores = await _coloresProvider.getColores();
+        final tallas = await _tallasProvider.getTallas();
         showDialog(
           context: context,
           builder: (BuildContext context){
-            return CustomProductDialog(title: 'Colores', imageUrl: 'https://lh3.googleusercontent.com/pw/ACtC-3cZWLy5d7yiW_81wpDyjFJ_gtiC0s9u3LOGqn9tJDluEs0OO1-oq7iSTm0asfMh83urAKn0dNSB5SuKo1BeWXk7w8YHEr_6cdi0p1_VoMI6T5vyPlCAbZLBWss2HG5VdSyjbYOu2_r0ajMS2yqSc3VG=w1236-h827-no',colores: colores,);
+            return CustomProductDialog(title: 'Colores', imageUrl: 'https://lh3.googleusercontent.com/pw/ACtC-3cZWLy5d7yiW_81wpDyjFJ_gtiC0s9u3LOGqn9tJDluEs0OO1-oq7iSTm0asfMh83urAKn0dNSB5SuKo1BeWXk7w8YHEr_6cdi0p1_VoMI6T5vyPlCAbZLBWss2HG5VdSyjbYOu2_r0ajMS2yqSc3VG=w1236-h827-no',colores: colores, tallas: tallas,);
             }
         );  
       }),

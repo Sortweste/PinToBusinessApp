@@ -17,7 +17,14 @@ class Colores extends Table {
   TextColumn get value => text().withLength(min: 1, max: 100)();
 }
 
-@UseMoor(tables: [Categories, Colores], daos: [CategoriesDao, ColoresDao])
+class Tallas extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get size => text().withLength(min: 1, max: 100)();
+}
+
+
+
+@UseMoor(tables: [Categories, Colores, Tallas], daos: [CategoriesDao, ColoresDao, TallasDao])
 class AppDatabase extends _$AppDatabase {
     AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite', logStatements: false));
 
@@ -53,4 +60,18 @@ class ColoresDao extends DatabaseAccessor<AppDatabase> with _$ColoresDaoMixin {
     Future deleteColor(Insertable<Colore> color) => delete(colores).delete(color);
     Future truncateColores() => delete(colores).go();
    
+}
+
+@UseDao(tables: [Tallas])
+class TallasDao extends DatabaseAccessor<AppDatabase> with _$TallasDaoMixin {
+  final AppDatabase db;
+
+  TallasDao(this.db) : super(db);
+
+  Future<List<Talla>> getAllTallas() => select(tallas).get();
+  Stream<List<Talla>> watchAllTallas() => select(tallas).watch();
+  Future insertTalla(Insertable<Talla> talla) => into(tallas).insert(talla, orReplace: true);
+  Future updateTalla(Insertable<Talla> talla) => update(tallas).replace(talla); 
+  Future deleteTalla(Insertable<Talla> talla) => delete(tallas).delete(talla);
+  Future truncateTallas() => delete(tallas).go();
 }

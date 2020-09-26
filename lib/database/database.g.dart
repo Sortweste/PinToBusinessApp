@@ -385,21 +385,177 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
   }
 }
 
+class Talla extends DataClass implements Insertable<Talla> {
+  final int id;
+  final String size;
+  Talla({@required this.id, @required this.size});
+  factory Talla.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    return Talla(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      size: stringType.mapFromDatabaseResponse(data['${effectivePrefix}size']),
+    );
+  }
+  factory Talla.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Talla(
+      id: serializer.fromJson<int>(json['id']),
+      size: serializer.fromJson<String>(json['size']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'size': serializer.toJson<String>(size),
+    };
+  }
+
+  @override
+  TallasCompanion createCompanion(bool nullToAbsent) {
+    return TallasCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      size: size == null && nullToAbsent ? const Value.absent() : Value(size),
+    );
+  }
+
+  Talla copyWith({int id, String size}) => Talla(
+        id: id ?? this.id,
+        size: size ?? this.size,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Talla(')
+          ..write('id: $id, ')
+          ..write('size: $size')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(id.hashCode, size.hashCode));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Talla && other.id == this.id && other.size == this.size);
+}
+
+class TallasCompanion extends UpdateCompanion<Talla> {
+  final Value<int> id;
+  final Value<String> size;
+  const TallasCompanion({
+    this.id = const Value.absent(),
+    this.size = const Value.absent(),
+  });
+  TallasCompanion.insert({
+    this.id = const Value.absent(),
+    @required String size,
+  }) : size = Value(size);
+  TallasCompanion copyWith({Value<int> id, Value<String> size}) {
+    return TallasCompanion(
+      id: id ?? this.id,
+      size: size ?? this.size,
+    );
+  }
+}
+
+class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $TallasTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _sizeMeta = const VerificationMeta('size');
+  GeneratedTextColumn _size;
+  @override
+  GeneratedTextColumn get size => _size ??= _constructSize();
+  GeneratedTextColumn _constructSize() {
+    return GeneratedTextColumn('size', $tableName, false,
+        minTextLength: 1, maxTextLength: 100);
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, size];
+  @override
+  $TallasTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'tallas';
+  @override
+  final String actualTableName = 'tallas';
+  @override
+  VerificationContext validateIntegrity(TallasCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.id.present) {
+      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    }
+    if (d.size.present) {
+      context.handle(
+          _sizeMeta, size.isAcceptableValue(d.size.value, _sizeMeta));
+    } else if (isInserting) {
+      context.missing(_sizeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Talla map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Talla.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(TallasCompanion d) {
+    final map = <String, Variable>{};
+    if (d.id.present) {
+      map['id'] = Variable<int, IntType>(d.id.value);
+    }
+    if (d.size.present) {
+      map['size'] = Variable<String, StringType>(d.size.value);
+    }
+    return map;
+  }
+
+  @override
+  $TallasTable createAlias(String alias) {
+    return $TallasTable(_db, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $CategoriesTable _categories;
   $CategoriesTable get categories => _categories ??= $CategoriesTable(this);
   $ColoresTable _colores;
   $ColoresTable get colores => _colores ??= $ColoresTable(this);
+  $TallasTable _tallas;
+  $TallasTable get tallas => _tallas ??= $TallasTable(this);
   CategoriesDao _categoriesDao;
   CategoriesDao get categoriesDao =>
       _categoriesDao ??= CategoriesDao(this as AppDatabase);
   ColoresDao _coloresDao;
   ColoresDao get coloresDao => _coloresDao ??= ColoresDao(this as AppDatabase);
+  TallasDao _tallasDao;
+  TallasDao get tallasDao => _tallasDao ??= TallasDao(this as AppDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [categories, colores];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [categories, colores, tallas];
 }
 
 // **************************************************************************
@@ -411,4 +567,7 @@ mixin _$CategoriesDaoMixin on DatabaseAccessor<AppDatabase> {
 }
 mixin _$ColoresDaoMixin on DatabaseAccessor<AppDatabase> {
   $ColoresTable get colores => db.colores;
+}
+mixin _$TallasDaoMixin on DatabaseAccessor<AppDatabase> {
+  $TallasTable get tallas => db.tallas;
 }

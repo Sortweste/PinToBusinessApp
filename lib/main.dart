@@ -4,19 +4,26 @@ import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
+import 'package:demo/provider/tallas_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/bottom_nav_menu_page.dart';
  
-void main() => runApp(MyApp());
+ AppDatabase db;
+void main() {
+  db = AppDatabase();
+  return runApp(MyApp());
+} 
  
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<CategoriesDao>(create: (_) => AppDatabase().categoriesDao,),
+        Provider<CategoriesDao>(create: (_) => db.categoriesDao,),
+        Provider<TallasDao>(create: (_) => db.tallasDao,),
+        Provider<ColoresDao>(create: (_) => db.coloresDao,),
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
         ChangeNotifierProxyProvider<CategoriesDao, CategoriesProvider>(
           create: (context) => CategoriesProvider(null),
@@ -24,7 +31,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (context) => ColoresProvider()),
         ChangeNotifierProvider(create: (_) => ProductsManager()),
-        Provider<ColoresDao>(create: (_) => AppDatabase().coloresDao,),
+        
+        ChangeNotifierProxyProvider<TallasDao, TallasProvider>(
+          create: (context) => TallasProvider(null),
+          update: (context, dao, cp) => TallasProvider(dao),
+        ),
+
       ],
       child: _MateApp(),
       );

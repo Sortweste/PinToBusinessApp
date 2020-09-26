@@ -13,8 +13,9 @@ class CustomProductDialog extends StatefulWidget {
   String title;
   String imageUrl;
   List<Colore> colores;
+  List<Talla> tallas; 
 
-  CustomProductDialog({Key key, this.title, this.imageUrl, this.colores}) : super(key: key);
+  CustomProductDialog({Key key, this.title, this.imageUrl, this.colores, this.tallas}) : super(key: key);
 
   @override
   _CustomProductDialogState createState() => _CustomProductDialogState();
@@ -27,7 +28,7 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
   List<Color> colores_value;
   List<String> names_value;
   
-  List<String> sizes = ["40mm", "35mm", "1 1/4", "1\"", "X", "XL", "S", "M", "2\"", "3\"", "XXX"];
+  //List<String> sizes = ["40mm", "35mm", "1 1/4", "1\"", "X", "XL", "S", "M", "2\"", "3\"", "XXX"];
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +172,7 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
         physics: ClampingScrollPhysics(),
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        itemCount: sizes.length,
+        itemCount: widget.tallas.length,
         itemBuilder: (BuildContext context, int index) => _customSizedContainerItem(context, index)
       );
     }
@@ -179,21 +180,21 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
     Widget _customSizedContainerItem(BuildContext context, int index){ 
       return 
       InkWell(
-        onTap: (){_pManager.setSelectedSize(sizes[index]);},
+        onTap: (){_pManager.setSelectedSize(widget.tallas[index].size);},
         child: 
           Container(
           width: 60,
           margin: EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
-            color: (_pManager.selectedSize == sizes[index] ? Colors.blue : Colors.white), 
+            color: (_pManager.selectedSize == widget.tallas[index].size ? Colors.blue : Colors.white), 
             border: Border.all(),
             borderRadius: BorderRadius.circular(5)
           ),
           child: Center(
-            child: Text(sizes[index], 
+            child: Text(widget.tallas[index].size, 
               textAlign: TextAlign.center, 
               style: TextStyle(
-                color: (_pManager.selectedSize == sizes[index] ? Colors.white : Colors.black)
+                color: (_pManager.selectedSize == widget.tallas[index].size ? Colors.white : Colors.black)
               ),
             )
           ),
