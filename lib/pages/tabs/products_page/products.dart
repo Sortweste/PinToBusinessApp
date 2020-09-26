@@ -24,12 +24,6 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
   GlobalKey<ScaffoldState> scaffoldKey;
 
 
-   showSnackBar(String message) {
-    scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(message),
-    ));
-  }
-
   
   @override
   void initState() { 

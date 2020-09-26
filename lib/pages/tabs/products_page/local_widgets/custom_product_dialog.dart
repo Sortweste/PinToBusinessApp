@@ -27,10 +27,12 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
   List<Color> colores_value;
   List<String> names_value;
   
-   
+  List<String> sizes = ["40mm", "35mm", "1 1/4", "1\"", "X", "XL", "S", "M", "2\"", "3\"", "XXX"];
+
   @override
   Widget build(BuildContext context) {
      _pManager = Provider.of<ProductsManager>(context, listen: false);
+     final screen = MediaQuery.of(context).size;
     colores_value = widget.colores.map((it) => Hexcolor(it.value)).toList();
     //colores_value.map((color) => Hexcolor(color)).toList()
     names_value = widget.colores.map((it) =>  it.name).toList();
@@ -69,6 +71,12 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 10,),
+            Container(
+              width: screen.width,
+              margin: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+              child: Consumer<ProductsManager>(builder: (context, value, childe) => _customSizePicker()),
             ),
            // RaisedButton(onPressed: (){ _pManager.setColorString('asdfa'); }, child: Text('boton'),)
           ],
@@ -141,5 +149,56 @@ class _CustomProductDialogState extends State<CustomProductDialog> {
           ),
         );
       }
+
+    Widget _customSizePicker(){
+      return SizedBox(
+          height: 50.0,
+          child:  Row(   
+            crossAxisAlignment: CrossAxisAlignment.center,         
+            children: [
+            Icon(Icons.arrow_left),
+            Expanded(
+              child: _customSizedContainer(),
+            ),
+            Icon(Icons.arrow_right),
+          ],
+        ),
+      );
+    }
+
+    Widget _customSizedContainer(){
+      return ListView.builder(
+        physics: ClampingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: sizes.length,
+        itemBuilder: (BuildContext context, int index) => _customSizedContainerItem(context, index)
+      );
+    }
+
+    Widget _customSizedContainerItem(BuildContext context, int index){ 
+      return 
+      InkWell(
+        onTap: (){_pManager.setSelectedSize(sizes[index]);},
+        child: 
+          Container(
+          width: 60,
+          margin: EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(
+            color: (_pManager.selectedSize == sizes[index] ? Colors.blue : Colors.white), 
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(5)
+          ),
+          child: Center(
+            child: Text(sizes[index], 
+              textAlign: TextAlign.center, 
+              style: TextStyle(
+                color: (_pManager.selectedSize == sizes[index] ? Colors.white : Colors.black)
+              ),
+            )
+          ),
+        )
+      );
+    }
 
 }

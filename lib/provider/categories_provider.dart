@@ -17,7 +17,6 @@ class CategoriesProvider with ChangeNotifier {
     Future<List<Categorie>> _categoriesFuture;
 
   CategoriesProvider(this._categoriesDao) {
-    //this.requestCategories();
   }
 
   void requestCategories() {
