@@ -66,14 +66,14 @@ class CategorySearch extends SearchDelegate{
     return Column(
       children: [
         InternetWidget(
-          hasInternet: _categoriesOnline(false),
-          noInternet: _categoriesOfflineSearch(context, false),
+          hasInternet: _categoriesOnline(true),
+          noInternet: _categoriesOfflineSearch(context, true),
         ),
       ],
     );
   }
 
-  Widget _categoriesOnline(bool online){
+  Widget _categoriesOnline(bool suggestion){
     return Expanded(
       child: Padding(
           padding: EdgeInsets.all(5),
@@ -81,8 +81,8 @@ class CategorySearch extends SearchDelegate{
           future: (query.isEmpty) ? categoriesProvider.categories : categoriesProvider.searchCategories(query),
           builder: (context, snapshot){
             if(snapshot.hasData){
-              return (snapshot.data.length == 0) ? noResults(context)
-                :  _customGridView(context,snapshot.data)
+              return (snapshot.data.length == 0) ? noResults(context) : 
+              (suggestion) ? _suggestionListView(context, snapshot.data)  : _customGridView(context, snapshot.data)
               ; 
               }else{
                 return Center(child: CircularProgressIndicator(),);
@@ -93,12 +93,25 @@ class CategorySearch extends SearchDelegate{
     );
   }
 
-  Widget _categoriesOfflineSearch(BuildContext context, bool online){
+  Widget _categoriesOfflineSearch(BuildContext context, bool suggestion){
      final List<Categorie> listaSugerida =  (query.isEmpty) ? categorias ?? [] : categorias.where((p) => p.name.toLowerCase().startsWith(query.toLowerCase())).toList();
     
     return Expanded(
-      child: (query.isNotEmpty && listaSugerida.length==0) ? noResults(context): 
-      Padding(padding: EdgeInsets.all(5) ,child: _customGridView(context, listaSugerida)),
+      child: (query.isNotEmpty && listaSugerida.length==0) ? noResults(context) : 
+        (suggestion) ? _suggestionListView(context, listaSugerida)  : _customGridView(context, listaSugerida)
+    );
+  }
+
+  Widget _suggestionListView(BuildContext context, List<Categorie> categories){
+    return ListView(
+      children: 
+        categories.map((e) => 
+          ListTile(
+            onTap: () { },
+          leading: Icon(Icons.search),
+          title: Text(e.name),
+        )
+        ).toList(),
     );
   }
 
@@ -110,19 +123,24 @@ class CategorySearch extends SearchDelegate{
               mainAxisSpacing: 1.0,
               children: categories.map((category) => CustomCardView(title: category.name, imageURL: category.imageurl,) ).toList()
             );
-        return gridView;
+        return Padding(padding: EdgeInsets.all(5) ,child: gridView);
   }
 
 
   Widget noResults(BuildContext context){
     return Center(
-      child: Column (
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        Icon(Icons.youtube_searched_for, size: 64,),
-        SizedBox(height: 20,),
-        Text('No se encontró ninguna categoría que corresponda con \'$query\'', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline6,),
-       ],
+      child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30),
+          child: SingleChildScrollView(
+            child: Column (
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+            Icon(Icons.youtube_searched_for, size: 64,),
+            SizedBox(height: 20,),
+            Text('No se encontró ninguna categoría que corresponda con \'$query\'', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline6,),
+         ],
+        ),
+          ),
       ),
     );
   }
