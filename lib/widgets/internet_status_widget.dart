@@ -17,7 +17,7 @@ class InternetWidget extends StatelessWidget {
                 child: Column(
                   children: [
                     _internetLabel(context, connected),
-                    (connected) ? hasInternet : noInternet
+                    if (connected) hasInternet else noInternet
                   ],
                 ),
               )

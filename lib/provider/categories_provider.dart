@@ -51,6 +51,30 @@ class CategoriesProvider with ChangeNotifier {
     }
   }
 
+   Future<List<Categorie>> searchCategories(String query) async {
+    final _url = Uri.https(_urlBase, 'api/v1/categories/search/${query}.json');
+    List<Categorie> _categorias = new List<Categorie>();
+    try {
+      final res = await http.get(_url);
+      if(res.statusCode == 200){
+       _categorias = new List<Categorie>();
+       final List decodedData = json.decode(res.body);
+          decodedData.forEach((element) {
+          final Categorie c = new Categorie(
+            id: element['id'],
+            name: element['name'],
+            imageurl: element['image_url']
+          );
+          _categorias.add(c);
+        });
+    }
+    print('awebo');
+    return _categorias;
+    } catch (e) {
+      return _categorias;
+    }
+  }
+
    void _fetchCategoriesDB(List<Categorie> catList) {
     if(catList.isNotEmpty){
       catList.forEach((element) {

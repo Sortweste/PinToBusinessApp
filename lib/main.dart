@@ -25,9 +25,9 @@ class MyApp extends StatelessWidget {
         Provider<TallasDao>(create: (_) => db.tallasDao,),
         Provider<ColoresDao>(create: (_) => db.coloresDao,),
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
-        ChangeNotifierProxyProvider<CategoriesDao, CategoriesProvider>(
-          create: (context) => CategoriesProvider(null),
-          update: (context, dao, cp) => CategoriesProvider(dao),
+        ChangeNotifierProvider<CategoriesProvider>(
+          create: (context) => CategoriesProvider(db.categoriesDao),
+          //update: (context, dao, cp) => CategoriesProvider(dao),
         ),
         ChangeNotifierProvider(create: (context) => ColoresProvider()),
         ChangeNotifierProvider(create: (_) => ProductsManager()),
@@ -57,7 +57,9 @@ class _MateApp extends StatelessWidget {
       routes: {
          'home': (BuildContext context) => HomePage(),
       },
-      theme: ThemeData.light(),
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.brown
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:demo/database/database.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_card_view.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_product_dialog.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/search_categories_delegate.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/provider/tallas_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
@@ -30,8 +31,9 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
   void initState() { 
     super.initState();
     scaffoldKey = GlobalKey(debugLabel: 'productos');
-     Future.delayed(Duration.zero, (){
-       Provider.of<CategoriesProvider>(context, listen: false).requestCategories();
+     Future.delayed(Duration.zero, () {
+       final p = Provider.of<CategoriesProvider>(context, listen: false);
+       p.requestCategories();
      });
   }
 
@@ -71,7 +73,17 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(title: Text('Productos',),),
+      appBar: AppBar(title: Text('Productos',),
+          actions: [
+            IconButton(icon: Icon(Icons.search), onPressed: (){
+              final _dao = Provider.of<CategoriesDao>(context, listen:false);
+              showSearch(
+                context: context, 
+                delegate: CategorySearch(categoriesDao: _dao, categoriesProvider: _categoriesProvider)
+              );
+            }),
+          ],
+      ),
       body: SafeArea(
           child: Padding(
           padding: EdgeInsets.all(0.0),
@@ -103,20 +115,23 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
   Widget _showCategoriesDB(BuildContext context, CategoriesProvider p) {
     final catProvider = Provider.of<CategoriesDao>(context);
     return Expanded(
-      child: StreamBuilder(
-        stream: catProvider.watchAllCategories(),
-        builder: (context, snapshot){
-            if(snapshot.hasData){
-              final List<Categorie> lista = snapshot.data;
-              return (lista.length == 0) ? TextErrorWidget(
-                buttonFunction: (){ 
-                  mostrarSnackBar('No tienes conexión a internet'); 
-                  }) : 
-                  _customGridView(snapshot, true);
-            } else{
-              return TextErrorWidget(buttonFunction: (){ refresh(); });
-            }
-        },
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: StreamBuilder(
+          stream: catProvider.watchAllCategories(),
+          builder: (context, snapshot){
+              if(snapshot.hasData){
+                final List<Categorie> lista = snapshot.data;
+                return (lista.length == 0) ? TextErrorWidget(
+                  buttonFunction: (){ 
+                    mostrarSnackBar('No tienes conexión a internet'); 
+                    }) : 
+                    _customGridView(snapshot, true);
+              } else{
+                return TextErrorWidget(buttonFunction: (){ refresh(); });
+              }
+          },
+        ),
       ),
     );
   }
@@ -125,21 +140,24 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
 
   Widget _showCategories(BuildContext context, CategoriesProvider _categoriesProvider) {
     return Expanded(
-      child: FutureBuilder<List<Categorie>>(
-        future: _categoriesProvider.categories,
-        builder: (context, snapshot){
-            if(snapshot.hasData){
-              return (snapshot.data.isEmpty) ?  TextErrorWidget(buttonFunction: (){ 
-                refresh();   
-              }) : 
-                _customGridView(snapshot, true);
-            }else{
-              return Center(
-                child: CircularProgressIndicator(),
-                );
-            }
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: FutureBuilder<List<Categorie>>(
+          future: _categoriesProvider.categories,
+          builder: (context, snapshot){
+              if(snapshot.hasData){
+                return (snapshot.data.isEmpty) ?  TextErrorWidget(buttonFunction: (){ 
+                  refresh();   
+                }) : 
+                  _customGridView(snapshot, true);
+              }else{
+                return Center(
+                  child: CircularProgressIndicator(),
+                  );
+              }
 
-        },
+          },
+        ),
       ),
     );
   }

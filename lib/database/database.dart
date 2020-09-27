@@ -40,7 +40,9 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase> with _$CategoriesDaoMi
   CategoriesDao(this.db) : super(db);
 
   Future<List<Categorie>> getAllCategories() => select(categories).get();
-  Stream<List<Categorie>> watchAllCategories() => select(categories).watch();
+  Stream<List<Categorie>> watchAllCategories() => (select(categories)
+    
+  ).watch();
   Future insertCategory(Insertable<Categorie> category) => into(categories).insert(category, orReplace: true);
   Future updateCategory(Insertable<Categorie> category) => update(categories).replace(category); 
   Future deleteCategory(Insertable<Categorie> category) => delete(categories).delete(category);
@@ -69,7 +71,8 @@ class TallasDao extends DatabaseAccessor<AppDatabase> with _$TallasDaoMixin {
   TallasDao(this.db) : super(db);
 
   Future<List<Talla>> getAllTallas() => select(tallas).get();
-  Stream<List<Talla>> watchAllTallas() => select(tallas).watch();
+  Stream<List<Talla>> watchAllTallas() => (select(tallas))
+   .watch();
   Future insertTalla(Insertable<Talla> talla) => into(tallas).insert(talla, orReplace: true);
   Future updateTalla(Insertable<Talla> talla) => update(tallas).replace(talla); 
   Future deleteTalla(Insertable<Talla> talla) => delete(tallas).delete(talla);
