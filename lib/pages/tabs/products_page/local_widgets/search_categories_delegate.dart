@@ -2,10 +2,10 @@ import 'package:connectivity/connectivity.dart';
 import 'package:demo/database/database.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/custom_card_view.dart';
 import 'package:demo/provider/categories_provider.dart';
-import 'package:demo/widgets/error_widget.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
+import 'package:demo/widgets/voice_search_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CategorySearch extends SearchDelegate{
   
@@ -24,13 +24,26 @@ class CategorySearch extends SearchDelegate{
     }
   }
 
+  void voiceResult(BuildContext context) async {
+     final con = await Connectivity().checkConnectivity();
+    if(con != ConnectivityResult.none){
+        query = await showDialog(context: context,barrierDismissible: false ,builder: (context) => VoiceSearch(),);
+    }else{
+      Fluttertoast.showToast(msg: 'No tienes conexión a internet', toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+
   @override
   List<Widget> buildActions(BuildContext context) {
       return  [
       IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
+        icon: (query.isEmpty) ? Icon(Icons.mic) : Icon(Icons.clear),
+        onPressed: ()  {
+          if(query.isEmpty){
+            voiceResult(context);
+          }else{
+            query = '';
+          }
         },
         ),
       ];
@@ -57,7 +70,7 @@ class CategorySearch extends SearchDelegate{
           noInternet: _categoriesOfflineSearch(context, false),
         ),
       ],
-    );;
+    );
     }
   
     @override

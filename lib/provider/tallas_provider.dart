@@ -16,8 +16,7 @@ class TallasProvider with ChangeNotifier {
     final _urlBase = 'pinto-business.herokuapp.com';
     Future<List<Talla>> _tallasFuture;
 
-  TallasProvider(this._tallasDao) {
-  }
+  TallasProvider(this._tallasDao);
 
   void requestTallas() {
     this._tallasFuture = getTallas();

@@ -16,8 +16,7 @@ class CategoriesProvider with ChangeNotifier {
     final _urlBase = 'pinto-business.herokuapp.com';
     Future<List<Categorie>> _categoriesFuture;
 
-  CategoriesProvider(this._categoriesDao) {
-  }
+  CategoriesProvider(this._categoriesDao);
 
   void requestCategories() {
     this._categoriesFuture = getCategories();
