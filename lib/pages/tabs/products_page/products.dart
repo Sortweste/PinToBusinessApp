@@ -169,7 +169,7 @@ class _ProductsPageState extends State<ProductsPage> with AutomaticKeepAliveClie
               crossAxisCount: (isPortrait) ? 2 : 3,
               childAspectRatio: 1.0,
               mainAxisSpacing: 1.0,
-              children: categories.data.map((category) => CustomCardView(title: category.name, imageURL: category.imageurl,) ).toList()
+              children: categories.data.map((category) => CustomCardView(category: category)).toList()
             );
         return (flag) ? RefreshIndicator(
             onRefresh: refresh,

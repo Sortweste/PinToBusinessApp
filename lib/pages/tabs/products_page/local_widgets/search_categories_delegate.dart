@@ -134,7 +134,7 @@ class CategorySearch extends SearchDelegate{
               crossAxisCount: (isPortrait) ? 2 : 3,
               childAspectRatio: 1.0,
               mainAxisSpacing: 1.0,
-              children: categories.map((category) => CustomCardView(title: category.name, imageURL: category.imageurl,) ).toList()
+              children: categories.map((category) => CustomCardView(category: category,) ).toList()
             );
         return Padding(padding: EdgeInsets.all(5) ,child: gridView);
   }

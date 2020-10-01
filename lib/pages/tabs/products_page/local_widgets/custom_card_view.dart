@@ -1,12 +1,13 @@
 import 'package:cache_image/cache_image.dart';
+import 'package:demo/database/database.dart';
+import 'package:demo/pages/tabs/products_page/list_products.dart';
 import 'package:flutter/material.dart';
 
 class CustomCardView extends StatelessWidget {
 
-  const CustomCardView({this.title, this.imageURL});
+  final Categorie category;
 
-  final String title;
-  final String imageURL;
+  const CustomCardView({this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,9 @@ class CustomCardView extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: InkWell(
-          onTap: (){ },
+          onTap: (){ 
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListProductsPage(category: category,),));
+          },
           highlightColor: Colors.red,
           child: Padding(
           padding: EdgeInsets.all(0.0),
@@ -24,7 +27,7 @@ class CustomCardView extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: CacheImage(imageURL, cache: true, durationMultiplier: 0, duration: Duration(seconds: 1), durationExpiration: Duration(seconds: 10)),
+                image: CacheImage(category.imageurl, cache: true, durationMultiplier: 0, duration: Duration(seconds: 1), durationExpiration: Duration(seconds: 10)),
                 fit: BoxFit.cover,
               ),
             ),
@@ -44,7 +47,7 @@ class CustomCardView extends StatelessWidget {
                     ),
                     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                     child: Text(
-                      '$title',
+                      category.name,
                       maxLines: 2,
                       softWrap: true,
                       textAlign: TextAlign.center,

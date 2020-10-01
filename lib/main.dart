@@ -1,5 +1,6 @@
 import 'package:demo/database/database.dart';
 import 'package:demo/pages/bottom_nav_menu_page.dart';
+import 'package:demo/pages/tabs/products_page/list_products.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
@@ -56,6 +57,7 @@ class _MateApp extends StatelessWidget {
       initialRoute: 'home',
       routes: {
          'home': (BuildContext context) => HomePage(),
+         /*'list_products': (BuildContext context) => ListProductsPage()*/
       },
       theme: ThemeData.light().copyWith(
         primaryColor: Colors.brown
