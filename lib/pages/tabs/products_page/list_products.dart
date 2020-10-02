@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:connectivity/connectivity.dart';
 import 'package:demo/database/database.dart';
+import 'package:demo/provider/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:demo/widgets/error_widget.dart';
@@ -26,10 +27,10 @@ class _ListProductsPageState extends State<ListProductsPage>{
     scaffoldKey = GlobalKey(debugLabel: 'productos/id');
      Future.delayed(Duration.zero, () {
        final p = Provider.of<ProductsProvider>(context, listen: false);
-       p.requestProducts();
+       p.getProductos(2);
      });
   }
-
+/*
   Future<Null> refresh() async {
     final p = Provider.of<ProductsProvider>(context, listen: false);
     final connection = await Connectivity().checkConnectivity();
@@ -44,7 +45,7 @@ class _ListProductsPageState extends State<ListProductsPage>{
    return Future.delayed(duration, (){
      mostrarSnackBar((connection == ConnectivityResult.none) ? 'No tienes conexión a internet' : 'Productos Actualizados');
    });
-  }
+  }*/
 
   mostrarSnackBar(String message) {
     scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -69,17 +70,17 @@ class _ListProductsPageState extends State<ListProductsPage>{
           padding: EdgeInsets.all(0.0),
           child: Column(
             children: [
-              InternetWidget(
+              /*InternetWidget(
                 hasInternet: _showProducts(context, _productsProvider),
                 noInternet: _showProductsDB(context),
-              )
+              )*/
             ]
           )
         )
       )
     );
   }
-
+/*
   Widget _showProductsDB(BuildContext context) {
     final productProvider = Provider.of<CategoriesDao>(context);
     return Expanded(
@@ -141,5 +142,5 @@ class _ListProductsPageState extends State<ListProductsPage>{
 
   @override
   bool get wantKeepAlive => true;
-
+*/
 }

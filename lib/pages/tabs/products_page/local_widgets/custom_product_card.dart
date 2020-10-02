@@ -3,13 +3,14 @@ import 'package:cache_image/cache_image.dart';
 
 class CustomProductCard extends StatelessWidget {
 
-  final Product product;
-  const CustomProductCard({this.product});
+  //final Product product;
+  //const CustomProductCard({this.product});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: InkWell(
+      child: Text("HELLO WORLD")
+    /*  child: InkWell(
         onTap: (){},
         child: Row(
           children: <Widget>[
@@ -39,7 +40,7 @@ class CustomProductCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ),*/
     );
   }
 }

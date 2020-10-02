@@ -1,4 +1,6 @@
-import 'dart:convert';
+/*import 'dart:convert
+
+import '../database.dart';';
 
 class ListColorConverter extends TypeConverter<List<Colore>, String> {
   const ListColorConverter();
@@ -19,4 +21,4 @@ class ListColorConverter extends TypeConverter<List<Colore>, String> {
     return json.encode(value.toJson());
   }
 
-}
+}*/

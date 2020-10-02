@@ -5,6 +5,7 @@ import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
+import 'package:demo/provider/products_provider.dart';
 import 'package:demo/provider/tallas_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +37,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<TallasDao, TallasProvider>(
           create: (context) => TallasProvider(null),
           update: (context, dao, cp) => TallasProvider(dao),
+        ),
+
+          ChangeNotifierProvider<ProductsProvider>(
+          create: (context) => ProductsProvider(db),
         ),
 
       ],
