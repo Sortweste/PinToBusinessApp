@@ -33,7 +33,7 @@ class CustomProductCard extends StatelessWidget {
                   Text(product.descripcion),
                   Text(product.specifications),
                   Text(product.existencia),
-                  Text(product.provider),
+                  //Text(product.provider),
                 ]
               ),
             ),
