@@ -8,17 +8,21 @@ part of 'database.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Categorie extends DataClass implements Insertable<Categorie> {
-  final int id;
+  final int idCategory;
   final String name;
   final String imageurl;
-  Categorie({@required this.id, @required this.name, @required this.imageurl});
+  Categorie(
+      {@required this.idCategory,
+      @required this.name,
+      @required this.imageurl});
   factory Categorie.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     return Categorie(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idCategory: intType
+          .mapFromDatabaseResponse(data['${effectivePrefix}id_category']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       imageurl: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}imageurl']),
@@ -28,7 +32,7 @@ class Categorie extends DataClass implements Insertable<Categorie> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Categorie(
-      id: serializer.fromJson<int>(json['id']),
+      idCategory: serializer.fromJson<int>(json['idCategory']),
       name: serializer.fromJson<String>(json['name']),
       imageurl: serializer.fromJson<String>(json['imageurl']),
     );
@@ -37,7 +41,7 @@ class Categorie extends DataClass implements Insertable<Categorie> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idCategory': serializer.toJson<int>(idCategory),
       'name': serializer.toJson<String>(name),
       'imageurl': serializer.toJson<String>(imageurl),
     };
@@ -46,7 +50,9 @@ class Categorie extends DataClass implements Insertable<Categorie> {
   @override
   CategoriesCompanion createCompanion(bool nullToAbsent) {
     return CategoriesCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idCategory: idCategory == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idCategory),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       imageurl: imageurl == null && nullToAbsent
           ? const Value.absent()
@@ -54,15 +60,16 @@ class Categorie extends DataClass implements Insertable<Categorie> {
     );
   }
 
-  Categorie copyWith({int id, String name, String imageurl}) => Categorie(
-        id: id ?? this.id,
+  Categorie copyWith({int idCategory, String name, String imageurl}) =>
+      Categorie(
+        idCategory: idCategory ?? this.idCategory,
         name: name ?? this.name,
         imageurl: imageurl ?? this.imageurl,
       );
   @override
   String toString() {
     return (StringBuffer('Categorie(')
-          ..write('id: $id, ')
+          ..write('idCategory: $idCategory, ')
           ..write('name: $name, ')
           ..write('imageurl: $imageurl')
           ..write(')'))
@@ -70,36 +77,36 @@ class Categorie extends DataClass implements Insertable<Categorie> {
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, imageurl.hashCode)));
+  int get hashCode => $mrjf(
+      $mrjc(idCategory.hashCode, $mrjc(name.hashCode, imageurl.hashCode)));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Categorie &&
-          other.id == this.id &&
+          other.idCategory == this.idCategory &&
           other.name == this.name &&
           other.imageurl == this.imageurl);
 }
 
 class CategoriesCompanion extends UpdateCompanion<Categorie> {
-  final Value<int> id;
+  final Value<int> idCategory;
   final Value<String> name;
   final Value<String> imageurl;
   const CategoriesCompanion({
-    this.id = const Value.absent(),
+    this.idCategory = const Value.absent(),
     this.name = const Value.absent(),
     this.imageurl = const Value.absent(),
   });
   CategoriesCompanion.insert({
-    this.id = const Value.absent(),
+    this.idCategory = const Value.absent(),
     @required String name,
     @required String imageurl,
   })  : name = Value(name),
         imageurl = Value(imageurl);
   CategoriesCompanion copyWith(
-      {Value<int> id, Value<String> name, Value<String> imageurl}) {
+      {Value<int> idCategory, Value<String> name, Value<String> imageurl}) {
     return CategoriesCompanion(
-      id: id ?? this.id,
+      idCategory: idCategory ?? this.idCategory,
       name: name ?? this.name,
       imageurl: imageurl ?? this.imageurl,
     );
@@ -111,12 +118,12 @@ class $CategoriesTable extends Categories
   final GeneratedDatabase _db;
   final String _alias;
   $CategoriesTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idCategoryMeta = const VerificationMeta('idCategory');
+  GeneratedIntColumn _idCategory;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idCategory => _idCategory ??= _constructIdCategory();
+  GeneratedIntColumn _constructIdCategory() {
+    return GeneratedIntColumn('id_category', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -139,7 +146,7 @@ class $CategoriesTable extends Categories
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, name, imageurl];
+  List<GeneratedColumn> get $columns => [idCategory, name, imageurl];
   @override
   $CategoriesTable get asDslTable => this;
   @override
@@ -150,8 +157,9 @@ class $CategoriesTable extends Categories
   VerificationContext validateIntegrity(CategoriesCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idCategory.present) {
+      context.handle(_idCategoryMeta,
+          idCategory.isAcceptableValue(d.idCategory.value, _idCategoryMeta));
     }
     if (d.name.present) {
       context.handle(
@@ -169,7 +177,7 @@ class $CategoriesTable extends Categories
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idCategory};
   @override
   Categorie map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -179,8 +187,8 @@ class $CategoriesTable extends Categories
   @override
   Map<String, Variable> entityToSql(CategoriesCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idCategory.present) {
+      map['id_category'] = Variable<int, IntType>(d.idCategory.value);
     }
     if (d.name.present) {
       map['name'] = Variable<String, StringType>(d.name.value);
@@ -198,17 +206,18 @@ class $CategoriesTable extends Categories
 }
 
 class Colore extends DataClass implements Insertable<Colore> {
-  final int id;
+  final int idColor;
   final String name;
   final String value;
-  Colore({@required this.id, @required this.name, @required this.value});
+  Colore({@required this.idColor, @required this.name, @required this.value});
   factory Colore.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     return Colore(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idColor:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}id_color']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       value:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}value']),
@@ -218,7 +227,7 @@ class Colore extends DataClass implements Insertable<Colore> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Colore(
-      id: serializer.fromJson<int>(json['id']),
+      idColor: serializer.fromJson<int>(json['idColor']),
       name: serializer.fromJson<String>(json['name']),
       value: serializer.fromJson<String>(json['value']),
     );
@@ -227,7 +236,7 @@ class Colore extends DataClass implements Insertable<Colore> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idColor': serializer.toJson<int>(idColor),
       'name': serializer.toJson<String>(name),
       'value': serializer.toJson<String>(value),
     };
@@ -236,22 +245,24 @@ class Colore extends DataClass implements Insertable<Colore> {
   @override
   ColoresCompanion createCompanion(bool nullToAbsent) {
     return ColoresCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idColor: idColor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idColor),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       value:
           value == null && nullToAbsent ? const Value.absent() : Value(value),
     );
   }
 
-  Colore copyWith({int id, String name, String value}) => Colore(
-        id: id ?? this.id,
+  Colore copyWith({int idColor, String name, String value}) => Colore(
+        idColor: idColor ?? this.idColor,
         name: name ?? this.name,
         value: value ?? this.value,
       );
   @override
   String toString() {
     return (StringBuffer('Colore(')
-          ..write('id: $id, ')
+          ..write('idColor: $idColor, ')
           ..write('name: $name, ')
           ..write('value: $value')
           ..write(')'))
@@ -260,35 +271,35 @@ class Colore extends DataClass implements Insertable<Colore> {
 
   @override
   int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, value.hashCode)));
+      $mrjf($mrjc(idColor.hashCode, $mrjc(name.hashCode, value.hashCode)));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Colore &&
-          other.id == this.id &&
+          other.idColor == this.idColor &&
           other.name == this.name &&
           other.value == this.value);
 }
 
 class ColoresCompanion extends UpdateCompanion<Colore> {
-  final Value<int> id;
+  final Value<int> idColor;
   final Value<String> name;
   final Value<String> value;
   const ColoresCompanion({
-    this.id = const Value.absent(),
+    this.idColor = const Value.absent(),
     this.name = const Value.absent(),
     this.value = const Value.absent(),
   });
   ColoresCompanion.insert({
-    this.id = const Value.absent(),
+    this.idColor = const Value.absent(),
     @required String name,
     @required String value,
   })  : name = Value(name),
         value = Value(value);
   ColoresCompanion copyWith(
-      {Value<int> id, Value<String> name, Value<String> value}) {
+      {Value<int> idColor, Value<String> name, Value<String> value}) {
     return ColoresCompanion(
-      id: id ?? this.id,
+      idColor: idColor ?? this.idColor,
       name: name ?? this.name,
       value: value ?? this.value,
     );
@@ -299,12 +310,12 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
   final GeneratedDatabase _db;
   final String _alias;
   $ColoresTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idColorMeta = const VerificationMeta('idColor');
+  GeneratedIntColumn _idColor;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idColor => _idColor ??= _constructIdColor();
+  GeneratedIntColumn _constructIdColor() {
+    return GeneratedIntColumn('id_color', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -327,7 +338,7 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, name, value];
+  List<GeneratedColumn> get $columns => [idColor, name, value];
   @override
   $ColoresTable get asDslTable => this;
   @override
@@ -338,8 +349,9 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
   VerificationContext validateIntegrity(ColoresCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idColor.present) {
+      context.handle(_idColorMeta,
+          idColor.isAcceptableValue(d.idColor.value, _idColorMeta));
     }
     if (d.name.present) {
       context.handle(
@@ -357,7 +369,7 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idColor};
   @override
   Colore map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -367,8 +379,8 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
   @override
   Map<String, Variable> entityToSql(ColoresCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idColor.present) {
+      map['id_color'] = Variable<int, IntType>(d.idColor.value);
     }
     if (d.name.present) {
       map['name'] = Variable<String, StringType>(d.name.value);
@@ -386,18 +398,23 @@ class $ColoresTable extends Colores with TableInfo<$ColoresTable, Colore> {
 }
 
 class Proveedore extends DataClass implements Insertable<Proveedore> {
-  final int id;
+  final int idProveedor;
   final String name;
   final String phone;
   final String email;
-  Proveedore({@required this.id, @required this.name, this.phone, this.email});
+  Proveedore(
+      {@required this.idProveedor,
+      @required this.name,
+      this.phone,
+      this.email});
   factory Proveedore.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     return Proveedore(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idProveedor: intType
+          .mapFromDatabaseResponse(data['${effectivePrefix}id_proveedor']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       phone:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}phone']),
@@ -409,7 +426,7 @@ class Proveedore extends DataClass implements Insertable<Proveedore> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Proveedore(
-      id: serializer.fromJson<int>(json['id']),
+      idProveedor: serializer.fromJson<int>(json['idProveedor']),
       name: serializer.fromJson<String>(json['name']),
       phone: serializer.fromJson<String>(json['phone']),
       email: serializer.fromJson<String>(json['email']),
@@ -419,7 +436,7 @@ class Proveedore extends DataClass implements Insertable<Proveedore> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idProveedor': serializer.toJson<int>(idProveedor),
       'name': serializer.toJson<String>(name),
       'phone': serializer.toJson<String>(phone),
       'email': serializer.toJson<String>(email),
@@ -429,7 +446,9 @@ class Proveedore extends DataClass implements Insertable<Proveedore> {
   @override
   ProveedoresCompanion createCompanion(bool nullToAbsent) {
     return ProveedoresCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idProveedor: idProveedor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idProveedor),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       phone:
           phone == null && nullToAbsent ? const Value.absent() : Value(phone),
@@ -438,9 +457,10 @@ class Proveedore extends DataClass implements Insertable<Proveedore> {
     );
   }
 
-  Proveedore copyWith({int id, String name, String phone, String email}) =>
+  Proveedore copyWith(
+          {int idProveedor, String name, String phone, String email}) =>
       Proveedore(
-        id: id ?? this.id,
+        idProveedor: idProveedor ?? this.idProveedor,
         name: name ?? this.name,
         phone: phone ?? this.phone,
         email: email ?? this.email,
@@ -448,7 +468,7 @@ class Proveedore extends DataClass implements Insertable<Proveedore> {
   @override
   String toString() {
     return (StringBuffer('Proveedore(')
-          ..write('id: $id, ')
+          ..write('idProveedor: $idProveedor, ')
           ..write('name: $name, ')
           ..write('phone: $phone, ')
           ..write('email: $email')
@@ -457,42 +477,42 @@ class Proveedore extends DataClass implements Insertable<Proveedore> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode,
+  int get hashCode => $mrjf($mrjc(idProveedor.hashCode,
       $mrjc(name.hashCode, $mrjc(phone.hashCode, email.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Proveedore &&
-          other.id == this.id &&
+          other.idProveedor == this.idProveedor &&
           other.name == this.name &&
           other.phone == this.phone &&
           other.email == this.email);
 }
 
 class ProveedoresCompanion extends UpdateCompanion<Proveedore> {
-  final Value<int> id;
+  final Value<int> idProveedor;
   final Value<String> name;
   final Value<String> phone;
   final Value<String> email;
   const ProveedoresCompanion({
-    this.id = const Value.absent(),
+    this.idProveedor = const Value.absent(),
     this.name = const Value.absent(),
     this.phone = const Value.absent(),
     this.email = const Value.absent(),
   });
   ProveedoresCompanion.insert({
-    this.id = const Value.absent(),
+    this.idProveedor = const Value.absent(),
     @required String name,
     this.phone = const Value.absent(),
     this.email = const Value.absent(),
   }) : name = Value(name);
   ProveedoresCompanion copyWith(
-      {Value<int> id,
+      {Value<int> idProveedor,
       Value<String> name,
       Value<String> phone,
       Value<String> email}) {
     return ProveedoresCompanion(
-      id: id ?? this.id,
+      idProveedor: idProveedor ?? this.idProveedor,
       name: name ?? this.name,
       phone: phone ?? this.phone,
       email: email ?? this.email,
@@ -505,12 +525,14 @@ class $ProveedoresTable extends Proveedores
   final GeneratedDatabase _db;
   final String _alias;
   $ProveedoresTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idProveedorMeta =
+      const VerificationMeta('idProveedor');
+  GeneratedIntColumn _idProveedor;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idProveedor =>
+      _idProveedor ??= _constructIdProveedor();
+  GeneratedIntColumn _constructIdProveedor() {
+    return GeneratedIntColumn('id_proveedor', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -548,7 +570,7 @@ class $ProveedoresTable extends Proveedores
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, name, phone, email];
+  List<GeneratedColumn> get $columns => [idProveedor, name, phone, email];
   @override
   $ProveedoresTable get asDslTable => this;
   @override
@@ -559,8 +581,9 @@ class $ProveedoresTable extends Proveedores
   VerificationContext validateIntegrity(ProveedoresCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idProveedor.present) {
+      context.handle(_idProveedorMeta,
+          idProveedor.isAcceptableValue(d.idProveedor.value, _idProveedorMeta));
     }
     if (d.name.present) {
       context.handle(
@@ -580,7 +603,7 @@ class $ProveedoresTable extends Proveedores
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idProveedor};
   @override
   Proveedore map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -590,8 +613,8 @@ class $ProveedoresTable extends Proveedores
   @override
   Map<String, Variable> entityToSql(ProveedoresCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idProveedor.present) {
+      map['id_proveedor'] = Variable<int, IntType>(d.idProveedor.value);
     }
     if (d.name.present) {
       map['name'] = Variable<String, StringType>(d.name.value);
@@ -612,16 +635,17 @@ class $ProveedoresTable extends Proveedores
 }
 
 class Talla extends DataClass implements Insertable<Talla> {
-  final int id;
+  final int idTalla;
   final String size;
-  Talla({@required this.id, @required this.size});
+  Talla({@required this.idTalla, @required this.size});
   factory Talla.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     return Talla(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idTalla:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}id_talla']),
       size: stringType.mapFromDatabaseResponse(data['${effectivePrefix}size']),
     );
   }
@@ -629,7 +653,7 @@ class Talla extends DataClass implements Insertable<Talla> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Talla(
-      id: serializer.fromJson<int>(json['id']),
+      idTalla: serializer.fromJson<int>(json['idTalla']),
       size: serializer.fromJson<String>(json['size']),
     );
   }
@@ -637,7 +661,7 @@ class Talla extends DataClass implements Insertable<Talla> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idTalla': serializer.toJson<int>(idTalla),
       'size': serializer.toJson<String>(size),
     };
   }
@@ -645,46 +669,50 @@ class Talla extends DataClass implements Insertable<Talla> {
   @override
   TallasCompanion createCompanion(bool nullToAbsent) {
     return TallasCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idTalla: idTalla == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idTalla),
       size: size == null && nullToAbsent ? const Value.absent() : Value(size),
     );
   }
 
-  Talla copyWith({int id, String size}) => Talla(
-        id: id ?? this.id,
+  Talla copyWith({int idTalla, String size}) => Talla(
+        idTalla: idTalla ?? this.idTalla,
         size: size ?? this.size,
       );
   @override
   String toString() {
     return (StringBuffer('Talla(')
-          ..write('id: $id, ')
+          ..write('idTalla: $idTalla, ')
           ..write('size: $size')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode, size.hashCode));
+  int get hashCode => $mrjf($mrjc(idTalla.hashCode, size.hashCode));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Talla && other.id == this.id && other.size == this.size);
+      (other is Talla &&
+          other.idTalla == this.idTalla &&
+          other.size == this.size);
 }
 
 class TallasCompanion extends UpdateCompanion<Talla> {
-  final Value<int> id;
+  final Value<int> idTalla;
   final Value<String> size;
   const TallasCompanion({
-    this.id = const Value.absent(),
+    this.idTalla = const Value.absent(),
     this.size = const Value.absent(),
   });
   TallasCompanion.insert({
-    this.id = const Value.absent(),
+    this.idTalla = const Value.absent(),
     @required String size,
   }) : size = Value(size);
-  TallasCompanion copyWith({Value<int> id, Value<String> size}) {
+  TallasCompanion copyWith({Value<int> idTalla, Value<String> size}) {
     return TallasCompanion(
-      id: id ?? this.id,
+      idTalla: idTalla ?? this.idTalla,
       size: size ?? this.size,
     );
   }
@@ -694,12 +722,12 @@ class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
   final GeneratedDatabase _db;
   final String _alias;
   $TallasTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idTallaMeta = const VerificationMeta('idTalla');
+  GeneratedIntColumn _idTalla;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idTalla => _idTalla ??= _constructIdTalla();
+  GeneratedIntColumn _constructIdTalla() {
+    return GeneratedIntColumn('id_talla', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -713,7 +741,7 @@ class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, size];
+  List<GeneratedColumn> get $columns => [idTalla, size];
   @override
   $TallasTable get asDslTable => this;
   @override
@@ -724,8 +752,9 @@ class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
   VerificationContext validateIntegrity(TallasCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idTalla.present) {
+      context.handle(_idTallaMeta,
+          idTalla.isAcceptableValue(d.idTalla.value, _idTallaMeta));
     }
     if (d.size.present) {
       context.handle(
@@ -737,7 +766,7 @@ class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idTalla};
   @override
   Talla map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -747,8 +776,8 @@ class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
   @override
   Map<String, Variable> entityToSql(TallasCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idTalla.present) {
+      map['id_talla'] = Variable<int, IntType>(d.idTalla.value);
     }
     if (d.size.present) {
       map['size'] = Variable<String, StringType>(d.size.value);
@@ -763,7 +792,7 @@ class $TallasTable extends Tallas with TableInfo<$TallasTable, Talla> {
 }
 
 class Producto extends DataClass implements Insertable<Producto> {
-  final int id;
+  final int idProducto;
   final String codigo;
   final String descripcion;
   final double precioUnitario;
@@ -779,7 +808,7 @@ class Producto extends DataClass implements Insertable<Producto> {
   final int categoryId;
   final String specifications;
   Producto(
-      {@required this.id,
+      {@required this.idProducto,
       @required this.codigo,
       this.descripcion,
       this.precioUnitario,
@@ -801,7 +830,8 @@ class Producto extends DataClass implements Insertable<Producto> {
     final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
     return Producto(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idProducto: intType
+          .mapFromDatabaseResponse(data['${effectivePrefix}id_producto']),
       codigo:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
       descripcion: stringType
@@ -836,7 +866,7 @@ class Producto extends DataClass implements Insertable<Producto> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Producto(
-      id: serializer.fromJson<int>(json['id']),
+      idProducto: serializer.fromJson<int>(json['idProducto']),
       codigo: serializer.fromJson<String>(json['codigo']),
       descripcion: serializer.fromJson<String>(json['descripcion']),
       precioUnitario: serializer.fromJson<double>(json['precioUnitario']),
@@ -857,7 +887,7 @@ class Producto extends DataClass implements Insertable<Producto> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idProducto': serializer.toJson<int>(idProducto),
       'codigo': serializer.toJson<String>(codigo),
       'descripcion': serializer.toJson<String>(descripcion),
       'precioUnitario': serializer.toJson<double>(precioUnitario),
@@ -878,7 +908,9 @@ class Producto extends DataClass implements Insertable<Producto> {
   @override
   ProductosCompanion createCompanion(bool nullToAbsent) {
     return ProductosCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idProducto: idProducto == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idProducto),
       codigo:
           codigo == null && nullToAbsent ? const Value.absent() : Value(codigo),
       descripcion: descripcion == null && nullToAbsent
@@ -924,7 +956,7 @@ class Producto extends DataClass implements Insertable<Producto> {
   }
 
   Producto copyWith(
-          {int id,
+          {int idProducto,
           String codigo,
           String descripcion,
           double precioUnitario,
@@ -940,7 +972,7 @@ class Producto extends DataClass implements Insertable<Producto> {
           int categoryId,
           String specifications}) =>
       Producto(
-        id: id ?? this.id,
+        idProducto: idProducto ?? this.idProducto,
         codigo: codigo ?? this.codigo,
         descripcion: descripcion ?? this.descripcion,
         precioUnitario: precioUnitario ?? this.precioUnitario,
@@ -959,7 +991,7 @@ class Producto extends DataClass implements Insertable<Producto> {
   @override
   String toString() {
     return (StringBuffer('Producto(')
-          ..write('id: $id, ')
+          ..write('idProducto: $idProducto, ')
           ..write('codigo: $codigo, ')
           ..write('descripcion: $descripcion, ')
           ..write('precioUnitario: $precioUnitario, ')
@@ -980,7 +1012,7 @@ class Producto extends DataClass implements Insertable<Producto> {
 
   @override
   int get hashCode => $mrjf($mrjc(
-      id.hashCode,
+      idProducto.hashCode,
       $mrjc(
           codigo.hashCode,
           $mrjc(
@@ -1013,7 +1045,7 @@ class Producto extends DataClass implements Insertable<Producto> {
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Producto &&
-          other.id == this.id &&
+          other.idProducto == this.idProducto &&
           other.codigo == this.codigo &&
           other.descripcion == this.descripcion &&
           other.precioUnitario == this.precioUnitario &&
@@ -1031,7 +1063,7 @@ class Producto extends DataClass implements Insertable<Producto> {
 }
 
 class ProductosCompanion extends UpdateCompanion<Producto> {
-  final Value<int> id;
+  final Value<int> idProducto;
   final Value<String> codigo;
   final Value<String> descripcion;
   final Value<double> precioUnitario;
@@ -1047,7 +1079,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
   final Value<int> categoryId;
   final Value<String> specifications;
   const ProductosCompanion({
-    this.id = const Value.absent(),
+    this.idProducto = const Value.absent(),
     this.codigo = const Value.absent(),
     this.descripcion = const Value.absent(),
     this.precioUnitario = const Value.absent(),
@@ -1064,7 +1096,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
     this.specifications = const Value.absent(),
   });
   ProductosCompanion.insert({
-    this.id = const Value.absent(),
+    this.idProducto = const Value.absent(),
     @required String codigo,
     this.descripcion = const Value.absent(),
     this.precioUnitario = const Value.absent(),
@@ -1081,7 +1113,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
     this.specifications = const Value.absent(),
   }) : codigo = Value(codigo);
   ProductosCompanion copyWith(
-      {Value<int> id,
+      {Value<int> idProducto,
       Value<String> codigo,
       Value<String> descripcion,
       Value<double> precioUnitario,
@@ -1097,7 +1129,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
       Value<int> categoryId,
       Value<String> specifications}) {
     return ProductosCompanion(
-      id: id ?? this.id,
+      idProducto: idProducto ?? this.idProducto,
       codigo: codigo ?? this.codigo,
       descripcion: descripcion ?? this.descripcion,
       precioUnitario: precioUnitario ?? this.precioUnitario,
@@ -1121,12 +1153,12 @@ class $ProductosTable extends Productos
   final GeneratedDatabase _db;
   final String _alias;
   $ProductosTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idProductoMeta = const VerificationMeta('idProducto');
+  GeneratedIntColumn _idProducto;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idProducto => _idProducto ??= _constructIdProducto();
+  GeneratedIntColumn _constructIdProducto() {
+    return GeneratedIntColumn('id_producto', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -1279,7 +1311,7 @@ class $ProductosTable extends Productos
   GeneratedIntColumn get providerId => _providerId ??= _constructProviderId();
   GeneratedIntColumn _constructProviderId() {
     return GeneratedIntColumn('provider_id', $tableName, true,
-        $customConstraints: 'NULL REFERENCES proveedores(id)');
+        $customConstraints: 'NULL REFERENCES proveedores(id_proveedor)');
   }
 
   final VerificationMeta _categoryIdMeta = const VerificationMeta('categoryId');
@@ -1288,7 +1320,7 @@ class $ProductosTable extends Productos
   GeneratedIntColumn get categoryId => _categoryId ??= _constructCategoryId();
   GeneratedIntColumn _constructCategoryId() {
     return GeneratedIntColumn('category_id', $tableName, true,
-        $customConstraints: 'NULL REFERENCES categories(id)');
+        $customConstraints: 'NULL REFERENCES categories(id_category)');
   }
 
   final VerificationMeta _specificationsMeta =
@@ -1307,7 +1339,7 @@ class $ProductosTable extends Productos
 
   @override
   List<GeneratedColumn> get $columns => [
-        id,
+        idProducto,
         codigo,
         descripcion,
         precioUnitario,
@@ -1333,8 +1365,9 @@ class $ProductosTable extends Productos
   VerificationContext validateIntegrity(ProductosCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idProducto.present) {
+      context.handle(_idProductoMeta,
+          idProducto.isAcceptableValue(d.idProducto.value, _idProductoMeta));
     }
     if (d.codigo.present) {
       context.handle(
@@ -1406,7 +1439,7 @@ class $ProductosTable extends Productos
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idProducto};
   @override
   Producto map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1416,8 +1449,8 @@ class $ProductosTable extends Productos
   @override
   Map<String, Variable> entityToSql(ProductosCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idProducto.present) {
+      map['id_producto'] = Variable<int, IntType>(d.idProducto.value);
     }
     if (d.codigo.present) {
       map['codigo'] = Variable<String, StringType>(d.codigo.value);
@@ -1475,18 +1508,21 @@ class $ProductosTable extends Productos
 
 class ProductosWithColore extends DataClass
     implements Insertable<ProductosWithColore> {
-  final int id;
+  final int idProductoWithColor;
   final int producto;
   final int color;
   ProductosWithColore(
-      {@required this.id, @required this.producto, @required this.color});
+      {@required this.idProductoWithColor,
+      @required this.producto,
+      @required this.color});
   factory ProductosWithColore.fromData(
       Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     return ProductosWithColore(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idProductoWithColor: intType.mapFromDatabaseResponse(
+          data['${effectivePrefix}id_producto_with_color']),
       producto:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}producto']),
       color: intType.mapFromDatabaseResponse(data['${effectivePrefix}color']),
@@ -1496,7 +1532,8 @@ class ProductosWithColore extends DataClass
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return ProductosWithColore(
-      id: serializer.fromJson<int>(json['id']),
+      idProductoWithColor:
+          serializer.fromJson<int>(json['idProductoWithColor']),
       producto: serializer.fromJson<int>(json['producto']),
       color: serializer.fromJson<int>(json['color']),
     );
@@ -1505,7 +1542,7 @@ class ProductosWithColore extends DataClass
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idProductoWithColor': serializer.toJson<int>(idProductoWithColor),
       'producto': serializer.toJson<int>(producto),
       'color': serializer.toJson<int>(color),
     };
@@ -1514,7 +1551,9 @@ class ProductosWithColore extends DataClass
   @override
   ProductosWithColoresCompanion createCompanion(bool nullToAbsent) {
     return ProductosWithColoresCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idProductoWithColor: idProductoWithColor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idProductoWithColor),
       producto: producto == null && nullToAbsent
           ? const Value.absent()
           : Value(producto),
@@ -1523,16 +1562,17 @@ class ProductosWithColore extends DataClass
     );
   }
 
-  ProductosWithColore copyWith({int id, int producto, int color}) =>
+  ProductosWithColore copyWith(
+          {int idProductoWithColor, int producto, int color}) =>
       ProductosWithColore(
-        id: id ?? this.id,
+        idProductoWithColor: idProductoWithColor ?? this.idProductoWithColor,
         producto: producto ?? this.producto,
         color: color ?? this.color,
       );
   @override
   String toString() {
     return (StringBuffer('ProductosWithColore(')
-          ..write('id: $id, ')
+          ..write('idProductoWithColor: $idProductoWithColor, ')
           ..write('producto: $producto, ')
           ..write('color: $color')
           ..write(')'))
@@ -1540,37 +1580,37 @@ class ProductosWithColore extends DataClass
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(producto.hashCode, color.hashCode)));
+  int get hashCode => $mrjf($mrjc(
+      idProductoWithColor.hashCode, $mrjc(producto.hashCode, color.hashCode)));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is ProductosWithColore &&
-          other.id == this.id &&
+          other.idProductoWithColor == this.idProductoWithColor &&
           other.producto == this.producto &&
           other.color == this.color);
 }
 
 class ProductosWithColoresCompanion
     extends UpdateCompanion<ProductosWithColore> {
-  final Value<int> id;
+  final Value<int> idProductoWithColor;
   final Value<int> producto;
   final Value<int> color;
   const ProductosWithColoresCompanion({
-    this.id = const Value.absent(),
+    this.idProductoWithColor = const Value.absent(),
     this.producto = const Value.absent(),
     this.color = const Value.absent(),
   });
   ProductosWithColoresCompanion.insert({
-    this.id = const Value.absent(),
+    this.idProductoWithColor = const Value.absent(),
     @required int producto,
     @required int color,
   })  : producto = Value(producto),
         color = Value(color);
   ProductosWithColoresCompanion copyWith(
-      {Value<int> id, Value<int> producto, Value<int> color}) {
+      {Value<int> idProductoWithColor, Value<int> producto, Value<int> color}) {
     return ProductosWithColoresCompanion(
-      id: id ?? this.id,
+      idProductoWithColor: idProductoWithColor ?? this.idProductoWithColor,
       producto: producto ?? this.producto,
       color: color ?? this.color,
     );
@@ -1582,12 +1622,14 @@ class $ProductosWithColoresTable extends ProductosWithColores
   final GeneratedDatabase _db;
   final String _alias;
   $ProductosWithColoresTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idProductoWithColorMeta =
+      const VerificationMeta('idProductoWithColor');
+  GeneratedIntColumn _idProductoWithColor;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idProductoWithColor =>
+      _idProductoWithColor ??= _constructIdProductoWithColor();
+  GeneratedIntColumn _constructIdProductoWithColor() {
+    return GeneratedIntColumn('id_producto_with_color', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -1616,7 +1658,7 @@ class $ProductosWithColoresTable extends ProductosWithColores
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, producto, color];
+  List<GeneratedColumn> get $columns => [idProductoWithColor, producto, color];
   @override
   $ProductosWithColoresTable get asDslTable => this;
   @override
@@ -1627,8 +1669,11 @@ class $ProductosWithColoresTable extends ProductosWithColores
   VerificationContext validateIntegrity(ProductosWithColoresCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idProductoWithColor.present) {
+      context.handle(
+          _idProductoWithColorMeta,
+          idProductoWithColor.isAcceptableValue(
+              d.idProductoWithColor.value, _idProductoWithColorMeta));
     }
     if (d.producto.present) {
       context.handle(_productoMeta,
@@ -1646,7 +1691,7 @@ class $ProductosWithColoresTable extends ProductosWithColores
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idProductoWithColor};
   @override
   ProductosWithColore map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1656,8 +1701,9 @@ class $ProductosWithColoresTable extends ProductosWithColores
   @override
   Map<String, Variable> entityToSql(ProductosWithColoresCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idProductoWithColor.present) {
+      map['id_producto_with_color'] =
+          Variable<int, IntType>(d.idProductoWithColor.value);
     }
     if (d.producto.present) {
       map['producto'] = Variable<int, IntType>(d.producto.value);
@@ -1676,18 +1722,21 @@ class $ProductosWithColoresTable extends ProductosWithColores
 
 class ProductosWithTalla extends DataClass
     implements Insertable<ProductosWithTalla> {
-  final int id;
+  final int idProductoWithTalla;
   final int producto;
   final int talla;
   ProductosWithTalla(
-      {@required this.id, @required this.producto, @required this.talla});
+      {@required this.idProductoWithTalla,
+      @required this.producto,
+      @required this.talla});
   factory ProductosWithTalla.fromData(
       Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     return ProductosWithTalla(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      idProductoWithTalla: intType.mapFromDatabaseResponse(
+          data['${effectivePrefix}id_producto_with_talla']),
       producto:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}producto']),
       talla: intType.mapFromDatabaseResponse(data['${effectivePrefix}talla']),
@@ -1697,7 +1746,8 @@ class ProductosWithTalla extends DataClass
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return ProductosWithTalla(
-      id: serializer.fromJson<int>(json['id']),
+      idProductoWithTalla:
+          serializer.fromJson<int>(json['idProductoWithTalla']),
       producto: serializer.fromJson<int>(json['producto']),
       talla: serializer.fromJson<int>(json['talla']),
     );
@@ -1706,7 +1756,7 @@ class ProductosWithTalla extends DataClass
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'idProductoWithTalla': serializer.toJson<int>(idProductoWithTalla),
       'producto': serializer.toJson<int>(producto),
       'talla': serializer.toJson<int>(talla),
     };
@@ -1715,7 +1765,9 @@ class ProductosWithTalla extends DataClass
   @override
   ProductosWithTallasCompanion createCompanion(bool nullToAbsent) {
     return ProductosWithTallasCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      idProductoWithTalla: idProductoWithTalla == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idProductoWithTalla),
       producto: producto == null && nullToAbsent
           ? const Value.absent()
           : Value(producto),
@@ -1724,16 +1776,17 @@ class ProductosWithTalla extends DataClass
     );
   }
 
-  ProductosWithTalla copyWith({int id, int producto, int talla}) =>
+  ProductosWithTalla copyWith(
+          {int idProductoWithTalla, int producto, int talla}) =>
       ProductosWithTalla(
-        id: id ?? this.id,
+        idProductoWithTalla: idProductoWithTalla ?? this.idProductoWithTalla,
         producto: producto ?? this.producto,
         talla: talla ?? this.talla,
       );
   @override
   String toString() {
     return (StringBuffer('ProductosWithTalla(')
-          ..write('id: $id, ')
+          ..write('idProductoWithTalla: $idProductoWithTalla, ')
           ..write('producto: $producto, ')
           ..write('talla: $talla')
           ..write(')'))
@@ -1741,36 +1794,36 @@ class ProductosWithTalla extends DataClass
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(producto.hashCode, talla.hashCode)));
+  int get hashCode => $mrjf($mrjc(
+      idProductoWithTalla.hashCode, $mrjc(producto.hashCode, talla.hashCode)));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is ProductosWithTalla &&
-          other.id == this.id &&
+          other.idProductoWithTalla == this.idProductoWithTalla &&
           other.producto == this.producto &&
           other.talla == this.talla);
 }
 
 class ProductosWithTallasCompanion extends UpdateCompanion<ProductosWithTalla> {
-  final Value<int> id;
+  final Value<int> idProductoWithTalla;
   final Value<int> producto;
   final Value<int> talla;
   const ProductosWithTallasCompanion({
-    this.id = const Value.absent(),
+    this.idProductoWithTalla = const Value.absent(),
     this.producto = const Value.absent(),
     this.talla = const Value.absent(),
   });
   ProductosWithTallasCompanion.insert({
-    this.id = const Value.absent(),
+    this.idProductoWithTalla = const Value.absent(),
     @required int producto,
     @required int talla,
   })  : producto = Value(producto),
         talla = Value(talla);
   ProductosWithTallasCompanion copyWith(
-      {Value<int> id, Value<int> producto, Value<int> talla}) {
+      {Value<int> idProductoWithTalla, Value<int> producto, Value<int> talla}) {
     return ProductosWithTallasCompanion(
-      id: id ?? this.id,
+      idProductoWithTalla: idProductoWithTalla ?? this.idProductoWithTalla,
       producto: producto ?? this.producto,
       talla: talla ?? this.talla,
     );
@@ -1782,12 +1835,14 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   final GeneratedDatabase _db;
   final String _alias;
   $ProductosWithTallasTable(this._db, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  final VerificationMeta _idProductoWithTallaMeta =
+      const VerificationMeta('idProductoWithTalla');
+  GeneratedIntColumn _idProductoWithTalla;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
+  GeneratedIntColumn get idProductoWithTalla =>
+      _idProductoWithTalla ??= _constructIdProductoWithTalla();
+  GeneratedIntColumn _constructIdProductoWithTalla() {
+    return GeneratedIntColumn('id_producto_with_talla', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
@@ -1816,7 +1871,7 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, producto, talla];
+  List<GeneratedColumn> get $columns => [idProductoWithTalla, producto, talla];
   @override
   $ProductosWithTallasTable get asDslTable => this;
   @override
@@ -1827,8 +1882,11 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   VerificationContext validateIntegrity(ProductosWithTallasCompanion d,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    if (d.idProductoWithTalla.present) {
+      context.handle(
+          _idProductoWithTallaMeta,
+          idProductoWithTalla.isAcceptableValue(
+              d.idProductoWithTalla.value, _idProductoWithTallaMeta));
     }
     if (d.producto.present) {
       context.handle(_productoMeta,
@@ -1846,7 +1904,7 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {idProductoWithTalla};
   @override
   ProductosWithTalla map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1856,8 +1914,9 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   @override
   Map<String, Variable> entityToSql(ProductosWithTallasCompanion d) {
     final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
+    if (d.idProductoWithTalla.present) {
+      map['id_producto_with_talla'] =
+          Variable<int, IntType>(d.idProductoWithTalla.value);
     }
     if (d.producto.present) {
       map['producto'] = Variable<int, IntType>(d.producto.value);
@@ -1952,7 +2011,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
   $TallasTable get tallas => db.tallas;
   AllProductsResult _rowToAllProductsResult(QueryRow row) {
     return AllProductsResult(
-      id: row.readInt('id'),
+      idProducto: row.readInt('id_producto'),
       codigo: row.readString('codigo'),
       descripcion: row.readString('descripcion'),
       precioUnitario: row.readDouble('precio_unitario'),
@@ -1967,23 +2026,23 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
       providerId: row.readInt('provider_id'),
       categoryId: row.readInt('category_id'),
       specifications: row.readString('specifications'),
-      id1: row.readInt('id'),
+      idProductoWithColor: row.readInt('id_producto_with_color'),
       producto: row.readInt('producto'),
       color: row.readInt('color'),
-      id2: row.readInt('id'),
+      idColor: row.readInt('id_color'),
       name: row.readString('name'),
       value: row.readString('value'),
-      id3: row.readInt('id'),
+      idProductoWithTalla: row.readInt('id_producto_with_talla'),
       producto1: row.readInt('producto'),
       talla: row.readInt('talla'),
-      id4: row.readInt('id'),
+      idTalla: row.readInt('id_talla'),
       size: row.readString('size'),
     );
   }
 
   Selectable<AllProductsResult> allProductsQuery(int idc) {
     return customSelectQuery(
-        'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id INNER JOIN colores ON colores.id = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id INNER JOIN tallas ON tallas.id = productos_with_tallas.talla WHERE productos.category_id = :idc',
+        'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc GROUP BY productos.descripcion',
         variables: [
           Variable.withInt(idc)
         ],
@@ -2006,7 +2065,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
 }
 
 class AllProductsResult {
-  final int id;
+  final int idProducto;
   final String codigo;
   final String descripcion;
   final double precioUnitario;
@@ -2021,19 +2080,19 @@ class AllProductsResult {
   final int providerId;
   final int categoryId;
   final String specifications;
-  final int id1;
+  final int idProductoWithColor;
   final int producto;
   final int color;
-  final int id2;
+  final int idColor;
   final String name;
   final String value;
-  final int id3;
+  final int idProductoWithTalla;
   final int producto1;
   final int talla;
-  final int id4;
+  final int idTalla;
   final String size;
   AllProductsResult({
-    this.id,
+    this.idProducto,
     this.codigo,
     this.descripcion,
     this.precioUnitario,
@@ -2048,16 +2107,16 @@ class AllProductsResult {
     this.providerId,
     this.categoryId,
     this.specifications,
-    this.id1,
+    this.idProductoWithColor,
     this.producto,
     this.color,
-    this.id2,
+    this.idColor,
     this.name,
     this.value,
-    this.id3,
+    this.idProductoWithTalla,
     this.producto1,
     this.talla,
-    this.id4,
+    this.idTalla,
     this.size,
   });
 }

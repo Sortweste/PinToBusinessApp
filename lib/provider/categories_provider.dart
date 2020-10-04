@@ -35,7 +35,7 @@ class CategoriesProvider with ChangeNotifier {
        final List decodedData = json.decode(res.body);
           decodedData.forEach((element) {
           final Categorie c = new Categorie(
-            id: element['id'],
+            idCategory: element['id'],
             name: element['name'],
             imageurl: element['image_url']
           );
@@ -51,7 +51,7 @@ class CategoriesProvider with ChangeNotifier {
   }
 
    Future<List<Categorie>> searchCategories(String query) async {
-    final _url = Uri.https(_urlBase, 'api/v1/categories/search/${query}.json');
+    final _url = Uri.https(_urlBase, 'api/v1/categories/search/$query.json');
     List<Categorie> _categorias = new List<Categorie>();
     try {
       final res = await http.get(_url);
@@ -60,7 +60,7 @@ class CategoriesProvider with ChangeNotifier {
        final List decodedData = json.decode(res.body);
           decodedData.forEach((element) {
           final Categorie c = new Categorie(
-            id: element['id'],
+            idCategory: element['id'],
             name: element['name'],
             imageurl: element['image_url']
           );
@@ -78,7 +78,7 @@ class CategoriesProvider with ChangeNotifier {
     if(catList.isNotEmpty){
       catList.forEach((element) async {
        final categoria = CategoriesCompanion(
-         id: moor.Value(element.id),
+         idCategory: moor.Value(element.idCategory),
          name: moor.Value(element.name),
          imageurl: moor.Value(element.imageurl)
        );

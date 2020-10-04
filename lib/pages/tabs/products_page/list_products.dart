@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'package:connectivity/connectivity.dart';
 import 'package:demo/database/database.dart';
 import 'package:demo/provider/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:demo/widgets/error_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:demo/pages/tabs/products_page/local_widgets/custom_product_card.dart';
 
 class ListProductsPage extends StatefulWidget {
   final Categorie category;
@@ -27,7 +25,7 @@ class _ListProductsPageState extends State<ListProductsPage>{
     scaffoldKey = GlobalKey(debugLabel: 'productos/id');
      Future.delayed(Duration.zero, () {
        final p = Provider.of<ProductsProvider>(context, listen: false);
-       p.getProductos(2);
+       p.getProductos(widget.category.idCategory);
      });
   }
 /*
@@ -87,19 +85,20 @@ class _ListProductsPageState extends State<ListProductsPage>{
       child: Padding(
         padding: EdgeInsets.all(5),
         child: StreamBuilder(
-          stream: productProvider.watchAllProducts(2),
+          stream: productProvider.watchAllProducts(widget.category.idCategory),
           builder: (context, snapshot){
-              if(snapshot.hasData){
-                final List<AllProductsResult> lista = snapshot.data;
-                return (lista.length == 0) ? Center(child: CircularProgressIndicator(),) : 
+              final List<AllProductsResult> lista = snapshot.data;
+              if(snapshot.hasError) {return TextErrorWidget(buttonFunction: (){ }); }
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting: return Center(child: CircularProgressIndicator(),);
+                case ConnectionState.active: return (lista.length == 0) ? Center(child: CircularProgressIndicator(),) : 
                    ListView.builder(
                      itemCount: lista.length,
                      itemBuilder: (context, index){
                      return ListTile(title: Text(lista[index].descripcion), subtitle: Text(lista[index].codigo),);
-                   },)
-                   ;
-              } else{
-                return TextErrorWidget(buttonFunction: (){ });
+                  }
+                   );
+               default: return Center(child: CircularProgressIndicator(),);
               }
           },
         ),

@@ -20,7 +20,7 @@ class ColoresProvider with ChangeNotifier {
       if(res.statusCode == 200){
        final List decodedData = json.decode(res.body);
           decodedData.forEach((element) {
-          colores.add(Colore.fromJson(element));
+          colores.add(Colore(idColor: element['id'], name: element['name'], value: element['value']));
         });
     }
     return colores;

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 
 import 'package:demo/database/database.dart';
-import 'package:demo/database/dtos/producto_con_colores.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -27,15 +26,17 @@ class ProductsProvider with ChangeNotifier {
  // Future<List<Categorie>> get categories => this._categoriesFuture;
 
   Future getProductos(int idCategoria) async {
-    final _url = Uri.https(_urlBase, 'api/v1/categories/${idCategoria}/products.json');
+    final _url = Uri.https(_urlBase, 'api/v1/categories/$idCategoria/products.json');
    // List<Categorie> _categorias = new List<Categorie>();
     try {
       final res = await http.get(_url);
       if(res.statusCode == 200){
         List data = json.decode(res.body); 
+        db.productosWithColoresDao.truncateProductosWithColores();
+        db.productosWithTallasDao.truncateProductosWithTallas();
         data.forEach((element) async {
           var producto = Producto(
-            id: element['id'], 
+            idProducto: element['id'], 
             codigo: element['codigo'],
             descripcion: element['descripcion'], 
             specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
@@ -55,29 +56,29 @@ class ProductsProvider with ChangeNotifier {
           List auxColores = element['colors'];
           auxColores.removeWhere((value) => value == null);
 
-          List<Colore> colores = auxColores.map((color) => Colore(id: color['id'], name: color['name'], value: color['value'])).toList();
+          List<Colore> colores = auxColores.map((color) => Colore(idColor: color['id'], name: color['name'], value: color['value'])).toList();
           
           await db.productosWithColoresDao.truncateProductosWithColores();
           colores.forEach((c) async {
-            await db.coloresDao.insertColor(ColoresCompanion(id: moor.Value(c.id), name: moor.Value(c.name), value: moor.Value(c.value)));
-            var pwc = ProductosWithColoresCompanion(color: moor.Value(c.id), producto: moor.Value(producto.id));
+            await db.coloresDao.insertColor(ColoresCompanion(idColor: moor.Value(c.idColor), name: moor.Value(c.name), value: moor.Value(c.value)));
+            var pwc = ProductosWithColoresCompanion(color: moor.Value(c.idColor), producto: moor.Value(producto.idProducto));
             await db.productosWithColoresDao.insertProductoWithColores(pwc);
            });
 
           List auxTallas = element['sizes'];
           auxTallas.removeWhere((value) => value == null);
 
-          List<Talla> tallas = auxTallas.map((talla) => Talla(id: talla['id'], size: talla['size'])).toList();
+          List<Talla> tallas = auxTallas.map((talla) => Talla(idTalla: talla['id'], size: talla['size'])).toList();
           
           await  db.tallasDao.truncateTallas();
           tallas.forEach((t) async {
-            await db.tallasDao.insertTalla(TallasCompanion(id: moor.Value(t.id), size: moor.Value(t.size)));
-            var pwt = ProductosWithTallasCompanion(talla: moor.Value(t.id),producto: moor.Value(producto.id));
+            await db.tallasDao.insertTalla(TallasCompanion(idTalla: moor.Value(t.idTalla), size: moor.Value(t.size)));
+            var pwt = ProductosWithTallasCompanion(talla: moor.Value(t.idTalla),producto: moor.Value(producto.idProducto));
             await db.productosWithTallasDao.insertProductoWithTallas(pwt);
            });
 
           await db.proveedoresDao.insertProveedor(ProveedoresCompanion(
-             id: moor.Value(element['provider']['id']),
+             idProveedor: moor.Value(element['provider']['id']),
              email: moor.Value(element['provider']['email']),
              name: moor.Value(element['provider']['name']),
              phone: moor.Value(element['provider']['phone']),
@@ -86,7 +87,7 @@ class ProductsProvider with ChangeNotifier {
           await db.productosDao.insertProducto(ProductosCompanion(
             categoryId: moor.Value(producto.categoryId),
             descripcion: moor.Value(producto.descripcion),
-            id: moor.Value(producto.id),
+            idProducto: moor.Value(producto.idProducto),
             codigo: moor.Value(producto.codigo),
             precio500U: moor.Value(producto.precio500U),
             precioCaja: moor.Value(producto.precioCaja),

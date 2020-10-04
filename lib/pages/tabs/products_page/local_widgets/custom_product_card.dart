@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cache_image/cache_image.dart';
 
 class CustomProductCard extends StatelessWidget {
 

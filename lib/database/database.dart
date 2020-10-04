@@ -10,31 +10,31 @@ part 'database.g.dart';
 
 
 class Categories extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get idCategory => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
   TextColumn get imageurl => text().withLength(min: 1, max: 1000)();
 }
 
 class Colores extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get idColor => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 100)();
   TextColumn get value => text().withLength(min: 1, max: 100)();
 }
 
 class Tallas extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get idTalla => integer().autoIncrement()();
   TextColumn get size => text().withLength(min: 1, max: 100)();
 }
 
 class Proveedores extends Table {
-   IntColumn get id => integer().autoIncrement()();
+   IntColumn get idProveedor => integer().autoIncrement()();
    TextColumn get name => text().withLength(min: 1, max: 100)();
    TextColumn get phone => text().nullable()();
    TextColumn get email => text().nullable()();
 }
 
 class Productos extends Table{
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get idProducto => integer().autoIncrement()();
   TextColumn get codigo => text().withLength(min: 1, max: 100)();
   TextColumn get descripcion => text().nullable()();
   RealColumn get precioUnitario => real().nullable()();
@@ -46,20 +46,20 @@ class Productos extends Table{
   RealColumn get precioCaja => real().nullable()();
   RealColumn get precioFardo => real().nullable()();
   RealColumn get precioRollo => real().nullable()();
-  IntColumn get providerId => integer().nullable().customConstraint('NULL REFERENCES proveedores(id)')();
-  IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id)')();
+  IntColumn get providerId => integer().nullable().customConstraint('NULL REFERENCES proveedores(id_proveedor)')();
+  IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id_category)')();
   TextColumn get specifications => text().nullable()();
 }
 
 
 class ProductosWithColores extends Table{
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get idProductoWithColor => integer().autoIncrement()();
   IntColumn get producto => integer()();
   IntColumn get color => integer()();
 }
 
 class ProductosWithTallas extends Table{
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get idProductoWithTalla => integer().autoIncrement()();
   IntColumn get producto => integer()();
   IntColumn get talla => integer()();
 }
@@ -135,7 +135,7 @@ class ProveedoresDao extends DatabaseAccessor<AppDatabase> with _$ProveedoresDao
 
 @UseDao(tables: [Productos, Categories, Colores, Proveedores, ProductosWithColores, ProductosWithTallas, Tallas],
   queries: {
-    'allProducts': 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id INNER JOIN colores ON colores.id = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id INNER JOIN tallas ON tallas.id = productos_with_tallas.talla WHERE productos.category_id = :idc'
+    'allProducts': 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc GROUP BY productos.descripcion'
   }
 )
 class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixin {

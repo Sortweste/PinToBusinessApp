@@ -35,7 +35,7 @@ class TallasProvider with ChangeNotifier {
        final List decodedData = json.decode(res.body);
           decodedData.forEach((element) {
           final Talla t = new Talla(
-            id: element['id'],
+            idTalla: element['id'],
             size: element['size']
           );
           _tallas.add(t);
@@ -53,7 +53,7 @@ class TallasProvider with ChangeNotifier {
     if(tList.isNotEmpty){
       tList.forEach((element) {
        final talla = TallasCompanion(
-         id: moor.Value(element.id),
+         idTalla: moor.Value(element.idTalla),
          size: moor.Value(element.size),
        );
       _tallasDao.insertTalla(talla);
