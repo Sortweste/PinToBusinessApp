@@ -64,7 +64,7 @@ class _MateApp extends StatelessWidget {
          'home': (BuildContext context) => HomePage(),
          /*'list_products': (BuildContext context) => ListProductsPage()*/
       },
-      theme: ThemeData.dark().copyWith(
+      theme: ThemeData.light().copyWith(
         primaryColor: Colors.brown
       ),
     );
