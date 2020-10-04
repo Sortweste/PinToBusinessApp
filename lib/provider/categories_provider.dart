@@ -76,13 +76,13 @@ class CategoriesProvider with ChangeNotifier {
 
    void _fetchCategoriesDB(List<Categorie> catList) {
     if(catList.isNotEmpty){
-      catList.forEach((element) {
+      catList.forEach((element) async {
        final categoria = CategoriesCompanion(
          id: moor.Value(element.id),
          name: moor.Value(element.name),
          imageurl: moor.Value(element.imageurl)
        );
-      _categoriesDao.insertCategory(categoria);
+      await _categoriesDao.insertCategory(categoria);
      });
     }
   }

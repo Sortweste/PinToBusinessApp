@@ -70,34 +70,36 @@ class _ListProductsPageState extends State<ListProductsPage>{
           padding: EdgeInsets.all(0.0),
           child: Column(
             children: [
-              /*InternetWidget(
-                hasInternet: _showProducts(context, _productsProvider),
+              InternetWidget(
+                hasInternet: _showProductsDB(context),
                 noInternet: _showProductsDB(context),
-              )*/
-            ]
-          )
-        )
-      )
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
-/*
+
   Widget _showProductsDB(BuildContext context) {
-    final productProvider = Provider.of<CategoriesDao>(context);
+    final productProvider = Provider.of<ProductosDao>(context);
     return Expanded(
       child: Padding(
         padding: EdgeInsets.all(5),
         child: StreamBuilder(
-          stream: productProvider.watchAllProducts(),
+          stream: productProvider.watchAllProducts(2),
           builder: (context, snapshot){
               if(snapshot.hasData){
-                final List<Product> lista = snapshot.data;
-                return (lista.length == 0) ? TextErrorWidget(
-                  buttonFunction: (){ 
-                    mostrarSnackBar('No tienes conexión a internet'); 
-                    }) : 
-                    _customListView(snapshot, true);
+                final List<AllProductsResult> lista = snapshot.data;
+                return (lista.length == 0) ? Center(child: CircularProgressIndicator(),) : 
+                   ListView.builder(
+                     itemCount: lista.length,
+                     itemBuilder: (context, index){
+                     return ListTile(title: Text(lista[index].descripcion), subtitle: Text(lista[index].codigo),);
+                   },)
+                   ;
               } else{
-                return TextErrorWidget(buttonFunction: (){ refresh(); });
+                return TextErrorWidget(buttonFunction: (){ });
               }
           },
         ),
@@ -105,7 +107,7 @@ class _ListProductsPageState extends State<ListProductsPage>{
     );
   }
 
-    Widget _showProducts(BuildContext context, ProductsProvider _productsProvider) {
+  /*Widget _showProducts(BuildContext context, ProductsProvider _productsProvider) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.all(5),

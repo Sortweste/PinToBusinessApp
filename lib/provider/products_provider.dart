@@ -33,11 +33,12 @@ class ProductsProvider with ChangeNotifier {
       final res = await http.get(_url);
       if(res.statusCode == 200){
         List data = json.decode(res.body); 
-        data.forEach((element) {
+        data.forEach((element) async {
           var producto = Producto(
             id: element['id'], 
-            codigo: element['codigo'], 
-            specifications: element['specification'], 
+            codigo: element['codigo'],
+            descripcion: element['descripcion'], 
+            specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
             categoryId: element['category']['id'],
             precio500U: (element['precio500U'] != null) ? double.parse(element['precio500U']) : 0.00,
             precioMayorista: (element['precioMayorista'] != null) ? double.parse(element['precioMayorista']) : 0.00,
@@ -56,12 +57,51 @@ class ProductsProvider with ChangeNotifier {
 
           List<Colore> colores = auxColores.map((color) => Colore(id: color['id'], name: color['name'], value: color['value'])).toList();
           
-          ProductoConColores productoConColores = ProductoConColores(colores: colores, producto: producto);
+          await db.productosWithColoresDao.truncateProductosWithColores();
+          colores.forEach((c) async {
+            await db.coloresDao.insertColor(ColoresCompanion(id: moor.Value(c.id), name: moor.Value(c.name), value: moor.Value(c.value)));
+            var pwc = ProductosWithColoresCompanion(color: moor.Value(c.id), producto: moor.Value(producto.id));
+            await db.productosWithColoresDao.insertProductoWithColores(pwc);
+           });
 
-          db.productosWithColoresDao.insertProductosWithColore(productoConColores);
+          List auxTallas = element['sizes'];
+          auxTallas.removeWhere((value) => value == null);
 
+          List<Talla> tallas = auxTallas.map((talla) => Talla(id: talla['id'], size: talla['size'])).toList();
+          
+          await  db.tallasDao.truncateTallas();
+          tallas.forEach((t) async {
+            await db.tallasDao.insertTalla(TallasCompanion(id: moor.Value(t.id), size: moor.Value(t.size)));
+            var pwt = ProductosWithTallasCompanion(talla: moor.Value(t.id),producto: moor.Value(producto.id));
+            await db.productosWithTallasDao.insertProductoWithTallas(pwt);
+           });
+
+          await db.proveedoresDao.insertProveedor(ProveedoresCompanion(
+             id: moor.Value(element['provider']['id']),
+             email: moor.Value(element['provider']['email']),
+             name: moor.Value(element['provider']['name']),
+             phone: moor.Value(element['provider']['phone']),
+           ));
+          
+          await db.productosDao.insertProducto(ProductosCompanion(
+            categoryId: moor.Value(producto.categoryId),
+            descripcion: moor.Value(producto.descripcion),
+            id: moor.Value(producto.id),
+            codigo: moor.Value(producto.codigo),
+            precio500U: moor.Value(producto.precio500U),
+            precioCaja: moor.Value(producto.precioCaja),
+            precioCien: moor.Value(producto.precioCien),
+            precioDocena: moor.Value(producto.precioDocena),
+            precioFardo: moor.Value(producto.precioFardo),
+            precioMayorista: moor.Value(producto.precioMayorista),
+            precioRollo: moor.Value(producto.precioRollo),
+            precioUnitario: moor.Value(producto.precioUnitario),
+            precioYarda: moor.Value(producto.precioYarda),
+            providerId: moor.Value(producto.providerId),
+            specifications: moor.Value(producto.specifications),
+          ));
         });
-        
+        print('se pudo');
       } else{
 
       }

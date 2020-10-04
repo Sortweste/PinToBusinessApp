@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:moor_flutter/moor_flutter.dart';
-import 'package:rxdart/rxdart.dart';
+/*import 'package:rxdart/rxdart.dart';
 
 
 import 'dtos/producto_con_colores.dart';
-import 'dtos/producto_con_colores_y_tallas.dart';
+import 'dtos/producto_con_colores_y_tallas.dart';*/
 
 part 'database.g.dart'; 
 
@@ -36,6 +36,7 @@ class Proveedores extends Table {
 class Productos extends Table{
   IntColumn get id => integer().autoIncrement()();
   TextColumn get codigo => text().withLength(min: 1, max: 100)();
+  TextColumn get descripcion => text().nullable()();
   RealColumn get precioUnitario => real().nullable()();
   RealColumn get precioDocena => real().nullable()();
   RealColumn get precioMayorista => real().nullable()();
@@ -47,8 +48,9 @@ class Productos extends Table{
   RealColumn get precioRollo => real().nullable()();
   IntColumn get providerId => integer().nullable().customConstraint('NULL REFERENCES proveedores(id)')();
   IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id)')();
-  TextColumn get specifications => text().withLength(min: 1, max: 100)();
+  TextColumn get specifications => text().nullable()();
 }
+
 
 class ProductosWithColores extends Table{
   IntColumn get id => integer().autoIncrement()();
@@ -56,13 +58,13 @@ class ProductosWithColores extends Table{
   IntColumn get color => integer()();
 }
 
-class ProductosConColoresWithTallas extends Table{
+class ProductosWithTallas extends Table{
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get productoConColores => integer()();
-  IntColumn get tallas => integer()();
+  IntColumn get producto => integer()();
+  IntColumn get talla => integer()();
 }
 
-@UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosConColoresWithTallas], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosConColoresWithTallasDao])
+@UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosWithTallas], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosWithTallasDao])
 class AppDatabase extends _$AppDatabase {
     AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite', logStatements: false));
 
@@ -95,7 +97,7 @@ class ColoresDao extends DatabaseAccessor<AppDatabase> with _$ColoresDaoMixin {
 
   Future<List<Colore>> getAllColores() => select(colores).get();
   Stream<List<Colore>> watchAllColores() => select(colores).watch();
-  Future insertColor(Insertable<Colore> color) => into(colores).insert(color);
+  Future insertColor(Insertable<Colore> color) => into(colores).insert(color, orReplace: true);
    Future updateColor(Insertable<Colore> color) => update(colores).replace(color);
     Future deleteColor(Insertable<Colore> color) => delete(colores).delete(color);
     Future truncateColores() => delete(colores).go();
@@ -125,13 +127,17 @@ class ProveedoresDao extends DatabaseAccessor<AppDatabase> with _$ProveedoresDao
 
   Future<List<Proveedore>> getAllProveedores() => select(proveedores).get();
   Stream<List<Proveedore>> watchAllProveedores() => select(proveedores).watch();
-  Future insertProveedor(Insertable<Proveedore> proveedore) => into(proveedores).insert(proveedore);
+  Future insertProveedor(Insertable<Proveedore> proveedore) => into(proveedores).insert(proveedore, orReplace: true);
   Future updateProveedor(Insertable<Proveedore> proveedore) => update(proveedores).replace(proveedore);
   Future deleteProveedor(Insertable<Proveedore> proveedore) => delete(proveedores).delete(proveedore);
   Future truncateProveedor() => delete(proveedores).go();
 }
 
-@UseDao(tables: [Productos])
+@UseDao(tables: [Productos, Categories, Colores, Proveedores, ProductosWithColores, ProductosWithTallas, Tallas],
+  queries: {
+    'allProducts': 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id INNER JOIN colores ON colores.id = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id INNER JOIN tallas ON tallas.id = productos_with_tallas.talla WHERE productos.category_id = :idc'
+  }
+)
 class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixin {
   final AppDatabase db;
 
@@ -139,129 +145,36 @@ class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixi
 
   Future<List<Producto>> getAllProducto() => select(productos).get();
   Stream<List<Producto>> watchAllProducto() => select(productos).watch();
-  //Future insertProducto(Insertable<Producto> producto) => into(productos).insert(producto);
+  Future insertProducto(Insertable<Producto> producto) => into(productos).insert(producto, orReplace: true);
   Future updateProducto(Insertable<Producto> producto) => update(productos).replace(producto);
   Future deleteProducto(Insertable<Producto> producto) => delete(productos).delete(producto);
   Future truncateProducto() => delete(productos).go();
-   
 }
 
-@UseDao(tables: [ProductosWithColores, Productos, Colores])
+@UseDao(tables: [ProductosWithColores])
 class ProductosWithColoresDao extends DatabaseAccessor<AppDatabase> with _$ProductosWithColoresDaoMixin {
   final AppDatabase db;
 
   ProductosWithColoresDao(this.db) : super(db);
-  
-    Future<void> insertProductosWithColore(ProductoConColores entry){
-    return transaction( () async {
-        
-        final producto = entry.producto;
-        await into(productos).insert(producto, mode: InsertMode.replace);
 
-        await ( 
-          (delete(productosWithColores))
-            ..where( (entry) => entry.producto.equals(producto.id) )  
-        ).go();
-        
-        for(final color in entry.colores){
-          await into(productosWithColores).insert(ProductosWithColoresCompanion(
-            producto: Value(producto.id),
-            color: Value(color.id)));
-        }
-    });
-  }
-
-  Stream<ProductoConColores> watchProductoConColores(int id){
-    final productQuery = (select(productos))..where( (producto) => producto.id.equals(id) );
-    
-    final coloresQuery = select(productosWithColores).join([
-      innerJoin(colores, colores.id.equalsExp(productosWithColores.color))
-    ])..where(productosWithColores.producto.equals(id));
-
-    final productStream = productQuery.watchSingle();
-    final coloresStream = coloresQuery.watch().map( (rows) {
-      return rows.map( (row) => row.readTable(colores)).toList();
-    }); 
-
-    return Rx.combineLatest2(productStream, coloresStream, (Producto p, List<Colore> colores){
-      return ProductoConColores(producto: p, colores: colores);
-    });
-  }  
-  
+  Future<List<ProductosWithColore>> getAllProductosWithColores() => select(productosWithColores).get();
+  Stream<List<ProductosWithColore>> watchAllProductosWithColores() => select(productosWithColores).watch();
+  Future insertProductoWithColores(Insertable<ProductosWithColore> pwc) => into(productosWithColores).insert(pwc, orReplace: true);
+  Future updateProductoWithColores(Insertable<ProductosWithColore> pwc) => update(productosWithColores).replace(pwc);
+  Future deleteProducto(Insertable<ProductosWithColore> pwc) => delete(productosWithColores).delete(pwc);
+  Future truncateProductosWithColores() => delete(productosWithColores).go();
 }
 
-@UseDao(tables: [ProductosWithColores, ProductosConColoresWithTallas, Tallas])
-class ProductosConColoresWithTallasDao extends DatabaseAccessor<AppDatabase> with _$ProductosConColoresWithTallasDaoMixin {
+@UseDao(tables: [ProductosWithTallas])
+class ProductosWithTallasDao extends DatabaseAccessor<AppDatabase> with _$ProductosWithTallasDaoMixin {
   final AppDatabase db;
 
-  ProductosConColoresWithTallasDao(this.db) : super(db);
+  ProductosWithTallasDao(this.db) : super(db);
 
-  Future<void> insertProductosConColoresWithTalla(ProductoConColoresYTallas entry){
-    return transaction( () async {
-        
-        final productosWithColore = entry.productoConColores;
-        await into(productosWithColores).insert(productosWithColore, mode: InsertMode.replace);
-
-        await ( 
-          (delete(productosConColoresWithTallas))
-            ..where( (entry) => entry.productoConColores.equals(productosWithColore.id) )
-        ).go();
-        
-        
-        for(final talla in entry.tallas){
-          await into(productosConColoresWithTallas).insert(
-            ProductosConColoresWithTallasCompanion(
-            productoConColores: Value(productosWithColore.id),
-            tallas: Value(talla.id))
-          );
-        }
-
-    });
-  }
-
-  Stream<ProductoConColoresYTallas> watchProductoConColoresYTallas(int id){
-    final productWithColorQuery = (select(productosWithColores))..where( (productosWithColore) => productosWithColore.id.equals(id) );
-    
-    final tallasQuery = select(productosConColoresWithTallas).join([
-      innerJoin(tallas, tallas.id.equalsExp(productosConColoresWithTallas.tallas))
-    ])..where(productosConColoresWithTallas.productoConColores.equals(id));
-
-    final productWithColorStream = productWithColorQuery.watchSingle();
-    final tallasStream = tallasQuery.watch().map( (rows) {
-      return rows.map( (row) => row.readTable(tallas)).toList();
-    }); 
-
-    return Rx.combineLatest2(productWithColorStream, tallasStream, (ProductosWithColore p, List<Talla> tallas){
-      return ProductoConColoresYTallas(productoConColores: p, tallas: tallas);
-    });
-  }
-
-  Stream<List<ProductoConColoresYTallas>> watchAllProductoConColoresYTallas(){
-      final productsWithColorStream = select(productosWithColores).watch();
-
-      return productsWithColorStream.switchMap( (productosWithColore){
-        final idToProductosWithColore = { for(var producto in productosWithColore) producto.id: producto };
-        final ids = idToProductosWithColore.keys;
-
-        final entryQuery = select(productosConColoresWithTallas).join([
-          innerJoin(tallas, tallas.id.equalsExp(productosConColoresWithTallas.tallas))
-        ])..where(productosConColoresWithTallas.productoConColores.isIn(ids));
-
-        return entryQuery.watch().map((rows){
-
-          final idToTallas = <int, List<Talla>>{};
-          for(var row in rows){
-            final item = row.readTable(tallas);
-            final id = row.readTable(productosConColoresWithTallas).productoConColores;
-            idToTallas.putIfAbsent(id, ()=>[]).add(item);
-          }
-
-          return [
-            for(var id in ids)
-              ProductoConColoresYTallas(productoConColores: idToProductosWithColore[id], tallas: idToTallas[id] ?? []),
-          ];
-        });
-      });
-  }
-
+  Future<List<ProductosWithTalla>> getAllProductosWithTallas() => select(productosWithTallas).get();
+  Stream<List<ProductosWithTalla>> watchAllProductosWithTallas() => select(productosWithTallas).watch();
+  Future insertProductoWithTallas(Insertable<ProductosWithTalla> pwt) => into(productosWithTallas).insert(pwt, orReplace: true);
+  Future updateProductoWithTalla(Insertable<ProductosWithTalla> pwt) => update(productosWithTallas).replace(pwt);
+  Future deleteProductoWithTalla(Insertable<ProductosWithTalla> pwt) => delete(productosWithTallas).delete(pwt);
+  Future truncateProductosWithTallas() => delete(productosWithTallas).go();
 }

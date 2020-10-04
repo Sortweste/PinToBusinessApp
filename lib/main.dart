@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<CategoriesDao>(create: (_) => db.categoriesDao,),
+        Provider<ProductosDao>(create: (_) => db.productosDao,),
         Provider<TallasDao>(create: (_) => db.tallasDao,),
         Provider<ColoresDao>(create: (_) => db.coloresDao,),
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
@@ -64,7 +65,7 @@ class _MateApp extends StatelessWidget {
          'home': (BuildContext context) => HomePage(),
          /*'list_products': (BuildContext context) => ListProductsPage()*/
       },
-      theme: ThemeData.light().copyWith(
+      theme: ThemeData.dark().copyWith(
         primaryColor: Colors.brown
       ),
     );
