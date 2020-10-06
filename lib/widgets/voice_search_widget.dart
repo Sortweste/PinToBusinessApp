@@ -68,7 +68,7 @@ class _VoiceSearchState extends State<VoiceSearch> {
               SizedBox(height: 10,),
               AvatarGlow(
                 animate: speech.isListening,
-                glowColor: Colors.black,
+                glowColor: Colors.red,
                 duration: Duration(milliseconds: 500),
                 endRadius: 50,
                 repeat: true, 

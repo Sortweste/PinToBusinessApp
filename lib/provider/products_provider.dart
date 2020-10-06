@@ -5,11 +5,9 @@ import 'package:demo/database/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:moor_flutter/moor_flutter.dart' as moor;
-
+import 'package:flutter/material.dart';
 
 import 'dart:async';
-
-
 
 class ProductsProvider with ChangeNotifier {
     final _urlBase = 'pinto-business.herokuapp.com';
@@ -27,18 +25,19 @@ class ProductsProvider with ChangeNotifier {
 
   Future getProductos(int idCategoria) async {
     final _url = Uri.https(_urlBase, 'api/v1/categories/$idCategoria/products.json');
-   // List<Categorie> _categorias = new List<Categorie>();
     try {
       final res = await http.get(_url);
+      print(res.body);
       if(res.statusCode == 200){
-        List data = json.decode(res.body); 
+        List data = json.decode(res.body);
         db.productosWithColoresDao.truncateProductosWithColores();
-        db.productosWithTallasDao.truncateProductosWithTallas();
         data.forEach((element) async {
+          print(element);
           var producto = Producto(
             idProducto: element['id'], 
             codigo: element['codigo'],
-            descripcion: element['descripcion'], 
+            existencia: element['existencia'],
+            descripcion: (element['descripcion'] != null) ? element['descripcion'] : 'No disponible', 
             specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
             categoryId: element['category']['id'],
             precio500U: (element['precio500U'] != null) ? double.parse(element['precio500U']) : 0.00,
@@ -89,6 +88,7 @@ class ProductsProvider with ChangeNotifier {
             descripcion: moor.Value(producto.descripcion),
             idProducto: moor.Value(producto.idProducto),
             codigo: moor.Value(producto.codigo),
+            existencia: moor.Value(producto.existencia),
             precio500U: moor.Value(producto.precio500U),
             precioCaja: moor.Value(producto.precioCaja),
             precioCien: moor.Value(producto.precioCien),
@@ -102,30 +102,54 @@ class ProductsProvider with ChangeNotifier {
             specifications: moor.Value(producto.specifications),
           ));
         });
-        print('se pudo');
+        //print(res.body);
       } else{
 
       }
     //_fetchCategoriesDB(_categorias);
     //return _categorias;
     } catch (e) {
+      print(e.toString());
      // return _categorias;
     }
   }
 
-
-
-  /* void _fetchCategoriesDB(List<Categorie> catList) {
-    if(catList.isNotEmpty){
-      catList.forEach((element) {
-       final categoria = CategoriesCompanion(
-         id: moor.Value(element.id),
-         name: moor.Value(element.name),
-         imageurl: moor.Value(element.imageurl)
-       );
-      _categoriesDao.insertCategory(categoria);
-     });
+  Future<List<Producto>> searhProducts(String query, int categoryId) async {
+    final _url = Uri.https(_urlBase, 'api/v1/categories/$categoryId/products/search/$query.json');
+    List<Producto> _productos = new List<Producto>();
+    try {
+      final res = await http.get(_url);
+      if(res.statusCode == 200){
+       _productos = new List<Producto>();
+       final List decodedData = json.decode(res.body);
+          decodedData.forEach((element) {
+          final Producto p = new Producto(
+            idProducto: element['id'], 
+            codigo: element['codigo'],
+            existencia: element['existencia'],
+            descripcion: (element['descripcion'] != null) ? element['descripcion'] : 'No disponible', 
+            specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
+            categoryId: element['category']['id'],
+            precio500U: (element['precio500U'] != null) ? double.parse(element['precio500U']) : 0.00,
+            precioMayorista: (element['precioMayorista'] != null) ? double.parse(element['precioMayorista']) : 0.00,
+            precioCaja: (element['precioCaja'] != null) ? double.parse(element['precioCaja']) : 0.00,
+            precioCien: (element['precioCien'] != null) ? double.parse(element['precioCien']) : 0.00,
+            precioDocena: (element['precioDocena'] != null) ? double.parse(element['precioDocena']) : 0.00,
+            precioFardo: (element['precioFardo'] != null) ? double.parse(element['precioFardo']) : 0.00,
+            precioRollo: (element['precioRollo'] != null) ? double.parse(element['precioRollo']) : 0.00,
+            precioUnitario: (element['precioUnitario'] != null) ? double.parse(element['precioUnitario']) : 0.00,
+            precioYarda: (element['precioYarda'] != null) ? double.parse(element['precioYarda']) : 0.00,
+            providerId: element['provider']['id'],
+          );
+          _productos.add(p);
+        });
     }
-  }*/
+    return _productos;
+    } catch (e) {
+      return _productos;
+    }
+  }
+
+ 
 
 }

@@ -807,6 +807,7 @@ class Producto extends DataClass implements Insertable<Producto> {
   final int providerId;
   final int categoryId;
   final String specifications;
+  final int existencia;
   Producto(
       {@required this.idProducto,
       @required this.codigo,
@@ -822,7 +823,8 @@ class Producto extends DataClass implements Insertable<Producto> {
       this.precioRollo,
       this.providerId,
       this.categoryId,
-      this.specifications});
+      this.specifications,
+      this.existencia});
   factory Producto.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -860,6 +862,8 @@ class Producto extends DataClass implements Insertable<Producto> {
           .mapFromDatabaseResponse(data['${effectivePrefix}category_id']),
       specifications: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}specifications']),
+      existencia:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}existencia']),
     );
   }
   factory Producto.fromJson(Map<String, dynamic> json,
@@ -881,6 +885,7 @@ class Producto extends DataClass implements Insertable<Producto> {
       providerId: serializer.fromJson<int>(json['providerId']),
       categoryId: serializer.fromJson<int>(json['categoryId']),
       specifications: serializer.fromJson<String>(json['specifications']),
+      existencia: serializer.fromJson<int>(json['existencia']),
     );
   }
   @override
@@ -902,6 +907,7 @@ class Producto extends DataClass implements Insertable<Producto> {
       'providerId': serializer.toJson<int>(providerId),
       'categoryId': serializer.toJson<int>(categoryId),
       'specifications': serializer.toJson<String>(specifications),
+      'existencia': serializer.toJson<int>(existencia),
     };
   }
 
@@ -952,6 +958,9 @@ class Producto extends DataClass implements Insertable<Producto> {
       specifications: specifications == null && nullToAbsent
           ? const Value.absent()
           : Value(specifications),
+      existencia: existencia == null && nullToAbsent
+          ? const Value.absent()
+          : Value(existencia),
     );
   }
 
@@ -970,7 +979,8 @@ class Producto extends DataClass implements Insertable<Producto> {
           double precioRollo,
           int providerId,
           int categoryId,
-          String specifications}) =>
+          String specifications,
+          int existencia}) =>
       Producto(
         idProducto: idProducto ?? this.idProducto,
         codigo: codigo ?? this.codigo,
@@ -987,6 +997,7 @@ class Producto extends DataClass implements Insertable<Producto> {
         providerId: providerId ?? this.providerId,
         categoryId: categoryId ?? this.categoryId,
         specifications: specifications ?? this.specifications,
+        existencia: existencia ?? this.existencia,
       );
   @override
   String toString() {
@@ -1005,7 +1016,8 @@ class Producto extends DataClass implements Insertable<Producto> {
           ..write('precioRollo: $precioRollo, ')
           ..write('providerId: $providerId, ')
           ..write('categoryId: $categoryId, ')
-          ..write('specifications: $specifications')
+          ..write('specifications: $specifications, ')
+          ..write('existencia: $existencia')
           ..write(')'))
         .toString();
   }
@@ -1039,8 +1051,11 @@ class Producto extends DataClass implements Insertable<Producto> {
                                                       providerId.hashCode,
                                                       $mrjc(
                                                           categoryId.hashCode,
-                                                          specifications
-                                                              .hashCode)))))))))))))));
+                                                          $mrjc(
+                                                              specifications
+                                                                  .hashCode,
+                                                              existencia
+                                                                  .hashCode))))))))))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -1059,7 +1074,8 @@ class Producto extends DataClass implements Insertable<Producto> {
           other.precioRollo == this.precioRollo &&
           other.providerId == this.providerId &&
           other.categoryId == this.categoryId &&
-          other.specifications == this.specifications);
+          other.specifications == this.specifications &&
+          other.existencia == this.existencia);
 }
 
 class ProductosCompanion extends UpdateCompanion<Producto> {
@@ -1078,6 +1094,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
   final Value<int> providerId;
   final Value<int> categoryId;
   final Value<String> specifications;
+  final Value<int> existencia;
   const ProductosCompanion({
     this.idProducto = const Value.absent(),
     this.codigo = const Value.absent(),
@@ -1094,6 +1111,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
     this.providerId = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.specifications = const Value.absent(),
+    this.existencia = const Value.absent(),
   });
   ProductosCompanion.insert({
     this.idProducto = const Value.absent(),
@@ -1111,6 +1129,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
     this.providerId = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.specifications = const Value.absent(),
+    this.existencia = const Value.absent(),
   }) : codigo = Value(codigo);
   ProductosCompanion copyWith(
       {Value<int> idProducto,
@@ -1127,7 +1146,8 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
       Value<double> precioRollo,
       Value<int> providerId,
       Value<int> categoryId,
-      Value<String> specifications}) {
+      Value<String> specifications,
+      Value<int> existencia}) {
     return ProductosCompanion(
       idProducto: idProducto ?? this.idProducto,
       codigo: codigo ?? this.codigo,
@@ -1144,6 +1164,7 @@ class ProductosCompanion extends UpdateCompanion<Producto> {
       providerId: providerId ?? this.providerId,
       categoryId: categoryId ?? this.categoryId,
       specifications: specifications ?? this.specifications,
+      existencia: existencia ?? this.existencia,
     );
   }
 }
@@ -1337,6 +1358,18 @@ class $ProductosTable extends Productos
     );
   }
 
+  final VerificationMeta _existenciaMeta = const VerificationMeta('existencia');
+  GeneratedIntColumn _existencia;
+  @override
+  GeneratedIntColumn get existencia => _existencia ??= _constructExistencia();
+  GeneratedIntColumn _constructExistencia() {
+    return GeneratedIntColumn(
+      'existencia',
+      $tableName,
+      true,
+    );
+  }
+
   @override
   List<GeneratedColumn> get $columns => [
         idProducto,
@@ -1353,7 +1386,8 @@ class $ProductosTable extends Productos
         precioRollo,
         providerId,
         categoryId,
-        specifications
+        specifications,
+        existencia
       ];
   @override
   $ProductosTable get asDslTable => this;
@@ -1435,6 +1469,10 @@ class $ProductosTable extends Productos
           specifications.isAcceptableValue(
               d.specifications.value, _specificationsMeta));
     }
+    if (d.existencia.present) {
+      context.handle(_existenciaMeta,
+          existencia.isAcceptableValue(d.existencia.value, _existenciaMeta));
+    }
     return context;
   }
 
@@ -1496,6 +1534,9 @@ class $ProductosTable extends Productos
     if (d.specifications.present) {
       map['specifications'] =
           Variable<String, StringType>(d.specifications.value);
+    }
+    if (d.existencia.present) {
+      map['existencia'] = Variable<int, IntType>(d.existencia.value);
     }
     return map;
   }
@@ -1638,11 +1679,8 @@ class $ProductosWithColoresTable extends ProductosWithColores
   @override
   GeneratedIntColumn get producto => _producto ??= _constructProducto();
   GeneratedIntColumn _constructProducto() {
-    return GeneratedIntColumn(
-      'producto',
-      $tableName,
-      false,
-    );
+    return GeneratedIntColumn('producto', $tableName, false,
+        $customConstraints: 'NULL REFERENCES productos(id_producto)');
   }
 
   final VerificationMeta _colorMeta = const VerificationMeta('color');
@@ -1650,11 +1688,8 @@ class $ProductosWithColoresTable extends ProductosWithColores
   @override
   GeneratedIntColumn get color => _color ??= _constructColor();
   GeneratedIntColumn _constructColor() {
-    return GeneratedIntColumn(
-      'color',
-      $tableName,
-      false,
-    );
+    return GeneratedIntColumn('color', $tableName, false,
+        $customConstraints: 'NULL REFERENCES colores(id_color)');
   }
 
   @override
@@ -1851,11 +1886,8 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   @override
   GeneratedIntColumn get producto => _producto ??= _constructProducto();
   GeneratedIntColumn _constructProducto() {
-    return GeneratedIntColumn(
-      'producto',
-      $tableName,
-      false,
-    );
+    return GeneratedIntColumn('producto', $tableName, false,
+        $customConstraints: 'NULL REFERENCES productos(id_producto)');
   }
 
   final VerificationMeta _tallaMeta = const VerificationMeta('talla');
@@ -1863,11 +1895,8 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   @override
   GeneratedIntColumn get talla => _talla ??= _constructTalla();
   GeneratedIntColumn _constructTalla() {
-    return GeneratedIntColumn(
-      'talla',
-      $tableName,
-      false,
-    );
+    return GeneratedIntColumn('talla', $tableName, false,
+        $customConstraints: 'NULL REFERENCES tallas(id_talla)');
   }
 
   @override
@@ -2026,6 +2055,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
       providerId: row.readInt('provider_id'),
       categoryId: row.readInt('category_id'),
       specifications: row.readString('specifications'),
+      existencia: row.readInt('existencia'),
       idProductoWithColor: row.readInt('id_producto_with_color'),
       producto: row.readInt('producto'),
       color: row.readInt('color'),
@@ -2042,7 +2072,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
 
   Selectable<AllProductsResult> allProductsQuery(int idc) {
     return customSelectQuery(
-        'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc GROUP BY productos.descripcion',
+        'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc',
         variables: [
           Variable.withInt(idc)
         ],
@@ -2062,6 +2092,42 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
   Stream<List<AllProductsResult>> watchAllProducts(int idc) {
     return allProductsQuery(idc).watch();
   }
+
+  Producto _rowToProducto(QueryRow row) {
+    return Producto(
+      idProducto: row.readInt('id_producto'),
+      codigo: row.readString('codigo'),
+      descripcion: row.readString('descripcion'),
+      precioUnitario: row.readDouble('precio_unitario'),
+      precioDocena: row.readDouble('precio_docena'),
+      precioMayorista: row.readDouble('precio_mayorista'),
+      precioYarda: row.readDouble('precio_yarda'),
+      precioCien: row.readDouble('precio_cien'),
+      precio500U: row.readDouble('precio500_u'),
+      precioCaja: row.readDouble('precio_caja'),
+      precioFardo: row.readDouble('precio_fardo'),
+      precioRollo: row.readDouble('precio_rollo'),
+      providerId: row.readInt('provider_id'),
+      categoryId: row.readInt('category_id'),
+      specifications: row.readString('specifications'),
+      existencia: row.readInt('existencia'),
+    );
+  }
+
+  Selectable<Producto> singleProductQuery(int idc) {
+    return customSelectQuery(
+        'SELECT * FROM productos WHERE productos.category_id = :idc',
+        variables: [Variable.withInt(idc)],
+        readsFrom: {productos}).map(_rowToProducto);
+  }
+
+  Future<List<Producto>> singleProduct(int idc) {
+    return singleProductQuery(idc).get();
+  }
+
+  Stream<List<Producto>> watchSingleProduct(int idc) {
+    return singleProductQuery(idc).watch();
+  }
 }
 
 class AllProductsResult {
@@ -2080,6 +2146,7 @@ class AllProductsResult {
   final int providerId;
   final int categoryId;
   final String specifications;
+  final int existencia;
   final int idProductoWithColor;
   final int producto;
   final int color;
@@ -2107,6 +2174,7 @@ class AllProductsResult {
     this.providerId,
     this.categoryId,
     this.specifications,
+    this.existencia,
     this.idProductoWithColor,
     this.producto,
     this.color,

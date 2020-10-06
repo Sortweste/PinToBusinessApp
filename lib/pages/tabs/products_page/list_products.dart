@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:demo/database/database.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/search_product_delegate.dart';
 import 'package:demo/provider/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:demo/widgets/error_widget.dart';
 import 'package:provider/provider.dart';
+
+import 'local_widgets/custom_product_card.dart';
 
 class ListProductsPage extends StatefulWidget {
   final Categorie category;
@@ -57,11 +60,21 @@ class _ListProductsPageState extends State<ListProductsPage>{
     /*final _productsProvider = Provider.of<ProductsProvider>(context, listen: true);
     argument = ModalRoute.of(context).settings.arguments;
     */
+    final _productosProvider = Provider.of<ProductsProvider>(context, listen: false);
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.category.name)
+        title: Text(widget.category.name),
+        actions: [
+           IconButton(icon: Icon(Icons.search), onPressed: (){
+              final _dao = Provider.of<ProductosDao>(context, listen:false);
+              showSearch(
+                context: context, 
+                delegate: ProductSearch(productosDao: _dao, productosProvider: _productosProvider, categoryId: widget.category.idCategory)
+              );
+            }),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -85,9 +98,9 @@ class _ListProductsPageState extends State<ListProductsPage>{
       child: Padding(
         padding: EdgeInsets.all(5),
         child: StreamBuilder(
-          stream: productProvider.watchAllProducts(widget.category.idCategory),
+          stream: productProvider.watchSingleProduct(widget.category.idCategory),
           builder: (context, snapshot){
-              final List<AllProductsResult> lista = snapshot.data;
+              final List<Producto> lista = snapshot.data;
               if(snapshot.hasError) {return TextErrorWidget(buttonFunction: (){ }); }
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting: return Center(child: CircularProgressIndicator(),);
@@ -95,7 +108,8 @@ class _ListProductsPageState extends State<ListProductsPage>{
                    ListView.builder(
                      itemCount: lista.length,
                      itemBuilder: (context, index){
-                     return ListTile(title: Text(lista[index].descripcion), subtitle: Text(lista[index].codigo),);
+                       return CustomProductCard(product: lista[index]);
+                     //return ListTile(title: Text(lista[index].descripcion), subtitle: Text(lista[index].idProducto.toString()),);
                   }
                    );
                default: return Center(child: CircularProgressIndicator(),);

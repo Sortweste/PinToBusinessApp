@@ -49,19 +49,20 @@ class Productos extends Table{
   IntColumn get providerId => integer().nullable().customConstraint('NULL REFERENCES proveedores(id_proveedor)')();
   IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id_category)')();
   TextColumn get specifications => text().nullable()();
+  IntColumn get existencia => integer().nullable()();
 }
 
 
 class ProductosWithColores extends Table{
   IntColumn get idProductoWithColor => integer().autoIncrement()();
-  IntColumn get producto => integer()();
-  IntColumn get color => integer()();
+  IntColumn get producto => integer().customConstraint('NULL REFERENCES productos(id_producto)')();
+  IntColumn get color => integer().customConstraint('NULL REFERENCES colores(id_color)')();
 }
 
 class ProductosWithTallas extends Table{
   IntColumn get idProductoWithTalla => integer().autoIncrement()();
-  IntColumn get producto => integer()();
-  IntColumn get talla => integer()();
+  IntColumn get producto => integer().customConstraint('NULL REFERENCES productos(id_producto)')();
+  IntColumn get talla => integer().customConstraint('NULL REFERENCES tallas(id_talla)')();
 }
 
 @UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosWithTallas], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosWithTallasDao])
@@ -135,7 +136,8 @@ class ProveedoresDao extends DatabaseAccessor<AppDatabase> with _$ProveedoresDao
 
 @UseDao(tables: [Productos, Categories, Colores, Proveedores, ProductosWithColores, ProductosWithTallas, Tallas],
   queries: {
-    'allProducts': 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc GROUP BY productos.descripcion'
+    'allProducts': 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc',
+    'singleProduct': 'SELECT * FROM productos WHERE productos.category_id = :idc'
   }
 )
 class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixin {
