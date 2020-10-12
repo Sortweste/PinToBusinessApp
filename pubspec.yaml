@@ -41,6 +41,7 @@ dependencies:
   avatar_glow:
   fluttertoast:
   rxdart:
+  moor:
 
 dev_dependencies:
   flutter_test:

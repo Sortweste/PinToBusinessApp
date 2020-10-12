@@ -27,12 +27,15 @@ class ProductsProvider with ChangeNotifier {
     final _url = Uri.https(_urlBase, 'api/v1/categories/$idCategoria/products.json');
     try {
       final res = await http.get(_url);
-      print(res.body);
+      //print(res.body);
       if(res.statusCode == 200){
         List data = json.decode(res.body);
-        db.productosWithColoresDao.truncateProductosWithColores();
+       // db.productosWithColoresDao.truncateProductosWithColores();
+       // db.productosWithTallasDao.truncateProductosWithTallas();
+       // db.tallasDao.truncateTallas();
+       // db.coloresDao.truncateColores();
         data.forEach((element) async {
-          print(element);
+         // print(element);
           var producto = Producto(
             idProducto: element['id'], 
             codigo: element['codigo'],
@@ -53,36 +56,8 @@ class ProductsProvider with ChangeNotifier {
           );
 
           List auxColores = element['colors'];
-          auxColores.removeWhere((value) => value == null);
+         // auxColores.removeWhere((value) => value == null);
 
-          List<Colore> colores = auxColores.map((color) => Colore(idColor: color['id'], name: color['name'], value: color['value'])).toList();
-          
-          await db.productosWithColoresDao.truncateProductosWithColores();
-          colores.forEach((c) async {
-            await db.coloresDao.insertColor(ColoresCompanion(idColor: moor.Value(c.idColor), name: moor.Value(c.name), value: moor.Value(c.value)));
-            var pwc = ProductosWithColoresCompanion(color: moor.Value(c.idColor), producto: moor.Value(producto.idProducto));
-            await db.productosWithColoresDao.insertProductoWithColores(pwc);
-           });
-
-          List auxTallas = element['sizes'];
-          auxTallas.removeWhere((value) => value == null);
-
-          List<Talla> tallas = auxTallas.map((talla) => Talla(idTalla: talla['id'], size: talla['size'])).toList();
-          
-          await  db.tallasDao.truncateTallas();
-          tallas.forEach((t) async {
-            await db.tallasDao.insertTalla(TallasCompanion(idTalla: moor.Value(t.idTalla), size: moor.Value(t.size)));
-            var pwt = ProductosWithTallasCompanion(talla: moor.Value(t.idTalla),producto: moor.Value(producto.idProducto));
-            await db.productosWithTallasDao.insertProductoWithTallas(pwt);
-           });
-
-          await db.proveedoresDao.insertProveedor(ProveedoresCompanion(
-             idProveedor: moor.Value(element['provider']['id']),
-             email: moor.Value(element['provider']['email']),
-             name: moor.Value(element['provider']['name']),
-             phone: moor.Value(element['provider']['phone']),
-           ));
-          
           await db.productosDao.insertProducto(ProductosCompanion(
             categoryId: moor.Value(producto.categoryId),
             descripcion: moor.Value(producto.descripcion),
@@ -101,6 +76,37 @@ class ProductsProvider with ChangeNotifier {
             providerId: moor.Value(producto.providerId),
             specifications: moor.Value(producto.specifications),
           ));
+
+         if(auxColores.length > 0){
+            List<Colore> colores = auxColores.map((color) => Colore(idColor: color['id'], name: color['name'], value: color['value'])).toList();
+          
+          await db.productosWithColoresDao.truncateProductosWithColores();
+          colores.forEach((c) async {
+            await db.coloresDao.insertColor(ColoresCompanion(idColor: moor.Value(c.idColor), name: moor.Value(c.name), value: moor.Value(c.value)));
+            var pwc = ProductosWithColoresCompanion(color: moor.Value(c.idColor), producto: moor.Value(producto.idProducto));
+            await db.productosWithColoresDao.insertProductoWithColores(pwc);
+           });
+         }
+
+          List auxTallas = element['sizes'];
+          //auxTallas.removeWhere((value) => value == null);
+
+          List<Talla> tallas = auxTallas.map((talla) => Talla(idTalla: talla['id'], size: talla['size'])).toList();
+          
+          await db.productosWithTallasDao.truncateProductosWithTallas();
+          tallas.forEach((t) async {
+            await db.tallasDao.insertTalla(TallasCompanion(idTalla: moor.Value(t.idTalla), size: moor.Value(t.size)));
+            ProductosWithTallasCompanion pwt = ProductosWithTallasCompanion(talla: moor.Value(t.idTalla),producto: moor.Value(producto.idProducto));
+            await db.productosWithTallasDao.insertProductoWithTallas(pwt);
+           });
+
+           db.proveedoresDao.insertProveedor(ProveedoresCompanion(
+             idProveedor: moor.Value(element['provider']['id']),
+             email: moor.Value(element['provider']['email'] ?? 'no especificado'),
+             name: moor.Value(element['provider']['name'] ?? 'No especificado'),
+             phone: moor.Value(element['provider']['phone'] ?? '22577777'),
+           ));
+          
         });
         //print(res.body);
       } else{
@@ -109,7 +115,7 @@ class ProductsProvider with ChangeNotifier {
     //_fetchCategoriesDB(_categorias);
     //return _categorias;
     } catch (e) {
-      print(e.toString());
+      //print(e.toString());
      // return _categorias;
     }
   }

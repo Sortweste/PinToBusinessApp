@@ -2022,10 +2022,106 @@ mixin _$CategoriesDaoMixin on DatabaseAccessor<AppDatabase> {
 }
 mixin _$ColoresDaoMixin on DatabaseAccessor<AppDatabase> {
   $ColoresTable get colores => db.colores;
+  $ProductosWithColoresTable get productosWithColores =>
+      db.productosWithColores;
+  AllProductColorsResult _rowToAllProductColorsResult(QueryRow row) {
+    return AllProductColorsResult(
+      idColor: row.readInt('id_color'),
+      name: row.readString('name'),
+      value: row.readString('value'),
+      idProductoWithColor: row.readInt('id_producto_with_color'),
+      producto: row.readInt('producto'),
+      color: row.readInt('color'),
+    );
+  }
+
+  Selectable<AllProductColorsResult> allProductColorsQuery(int idc) {
+    return customSelectQuery(
+        'SELECT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc',
+        variables: [
+          Variable.withInt(idc)
+        ],
+        readsFrom: {
+          colores,
+          productosWithColores
+        }).map(_rowToAllProductColorsResult);
+  }
+
+  Future<List<AllProductColorsResult>> allProductColors(int idc) {
+    return allProductColorsQuery(idc).get();
+  }
+
+  Stream<List<AllProductColorsResult>> watchAllProductColors(int idc) {
+    return allProductColorsQuery(idc).watch();
+  }
 }
+
+class AllProductColorsResult {
+  final int idColor;
+  final String name;
+  final String value;
+  final int idProductoWithColor;
+  final int producto;
+  final int color;
+  AllProductColorsResult({
+    this.idColor,
+    this.name,
+    this.value,
+    this.idProductoWithColor,
+    this.producto,
+    this.color,
+  });
+}
+
 mixin _$TallasDaoMixin on DatabaseAccessor<AppDatabase> {
   $TallasTable get tallas => db.tallas;
+  $ProductosWithTallasTable get productosWithTallas => db.productosWithTallas;
+  AllProductSizesResult _rowToAllProductSizesResult(QueryRow row) {
+    return AllProductSizesResult(
+      idTalla: row.readInt('id_talla'),
+      size: row.readString('size'),
+      idProductoWithTalla: row.readInt('id_producto_with_talla'),
+      producto: row.readInt('producto'),
+      talla: row.readInt('talla'),
+    );
+  }
+
+  Selectable<AllProductSizesResult> allProductSizesQuery(int idc) {
+    return customSelectQuery(
+        'SELECT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc',
+        variables: [
+          Variable.withInt(idc)
+        ],
+        readsFrom: {
+          tallas,
+          productosWithTallas
+        }).map(_rowToAllProductSizesResult);
+  }
+
+  Future<List<AllProductSizesResult>> allProductSizes(int idc) {
+    return allProductSizesQuery(idc).get();
+  }
+
+  Stream<List<AllProductSizesResult>> watchAllProductSizes(int idc) {
+    return allProductSizesQuery(idc).watch();
+  }
 }
+
+class AllProductSizesResult {
+  final int idTalla;
+  final String size;
+  final int idProductoWithTalla;
+  final int producto;
+  final int talla;
+  AllProductSizesResult({
+    this.idTalla,
+    this.size,
+    this.idProductoWithTalla,
+    this.producto,
+    this.talla,
+  });
+}
+
 mixin _$ProveedoresDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProveedoresTable get proveedores => db.proveedores;
 }
@@ -2038,59 +2134,60 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
       db.productosWithColores;
   $ProductosWithTallasTable get productosWithTallas => db.productosWithTallas;
   $TallasTable get tallas => db.tallas;
-  AllProductsResult _rowToAllProductsResult(QueryRow row) {
-    return AllProductsResult(
-      idProducto: row.readInt('id_producto'),
-      codigo: row.readString('codigo'),
-      descripcion: row.readString('descripcion'),
-      precioUnitario: row.readDouble('precio_unitario'),
-      precioDocena: row.readDouble('precio_docena'),
-      precioMayorista: row.readDouble('precio_mayorista'),
-      precioYarda: row.readDouble('precio_yarda'),
-      precioCien: row.readDouble('precio_cien'),
-      precio500U: row.readDouble('precio500_u'),
-      precioCaja: row.readDouble('precio_caja'),
-      precioFardo: row.readDouble('precio_fardo'),
-      precioRollo: row.readDouble('precio_rollo'),
-      providerId: row.readInt('provider_id'),
-      categoryId: row.readInt('category_id'),
-      specifications: row.readString('specifications'),
-      existencia: row.readInt('existencia'),
-      idProductoWithColor: row.readInt('id_producto_with_color'),
-      producto: row.readInt('producto'),
-      color: row.readInt('color'),
+  ProductColorsResult _rowToProductColorsResult(QueryRow row) {
+    return ProductColorsResult(
       idColor: row.readInt('id_color'),
       name: row.readString('name'),
       value: row.readString('value'),
-      idProductoWithTalla: row.readInt('id_producto_with_talla'),
-      producto1: row.readInt('producto'),
-      talla: row.readInt('talla'),
-      idTalla: row.readInt('id_talla'),
-      size: row.readString('size'),
+      idProductoWithColor: row.readInt('id_producto_with_color'),
+      producto: row.readInt('producto'),
+      color: row.readInt('color'),
     );
   }
 
-  Selectable<AllProductsResult> allProductsQuery(int idc) {
+  Selectable<ProductColorsResult> productColorsQuery(int idc) {
     return customSelectQuery(
-        'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc',
+        'SELECT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc',
         variables: [
           Variable.withInt(idc)
         ],
         readsFrom: {
-          productos,
-          productosWithColores,
           colores,
-          productosWithTallas,
-          tallas
-        }).map(_rowToAllProductsResult);
+          productosWithColores
+        }).map(_rowToProductColorsResult);
   }
 
-  Future<List<AllProductsResult>> allProducts(int idc) {
-    return allProductsQuery(idc).get();
+  Future<List<ProductColorsResult>> productColors(int idc) {
+    return productColorsQuery(idc).get();
   }
 
-  Stream<List<AllProductsResult>> watchAllProducts(int idc) {
-    return allProductsQuery(idc).watch();
+  Stream<List<ProductColorsResult>> watchProductColors(int idc) {
+    return productColorsQuery(idc).watch();
+  }
+
+  ProductSizesResult _rowToProductSizesResult(QueryRow row) {
+    return ProductSizesResult(
+      idTalla: row.readInt('id_talla'),
+      size: row.readString('size'),
+      idProductoWithTalla: row.readInt('id_producto_with_talla'),
+      producto: row.readInt('producto'),
+      talla: row.readInt('talla'),
+    );
+  }
+
+  Selectable<ProductSizesResult> productSizesQuery(int idc) {
+    return customSelectQuery(
+        'SELECT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc',
+        variables: [Variable.withInt(idc)],
+        readsFrom: {tallas, productosWithTallas}).map(_rowToProductSizesResult);
+  }
+
+  Future<List<ProductSizesResult>> productSizes(int idc) {
+    return productSizesQuery(idc).get();
+  }
+
+  Stream<List<ProductSizesResult>> watchProductSizes(int idc) {
+    return productSizesQuery(idc).watch();
   }
 
   Producto _rowToProducto(QueryRow row) {
@@ -2128,64 +2225,76 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
   Stream<List<Producto>> watchSingleProduct(int idc) {
     return singleProductQuery(idc).watch();
   }
+
+  Selectable<Producto> findProductQuery(int idc) {
+    return customSelectQuery(
+        'SELECT * FROM productos WHERE productos.id_producto = :idc',
+        variables: [Variable.withInt(idc)],
+        readsFrom: {productos}).map(_rowToProducto);
+  }
+
+  Future<List<Producto>> findProduct(int idc) {
+    return findProductQuery(idc).get();
+  }
+
+  Stream<List<Producto>> watchFindProduct(int idc) {
+    return findProductQuery(idc).watch();
+  }
+
+  Proveedore _rowToProveedore(QueryRow row) {
+    return Proveedore(
+      idProveedor: row.readInt('id_proveedor'),
+      name: row.readString('name'),
+      phone: row.readString('phone'),
+      email: row.readString('email'),
+    );
+  }
+
+  Selectable<Proveedore> productProveedorQuery(int id) {
+    return customSelectQuery(
+        'SELECT * FROM proveedores WHERE proveedores.id_proveedor = :id',
+        variables: [Variable.withInt(id)],
+        readsFrom: {proveedores}).map(_rowToProveedore);
+  }
+
+  Future<List<Proveedore>> productProveedor(int id) {
+    return productProveedorQuery(id).get();
+  }
+
+  Stream<List<Proveedore>> watchProductProveedor(int id) {
+    return productProveedorQuery(id).watch();
+  }
 }
 
-class AllProductsResult {
-  final int idProducto;
-  final String codigo;
-  final String descripcion;
-  final double precioUnitario;
-  final double precioDocena;
-  final double precioMayorista;
-  final double precioYarda;
-  final double precioCien;
-  final double precio500U;
-  final double precioCaja;
-  final double precioFardo;
-  final double precioRollo;
-  final int providerId;
-  final int categoryId;
-  final String specifications;
-  final int existencia;
-  final int idProductoWithColor;
-  final int producto;
-  final int color;
+class ProductColorsResult {
   final int idColor;
   final String name;
   final String value;
-  final int idProductoWithTalla;
-  final int producto1;
-  final int talla;
-  final int idTalla;
-  final String size;
-  AllProductsResult({
-    this.idProducto,
-    this.codigo,
-    this.descripcion,
-    this.precioUnitario,
-    this.precioDocena,
-    this.precioMayorista,
-    this.precioYarda,
-    this.precioCien,
-    this.precio500U,
-    this.precioCaja,
-    this.precioFardo,
-    this.precioRollo,
-    this.providerId,
-    this.categoryId,
-    this.specifications,
-    this.existencia,
-    this.idProductoWithColor,
-    this.producto,
-    this.color,
+  final int idProductoWithColor;
+  final int producto;
+  final int color;
+  ProductColorsResult({
     this.idColor,
     this.name,
     this.value,
-    this.idProductoWithTalla,
-    this.producto1,
-    this.talla,
+    this.idProductoWithColor,
+    this.producto,
+    this.color,
+  });
+}
+
+class ProductSizesResult {
+  final int idTalla;
+  final String size;
+  final int idProductoWithTalla;
+  final int producto;
+  final int talla;
+  ProductSizesResult({
     this.idTalla,
     this.size,
+    this.idProductoWithTalla,
+    this.producto,
+    this.talla,
   });
 }
 

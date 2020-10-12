@@ -136,7 +136,7 @@ class ProductSearch extends SearchDelegate{
           ListTile(
             onTap: () { },
           leading: Icon(Icons.search),
-          title: Text(e.descripcion),
+          title: Text((e.descripcion == "No disponible") ? e.codigo : e.descripcion),
         )
         ).toList(),
     );

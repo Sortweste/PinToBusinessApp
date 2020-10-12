@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ProductsManager with ChangeNotifier {
-   String _color = 'Verde';
-   Color _currentColor = Colors.limeAccent;
+   String _color = '';
+   Color _currentColor = Colors.transparent;
    String _selectedSize = ''; 
    
-   ProductsManager(){
-     this._color = 'Verde';
-     this._currentColor = Colors.limeAccent;
-     this._selectedSize = ''; 
-     notifyListeners();
-   }  
-   
+  
+   setIni(String c, String s, Color cr){
+     this._color = c;
+     this._currentColor = cr;
+     this._selectedSize = s;
+   }
 
    setColorString(String c){
      this._color = c;

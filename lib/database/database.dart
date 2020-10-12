@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:moor_flutter/moor_flutter.dart';
-/*import 'package:rxdart/rxdart.dart';
-
+import 'package:rxdart/rxdart.dart';
+/*
 
 import 'dtos/producto_con_colores.dart';
 import 'dtos/producto_con_colores_y_tallas.dart';*/
+
+import 'dtos/product_with_colors_and_sizes.dart';
 
 part 'database.g.dart'; 
 
@@ -67,12 +69,13 @@ class ProductosWithTallas extends Table{
 
 @UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosWithTallas], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosWithTallasDao])
 class AppDatabase extends _$AppDatabase {
-    AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite', logStatements: false));
+    AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'data.sqlite', logStatements: false));
 
     @override
     int get schemaVersion => 1;
 
 }
+
 
 @UseDao(tables: [Categories])
 class CategoriesDao extends DatabaseAccessor<AppDatabase> with _$CategoriesDaoMixin {
@@ -90,7 +93,11 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase> with _$CategoriesDaoMi
   Future truncateCategories() => delete(categories).go();
 }
 
-@UseDao(tables: [Colores])
+@UseDao(tables: [Colores, ProductosWithColores],
+queries: {
+   'allProductColors': 'SELECT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc',
+}
+)
 class ColoresDao extends DatabaseAccessor<AppDatabase> with _$ColoresDaoMixin {
   final AppDatabase db;
 
@@ -105,7 +112,11 @@ class ColoresDao extends DatabaseAccessor<AppDatabase> with _$ColoresDaoMixin {
    
 }
 
-@UseDao(tables: [Tallas])
+@UseDao(tables: [Tallas, ProductosWithTallas], 
+queries: {
+  'allProductSizes': 'SELECT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc',
+}
+)
 class TallasDao extends DatabaseAccessor<AppDatabase> with _$TallasDaoMixin {
   final AppDatabase db;
 
@@ -134,10 +145,15 @@ class ProveedoresDao extends DatabaseAccessor<AppDatabase> with _$ProveedoresDao
   Future truncateProveedor() => delete(proveedores).go();
 }
 
+
+
 @UseDao(tables: [Productos, Categories, Colores, Proveedores, ProductosWithColores, ProductosWithTallas, Tallas],
   queries: {
-    'allProducts': 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.category_id = :idc',
-    'singleProduct': 'SELECT * FROM productos WHERE productos.category_id = :idc'
+     'productColors': 'SELECT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc',
+      'productSizes': 'SELECT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc',
+    'singleProduct': 'SELECT * FROM productos WHERE productos.category_id = :idc',
+     'findProduct': 'SELECT * FROM productos WHERE productos.id_producto = :idc',
+     'productProveedor': 'SELECT * FROM proveedores WHERE proveedores.id_proveedor = :id'
   }
 )
 class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixin {
@@ -151,7 +167,87 @@ class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixi
   Future updateProducto(Insertable<Producto> producto) => update(productos).replace(producto);
   Future deleteProducto(Insertable<Producto> producto) => delete(productos).delete(producto);
   Future truncateProducto() => delete(productos).go();
+
+  Stream<List<ProductWithColorsAndSizes>> watchProductoWithColorsAndSizes(int id){
+    /*final SimpleSelectStatement<Colores, Colore> colorsQuery =
+      select(colores)
+        ..join(<Join<Table, DataClass>>[
+          innerJoin(
+            productosWithColores,
+            productosWithColores.color.equalsExp(colores.idColor) &
+            productosWithColores.producto.equals(id),
+          ),
+        ]);*/
+        
+
+       /* final SimpleSelectStatement<Tallas, Talla> tallasQuery =
+      select(tallas)
+        ..join(<Join<Table, DataClass>>[
+          innerJoin(
+            productosWithTallas,
+            productosWithTallas.talla.equalsExp(tallas.idTalla) &
+            productosWithTallas.producto.equals(id),
+          ),
+        ]);*/
+
+        final SimpleSelectStatement<Productos, Producto> productoQuery =
+      select(productos)..where((tbl) => tbl.idProducto.equals(id));
+
+      
+      return Rx.combineLatest3(
+        watchProductColors(id),
+        watchProductSizes(id),
+        productoQuery.watch(), 
+        (List<ProductColorsResult> coloresQ,List<ProductSizesResult> tallasQ, List<Producto> productoQ) {
+          return productoQ.map((e) => 
+            ProductWithColorsAndSizes(
+                producto: productoQ[0],
+                talla: tallasQ,
+                colore: coloresQ,
+            )
+          ).toList();
+        }
+      );
+
+  }
+ /* Future<ProductWithColorsAndSizes> loadProductWithColorAndSizes(int id) async {
+
+    final rows = await select(productos).join([
+      innerJoin(productosWithColores, productosWithColores.color.equalsExp(colores.idColor) & productosWithColores.producto.equals(id)),
+      innerJoin(productosWithTallas, productosWithTallas.talla.equalsExp(tallas.idTalla) & productosWithTallas.producto.equals(id)),
+    ]).get();
+
+    return rows.map((resultRow){
+      print(resultRow);
+      
+      /*return ProductWithColorsAndSizes(
+        producto: resultRow. (productos),
+        colore: resultRow.data(colores),
+        talla: resultRow.data(tallas), 
+      );*/
+    }).toList()[0];
+  }*/
 }
+
+/*Stream<List<ProductWithColorsAndSizes>> loadProductWithColorAndSizes(int id){
+  final query = 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.id_producto = $id;';
+  return customSelectQuery(query).watch().map();
+  return customSelectQuery(
+    query,
+    variables: [],
+    readsFrom: {productos, tallas, colores, productosWithColores, productosWithTallas},
+  ).watch().map((rows){
+    print(rows);
+    return rows
+    .map((row) => ProductWithColorsAndSizes(
+        producto: row.readTable(Productos),
+        colore: row.readTable(Colores),
+        talla: row.readTable(Tallas), 
+      )).toList(); 
+  });
+}*/
+
+
 
 @UseDao(tables: [ProductosWithColores])
 class ProductosWithColoresDao extends DatabaseAccessor<AppDatabase> with _$ProductosWithColoresDaoMixin {

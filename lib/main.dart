@@ -3,6 +3,7 @@ import 'package:demo/pages/bottom_nav_menu_page.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
+import 'package:demo/provider/product_detail_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
 import 'package:demo/provider/products_provider.dart';
 import 'package:demo/provider/tallas_provider.dart';
@@ -43,6 +44,10 @@ class MyApp extends StatelessWidget {
           create: (context) => ProductsProvider(db),
         ),
 
+         ChangeNotifierProvider<ProductDetail>(
+          create: (context) => ProductDetail(),
+        ),
+
       ],
       child: _MateApp(),
       );
@@ -64,8 +69,8 @@ class _MateApp extends StatelessWidget {
          'home': (BuildContext context) => HomePage(),
          /*'list_products': (BuildContext context) => ListProductsPage()*/
       },
-      theme: ThemeData.light().copyWith(
-        primaryColor: Colors.brown
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Color.fromRGBO(143,65,61,1)
       ),
     );
   }

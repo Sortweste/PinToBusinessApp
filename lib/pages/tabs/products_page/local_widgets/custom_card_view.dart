@@ -27,7 +27,8 @@ class CustomCardView extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: CacheImage(category.imageurl, cache: true, durationMultiplier: 0, duration: Duration(seconds: 1), durationExpiration: Duration(seconds: 10)),
+                image: CacheImage(category.imageurl, cache: true, 
+                durationMultiplier: 0, duration: Duration(seconds: 1), durationExpiration: Duration(seconds: 10)),
                 fit: BoxFit.cover,
               ),
             ),
