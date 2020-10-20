@@ -21,6 +21,7 @@ class ListProductsPage extends StatefulWidget {
 class _ListProductsPageState extends State<ListProductsPage>{
 
   GlobalKey<ScaffoldState> scaffoldKey;
+  bool ready = false;
 
   @override
   void initState() { 
@@ -60,6 +61,7 @@ class _ListProductsPageState extends State<ListProductsPage>{
     /*final _productsProvider = Provider.of<ProductsProvider>(context, listen: true);
     argument = ModalRoute.of(context).settings.arguments;
     */
+    final dao = Provider.of<ProductosDao>(context);
     final _productosProvider = Provider.of<ProductsProvider>(context, listen: false);
     return Scaffold(
       key: scaffoldKey,
@@ -68,12 +70,12 @@ class _ListProductsPageState extends State<ListProductsPage>{
         title: Text(widget.category.name),
         actions: [
            IconButton(icon: Icon(Icons.search), onPressed: (){
-              final _dao = Provider.of<ProductosDao>(context, listen:false);
-              showSearch(
-                context: context, 
-                delegate: ProductSearch(productosDao: _dao, productosProvider: _productosProvider, categoryId: widget.category.idCategory)
-              );
-            }),
+                final _dao = Provider.of<ProductosDao>(context, listen:false);
+                showSearch(
+                  context: context, 
+                  delegate: ProductSearch(productosDao: _dao, productosProvider: _productosProvider, categoryId: widget.category.idCategory)
+                );
+              }),
         ],
       ),
       body: SafeArea(

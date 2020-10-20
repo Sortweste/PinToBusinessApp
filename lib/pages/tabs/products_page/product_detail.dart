@@ -1,5 +1,6 @@
 
 import 'package:demo/database/dtos/product_with_colors_and_sizes.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/edit_product_dialog.dart';
 import 'package:demo/provider/product_detail_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
 import 'package:demo/provider/products_provider.dart';
@@ -28,18 +29,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   ProductsManager _pManager;
   List<Color> colores_value;
   List<String> names_value;
+  List<int> colores_ids;
   bool fondo = false;
 
  
 
   scrollHandler(){
     _scrollController.addListener(() {
-        if (_scrollController.offset >= _scrollController.position.maxScrollExtent*0.8 && !_scrollController.position.outOfRange){
-          Future.delayed(Duration(milliseconds: 250), (){
+        if (_scrollController.offset >= _scrollController.position.maxScrollExtent*0.9 && !_scrollController.position.outOfRange){
+          Future.delayed(Duration(milliseconds: 375), (){
              Provider.of<ProductDetail>(context, listen: false).setFondo(true);
           });
-        } else if  (_scrollController.offset <= _scrollController.position.minScrollExtent + 100 && !_scrollController.position.outOfRange) {
-           Future.delayed(Duration(milliseconds: 250), () async {
+        } else if  (_scrollController.offset <= _scrollController.position.minScrollExtent + 50 && !_scrollController.position.outOfRange) {
+           Future.delayed(Duration(milliseconds: 375), () async {
              Provider.of<ProductDetail>(context, listen: false).setFondo(false);
           });
         }
@@ -88,7 +90,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           builder: (context, snapshot) {
             return (!snapshot.hasData) ? Center(child: CircularProgressIndicator(),) : NestedScrollView(
               controller: _scrollController,
-              physics: PageScrollPhysics(),
+              physics: BouncingScrollPhysics(),
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
                       expandedHeight: (h == Orientation.portrait) ? 250 : 150,
@@ -114,7 +116,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           }
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: (){},
+          onPressed: (){
+            showDialog(
+              context: context,
+              child: EditProduct(id: widget.id,),
+              barrierDismissible: false,
+            );
+          },
           tooltip: "Edita la información de este producto",
           child: Icon(Icons.edit)
         ),
@@ -125,10 +133,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     String name = (product.producto.descripcion == "No disponible") ? product.producto.codigo : product.producto.descripcion;
     colores_value = product.colore.map((e) => Hexcolor(e.value)).toList();
     names_value = product.colore.map((e) => e.name).toList();
+    colores_ids = product.colore.map((e) => e.idColor).toList();
     if(colores_value.length > 0 && names_value.length > 0){
-      _pManager.setIni(product.colore[0].name,(product.talla.isEmpty) ? '' : product.talla[0].size, Hexcolor(product.colore[0].value));
+      _pManager.setIni(product.colore[0].name,(product.talla.isEmpty) ? '' : product.talla[0].size, Hexcolor(product.colore[0].value), product.colore[0].idColor, (product.talla.isEmpty) ? 1 : product.talla[0].idTalla);
     } else {
-      _pManager.setIni('', '', Colors.transparent);
+      _pManager.setIni('', '', Colors.transparent, 1, 1);
     }
     return SingleChildScrollView(
           child: Column(
@@ -137,21 +146,137 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           children: <Widget>[
         _productHeader(name, product),
         SizedBox(height: 10,),
-        _selectedColorName(),
-        _colorPicker(),
+        if(product.producto.categoryId != 3) _selectedColorName(),
+        _selectPickerMode(product),       
         SizedBox(height: 10,),
         _sizePicker(product),
         SizedBox(height: 30,),
+        Consumer<ProductsManager>(
+          builder: (context, value, child) {
+            return StreamBuilder<List<ProductoDetalle>>(
+                     stream: productosDao.watchProductPrices(product.producto.idProducto, value.colorId, value.tallaId),
+                     builder: (BuildContext context, AsyncSnapshot snapshot){
+                        return (snapshot.hasData) ? (snapshot.data.isNotEmpty) ? _pricesTable(context, snapshot.data) : _noData(context) : Padding(padding: EdgeInsets.symmetric(vertical: 20) ,child: Center(child: CircularProgressIndicator(),));
+                   },
+                 );
+          }, 
+        ),
         StreamBuilder<List<Proveedore>>(
         stream: productosDao.watchProductProveedor(product.producto.providerId),
         builder: (BuildContext context, AsyncSnapshot snapshot){
-          return (snapshot.hasData) ? _providerFields(context, snapshot.data[0]) : Center(child: CircularProgressIndicator(),);
+          return (snapshot.hasData) ? _providerFields(context, snapshot.data[0]) : Padding(padding:EdgeInsets.symmetric(vertical: 20) ,child: Center(child: CircularProgressIndicator(),));
         },
           ),
       ],
           ),
     );
   }
+
+  Widget _noData(BuildContext context){
+    final size = MediaQuery.of(context).size;
+    return Container(
+       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+       width: size.width,
+       decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(10),
+       ),
+       child: Text('No disponible', style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white), textAlign: TextAlign.center,),
+    );
+  }
+
+  Widget _selectPickerMode(ProductWithColorsAndSizes product){
+      return (product.producto.categoryId != 3) ?  _colorPicker() :  _crearDropdown();
+  }
+
+  List<DropdownMenuItem<String>> getOpts() {
+        List<DropdownMenuItem<String>> lista = new List();
+
+        names_value.forEach((color){
+          lista.add(DropdownMenuItem(
+            child: Text(color),
+            value: color,
+            )
+          );
+        });
+        return lista;
+    }
+
+  Widget _crearDropdown(){
+    return Consumer<ProductsManager>(
+      builder:(context, value, child) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(flex: 2,child: Icon(Icons.select_all)),
+            Expanded(
+            flex: 8,
+            child: 
+              DropdownButton(
+                value: value.color,
+                items: getOpts(),
+                onChanged: (opt) {
+                    int col = colores_ids[names_value.indexOf(opt)];
+                    value.setColorString(opt);
+                    value.setColorId(col);
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _pricesTable(BuildContext context,List<ProductoDetalle> precios){
+      final size = MediaQuery.of(context).size;
+      return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+              width: size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).primaryColor
+              ),
+              child: Text('Tabla de precios', style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white), textAlign: TextAlign.center,),),
+            SizedBox(height: 10,),
+            if(precios[0].precioUnitario != 0) priceField(context, 'Precio unitario', precios[0].precioUnitario),
+            if(precios[0].precioDocena != 0) priceField(context, 'Precio docena', precios[0].precioDocena),
+           if(precios[0].precioMayorista != 0) priceField(context, 'Precio mayorista', precios[0].precioMayorista),
+           if(precios[0].precioYarda != 0) priceField(context, 'Precio yarda', precios[0].precioYarda),
+           if(precios[0].precioCien != 0) priceField(context, 'Precio 100', precios[0].precioCien),
+           if(precios[0].precio500U != 0) priceField(context, 'Precio 500', precios[0].precio500U),
+           if(precios[0].precioCaja != 0) priceField(context, 'Precio caja', precios[0].precioCaja),
+           if(precios[0].precioFardo != 0) priceField(context, 'Precio fardo', precios[0].precioFardo),
+           if(precios[0].precioRollo != 0) priceField(context, 'Precio rollo', precios[0].precioRollo),
+           if(precios[0].precioGruesa != 0) priceField(context, 'Precio gruesa', precios[0].precioGruesa),
+           if(precios[0].precioMillar != 0) priceField(context, 'Precio millar', precios[0].precioMillar),
+           if(precios[0].precioBolsa != 0) priceField(context, 'Precio bolsa', precios[0].precioBolsa),
+           
+          ],
+        ),
+      );
+  }
+
+  Widget priceField(BuildContext context, String name, double price){
+  final size = MediaQuery.of(context).size;
+  return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+      Expanded(flex: 4, child: Text(name, style: Theme.of(context).textTheme.subtitle1, textAlign: TextAlign.center,),),
+      SizedBox(width: 20,),
+      Expanded(flex: 2, child: Text('\$ ${price.toStringAsFixed(2)}', style: Theme.of(context).textTheme.subtitle1,)),
+    ],
+  );
+}
 
   Widget _providerFields(BuildContext context, Proveedore proveedor){
     final size = MediaQuery.of(context).size;
@@ -161,7 +286,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Container(
-            color: Theme.of(context).primaryColor,
+            decoration: BoxDecoration(
+               color: Theme.of(context).primaryColor,
+               borderRadius: BorderRadius.circular(10),
+            ),
             width: size.width,
             padding: EdgeInsets.symmetric(vertical: 5), 
             margin: EdgeInsets.symmetric(horizontal: 20), child: Text('Proveedor: ${proveedor.name}',style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white, fontSize: 16) ,textAlign: TextAlign.center,),),
@@ -180,7 +308,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-      Icon(icono,size: 28, color: Theme.of(context).primaryColorDark,),
+      Icon(icono,size: 28, color: Colors.blue,),
       SizedBox(width: 20,),
       Container(
         width: size.width*0.5,
@@ -190,6 +318,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 }
 
   Row _sizePicker(ProductWithColorsAndSizes product) {
+    List tallas = new List<ProductSizesResult>();
+    if(product.producto.categoryId == 3){
+       tallas.add(product.talla[0]);
+    }else{
+      tallas.addAll(product.talla);
+    }
     return Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -201,7 +335,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 0),
                 child: Consumer<ProductsManager>(
-                  builder: (context, value, child) => (product.talla.length > 0) ? _customSizePicker(product.talla) : Center(child: Padding(
+                  builder: (context, value, child) => (product.talla.length > 0) ? _customSizePicker(tallas) : Center(child: Padding(
                     padding: EdgeInsets.all(20),
                     child: CircularProgressIndicator()),)
                 )
@@ -244,8 +378,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           builder: (context, value, child) => Container(
             width: MediaQuery.of(context).size.width,
             //color: value.currentColor,
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            child: Text('${value.color}', style: Theme.of(context).textTheme.subtitle1.copyWith(fontSize: 16), textAlign: TextAlign.center,)
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: Text('Color:  ${value.color}', style: Theme.of(context).textTheme.subtitle1.copyWith(fontSize: 16), textAlign: TextAlign.start,)
           ),
         );
   }
@@ -308,6 +442,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     String colorNuevo = names_value[colores_value.indexOf(color)];
     _pManager.setColorString(colorNuevo);
     _pManager.setCurrentColor(color);
+    _pManager.setColorId(colores_ids[colores_value.indexOf(color)]);
   }
 
 
@@ -400,13 +535,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     Widget _customSizedContainerItem(BuildContext context,List<ProductSizesResult> sizes,int index){ 
       return 
       InkWell(
-        onTap: (){_pManager.setSelectedSize(sizes[index].size);},
+        onTap: (){
+          _pManager.setSizeId(sizes[index].idTalla);
+          _pManager.setSelectedSize(sizes[index].size);},
         child: 
           Container(
-          width: 60,
+          width: 80,
           margin: EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
-            color: (_pManager.selectedSize == sizes[index].size ? Colors.blue : Colors.white), 
+            color: (_pManager.selectedSize == sizes[index].size ? Colors.brown : Colors.white), 
             border: Border.all(width:  (_pManager.selectedSize == sizes[index].size ? 2 : 0.5)),
             borderRadius: BorderRadius.circular(5)
           ),
@@ -415,7 +552,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               textAlign: TextAlign.center, 
               style: TextStyle(
                 color: (_pManager.selectedSize == sizes[index].size ? Colors.white : Colors.black),
-                fontSize: 12
+                fontSize: 16
               ),
             )
           ),

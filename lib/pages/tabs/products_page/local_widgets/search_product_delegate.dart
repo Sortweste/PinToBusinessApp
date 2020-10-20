@@ -7,17 +7,20 @@ import 'package:demo/widgets/voice_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../product_detail.dart';
+
 class ProductSearch extends SearchDelegate{
   
   ProductosDao productosDao;
   ProductsProvider productosProvider;
   List<Producto> products;
   int categoryId;
+  List<Producto> listaSugerida;
   ProductSearch({@required this.productosDao, @required this.productosProvider, @required this.categoryId}){
      initialize();
   }
   
-  void initialize() async{
+  void initialize() async {
     products = await productosDao.singleProduct(categoryId);
     final con = await Connectivity().checkConnectivity();
     if(con != ConnectivityResult.none){
@@ -49,6 +52,9 @@ class ProductSearch extends SearchDelegate{
         ),
       ];
     }
+
+   @override
+   ThemeData appBarTheme(BuildContext context) => Theme.of(context);
   
     @override
     Widget buildLeading(BuildContext context) {
@@ -68,7 +74,7 @@ class ProductSearch extends SearchDelegate{
       children: [
         InternetWidget(
           hasInternet: _productsOnline(false),
-          noInternet: _productsOfflineSearch(context, false),
+          noInternet: _productsLocal(false),
         ),
       ],
     );
@@ -81,7 +87,7 @@ class ProductSearch extends SearchDelegate{
       children: [
         InternetWidget(
           hasInternet: _productsOnline(true),
-          noInternet: _productsOfflineSearch(context, true),
+          noInternet: _productsLocal(true),
         ),
       ],
     );
@@ -92,7 +98,7 @@ class ProductSearch extends SearchDelegate{
       child: Padding(
           padding: EdgeInsets.all(5),
           child: FutureBuilder<List<Producto>>(
-          future: (query.isEmpty) ? productosDao.singleProduct(categoryId) : productosProvider.searhProducts(query, categoryId),
+          future: (query.isEmpty) ? productosProvider.getAllProducts(categoryId) : productosProvider.searhProducts(query, categoryId),
           builder: (context, snapshot){
             if(snapshot.hasData){
               return (snapshot.data.length == 0) ? noResults(context) : 
@@ -113,9 +119,38 @@ class ProductSearch extends SearchDelegate{
     );
   }
 
-  Widget _productsOfflineSearch(BuildContext context, bool suggestion){
-     final List<Producto> listaSugerida =  (query.isEmpty) ? products ?? [] : products.where((p) => p.descripcion.toLowerCase().startsWith(query.toLowerCase())).toList();
-    
+   Widget _productsLocal(bool suggestion){
+    return Expanded(
+      child: Padding(
+          padding: EdgeInsets.all(5),
+          child: FutureBuilder<List<Producto>>(
+          future: productosDao.singleProduct(categoryId),
+          builder: (context, snapshot){
+            if(snapshot.hasData){
+              final List<Producto> lista = snapshot.data;
+              final filtrada = (query.isEmpty) ? lista : lista.where((p) => p.descripcion.toLowerCase().startsWith(query.toLowerCase())).toList();
+              return (filtrada.length == 0) ? noResults(context) : 
+              (suggestion) ? _suggestionListView(context, filtrada)  : 
+               ListView.builder(
+                     itemCount: filtrada.length,
+                     itemBuilder: (context, index){
+                       return CustomProductCard(product: filtrada[index]);
+                     //return ListTile(title: Text(lista[index].descripcion), subtitle: Text(lista[index].idProducto.toString()),);
+                  }
+                   ); 
+              }else{
+                return Center(child: CircularProgressIndicator(),);
+              }
+          },
+        ),
+      ) 
+    );
+  }
+
+  Widget _productsOfflineSearch(BuildContext context, bool suggestion) {
+   
+    fillProudcts();
+
     return Expanded(
       child: (query.isNotEmpty && listaSugerida.length==0) ? noResults(context) : 
         (suggestion) ? _suggestionListView(context, listaSugerida)  : 
@@ -129,12 +164,20 @@ class ProductSearch extends SearchDelegate{
     );
   }
 
+  void fillProudcts() async {
+    products = await productosDao.singleProduct(categoryId);
+    listaSugerida = (query.isEmpty) ? products : 
+    products.where((p) => p.descripcion.toLowerCase().startsWith(query.toLowerCase())).toList();
+  }
+
   Widget _suggestionListView(BuildContext context, List<Producto> categories){
     return ListView(
       children: 
         categories.map((e) => 
           ListTile(
-            onTap: () { },
+            onTap: () { 
+               Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductDetailPage(id: e.idProducto,),));
+             },
           leading: Icon(Icons.search),
           title: Text((e.descripcion == "No disponible") ? e.codigo : e.descripcion),
         )

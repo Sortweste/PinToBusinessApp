@@ -7,6 +7,8 @@ import 'package:demo/widgets/voice_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../list_products.dart';
+
 class CategorySearch extends SearchDelegate{
   
   CategoriesDao categoriesDao;
@@ -32,6 +34,9 @@ class CategorySearch extends SearchDelegate{
       Fluttertoast.showToast(msg: 'No tienes conexión a internet', toastLength: Toast.LENGTH_SHORT);
     }
   }
+
+    @override
+   ThemeData appBarTheme(BuildContext context) => Theme.of(context);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -67,7 +72,7 @@ class CategorySearch extends SearchDelegate{
       children: [
         InternetWidget(
           hasInternet: _categoriesOnline(false),
-          noInternet: _categoriesOfflineSearch(context, false),
+          noInternet: _categoriesLocal(false),
         ),
       ],
     );
@@ -80,7 +85,7 @@ class CategorySearch extends SearchDelegate{
       children: [
         InternetWidget(
           hasInternet: _categoriesOnline(true),
-          noInternet: _categoriesOfflineSearch(context, true),
+          noInternet: _categoriesLocal(true),
         ),
       ],
     );
@@ -106,8 +111,34 @@ class CategorySearch extends SearchDelegate{
     );
   }
 
+  Widget _categoriesLocal(bool suggestion){
+    return Expanded(
+      child: Padding(
+          padding: EdgeInsets.all(5),
+          child: FutureBuilder<List<Categorie>>(
+          future: categoriesDao.getAllCategories(),
+          builder: (context, snapshot){
+            if(snapshot.hasData){
+              final List<Categorie> categ = snapshot.data;
+              final filtradas = (query.isEmpty) ? categ ?? [] : categ.where((p) => p.name.toLowerCase().startsWith(query.toLowerCase())).toList();
+              return (filtradas.length == 0) ? noResults(context) : 
+              (suggestion) ? _suggestionListView(context, filtradas)  : _customGridView(context, filtradas)
+              ; 
+              }else{
+                return Center(child: CircularProgressIndicator(),);
+              }
+          },
+        ),
+      ) 
+    );
+  }
+
   Widget _categoriesOfflineSearch(BuildContext context, bool suggestion){
-     final List<Categorie> listaSugerida =  (query.isEmpty) ? categorias ?? [] : categorias.where((p) => p.name.toLowerCase().startsWith(query.toLowerCase())).toList();
+    List<Categorie> listaSugerida = new List();
+    
+    Future.delayed(Duration.zero, () {
+       listaSugerida =  (query.isEmpty) ? categorias ?? [] : categorias.where((p) => p.name.toLowerCase().startsWith(query.toLowerCase())).toList();
+    });
     
     return Expanded(
       child: (query.isNotEmpty && listaSugerida.length==0) ? noResults(context) : 
@@ -120,7 +151,9 @@ class CategorySearch extends SearchDelegate{
       children: 
         categories.map((e) => 
           ListTile(
-            onTap: () { },
+            onTap: () { 
+               Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListProductsPage(category: e,),));
+             },
           leading: Icon(Icons.search),
           title: Text(e.name),
         )

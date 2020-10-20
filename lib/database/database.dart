@@ -35,10 +35,21 @@ class Proveedores extends Table {
    TextColumn get email => text().nullable()();
 }
 
-class Productos extends Table{
+class Productos extends Table {
   IntColumn get idProducto => integer().autoIncrement()();
   TextColumn get codigo => text().withLength(min: 1, max: 100)();
   TextColumn get descripcion => text().nullable()();
+  IntColumn get existencia => integer().nullable()();
+  TextColumn get specifications => text().nullable()();
+  IntColumn get providerId => integer().nullable().customConstraint('NULL REFERENCES proveedores(id_proveedor)')();
+  IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id_category)')();
+}
+
+class ProductoDetalles extends Table{
+  IntColumn get idProductoDetalle => integer().autoIncrement()();
+  IntColumn get productId => integer().nullable().customConstraint('NULL REFERENCES productos(id_producto)')();
+  IntColumn get colorId => integer().nullable().customConstraint('NULL REFERENCES colores(id_color)')();
+  IntColumn get tallaId => integer().nullable().customConstraint('NULL REFERENCES tallas(id_talla)')();
   RealColumn get precioUnitario => real().nullable()();
   RealColumn get precioDocena => real().nullable()();
   RealColumn get precioMayorista => real().nullable()();
@@ -48,10 +59,9 @@ class Productos extends Table{
   RealColumn get precioCaja => real().nullable()();
   RealColumn get precioFardo => real().nullable()();
   RealColumn get precioRollo => real().nullable()();
-  IntColumn get providerId => integer().nullable().customConstraint('NULL REFERENCES proveedores(id_proveedor)')();
-  IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id_category)')();
-  TextColumn get specifications => text().nullable()();
-  IntColumn get existencia => integer().nullable()();
+  RealColumn get precioGruesa => real().nullable()();
+  RealColumn get precioMillar => real().nullable()();
+  RealColumn get precioBolsa => real().nullable()();
 }
 
 
@@ -67,9 +77,9 @@ class ProductosWithTallas extends Table{
   IntColumn get talla => integer().customConstraint('NULL REFERENCES tallas(id_talla)')();
 }
 
-@UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosWithTallas], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosWithTallasDao])
+@UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosWithTallas, ProductoDetalles], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosWithTallasDao, ProductoDetallesDao])
 class AppDatabase extends _$AppDatabase {
-    AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'data.sqlite', logStatements: false));
+    AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite', logStatements: false));
 
     @override
     int get schemaVersion => 1;
@@ -147,13 +157,14 @@ class ProveedoresDao extends DatabaseAccessor<AppDatabase> with _$ProveedoresDao
 
 
 
-@UseDao(tables: [Productos, Categories, Colores, Proveedores, ProductosWithColores, ProductosWithTallas, Tallas],
+@UseDao(tables: [Productos, Categories, Colores, Proveedores, ProductosWithColores, ProductosWithTallas, Tallas, ProductoDetalles],
   queries: {
-     'productColors': 'SELECT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc',
-      'productSizes': 'SELECT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc',
+     'productColors': 'SELECT DISTINCT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc GROUP BY name',
+      'productSizes': 'SELECT DISTINCT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc GROUP BY size',
     'singleProduct': 'SELECT * FROM productos WHERE productos.category_id = :idc',
      'findProduct': 'SELECT * FROM productos WHERE productos.id_producto = :idc',
-     'productProveedor': 'SELECT * FROM proveedores WHERE proveedores.id_proveedor = :id'
+     'productProveedor': 'SELECT * FROM proveedores WHERE proveedores.id_proveedor = :id',
+     'productPrices': 'SELECT * FROM producto_detalles WHERE product_id = :idp AND color_id = :idc AND talla_id = :idt'
   }
 )
 class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixin {
@@ -210,42 +221,21 @@ class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixi
       );
 
   }
- /* Future<ProductWithColorsAndSizes> loadProductWithColorAndSizes(int id) async {
-
-    final rows = await select(productos).join([
-      innerJoin(productosWithColores, productosWithColores.color.equalsExp(colores.idColor) & productosWithColores.producto.equals(id)),
-      innerJoin(productosWithTallas, productosWithTallas.talla.equalsExp(tallas.idTalla) & productosWithTallas.producto.equals(id)),
-    ]).get();
-
-    return rows.map((resultRow){
-      print(resultRow);
-      
-      /*return ProductWithColorsAndSizes(
-        producto: resultRow. (productos),
-        colore: resultRow.data(colores),
-        talla: resultRow.data(tallas), 
-      );*/
-    }).toList()[0];
-  }*/
 }
+ 
+@UseDao(tables: [ProductoDetalles])
+class ProductoDetallesDao extends DatabaseAccessor<AppDatabase> with _$ProductoDetallesDaoMixin {
+  final AppDatabase db;
 
-/*Stream<List<ProductWithColorsAndSizes>> loadProductWithColorAndSizes(int id){
-  final query = 'SELECT * FROM productos INNER JOIN productos_with_colores ON productos_with_colores.producto = productos.id_producto INNER JOIN colores ON colores.id_color = productos_with_colores.color INNER JOIN productos_with_tallas ON productos_with_tallas.producto = productos.id_producto INNER JOIN tallas ON tallas.id_talla = productos_with_tallas.talla WHERE productos.id_producto = $id;';
-  return customSelectQuery(query).watch().map();
-  return customSelectQuery(
-    query,
-    variables: [],
-    readsFrom: {productos, tallas, colores, productosWithColores, productosWithTallas},
-  ).watch().map((rows){
-    print(rows);
-    return rows
-    .map((row) => ProductWithColorsAndSizes(
-        producto: row.readTable(Productos),
-        colore: row.readTable(Colores),
-        talla: row.readTable(Tallas), 
-      )).toList(); 
-  });
-}*/
+  ProductoDetallesDao(this.db) : super(db);
+
+  Future<List<ProductoDetalle>> getAllProductoDetalles() => select(productoDetalles).get();
+  Stream<List<ProductoDetalle>> watchAllProductoDetalles() => select(productoDetalles).watch();
+  Future insertProductoDetalle(Insertable<ProductoDetalle> pd) => into(productoDetalles).insert(pd, orReplace: true);
+  Future updateProductoDetalle(Insertable<ProductoDetalle> pd) => update(productoDetalles).replace(pd);
+  Future deleteProductoDetalle(Insertable<ProductoDetalle> pd) => delete(productoDetalles).delete(pd);
+  Future truncateProductoDetalles() => delete(productoDetalles).go();
+}
 
 
 

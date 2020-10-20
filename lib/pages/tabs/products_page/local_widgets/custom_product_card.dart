@@ -1,9 +1,7 @@
 import 'package:demo/pages/tabs/products_page/product_detail.dart';
-import 'package:demo/provider/product_detail_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/database/database.dart';
 import 'package:cache_image/cache_image.dart';
-import 'package:provider/provider.dart';
 
 class CustomProductCard extends StatelessWidget {
 
@@ -15,7 +13,7 @@ class CustomProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
      List<String> pricesList;
      List<String> pricesDesc;
-    switch(product.categoryId){
+    /*switch(product.categoryId){
         case 1:
         case 4: 
         case 5:
@@ -29,7 +27,7 @@ class CustomProductCard extends StatelessWidget {
         case 3: pricesList = ["${product.precioYarda.toStringAsFixed(2)}", "${product.precioRollo.toStringAsFixed(2)}"];
                 pricesDesc = ["Precio yarda:", "Precio rollo:"];
                 break;
-    }
+    }*/
 
     return Container(
       decoration: BoxDecoration(
@@ -96,7 +94,7 @@ class CustomProductCard extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.only(bottom: 0.0),
         child: Text(
-          product.specifications,
+          product.codigo,
           style: Theme.of(context).textTheme.subtitle1,
         ),
       ),
@@ -104,13 +102,13 @@ class CustomProductCard extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 2.0),
         child: Text(
-          "Existencia: ${product.existencia.toString()} unidades",
+          "Especificación: ${product.specifications} unidades",
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ),
     ];
 
-  for(int i=0; i<prices.length; i++)
+ /* for(int i=0; i<prices.length; i++)
     productDescription.add(
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 2.0,),
@@ -124,7 +122,7 @@ class CustomProductCard extends StatelessWidget {
           ),
         )
       ),
-    );
+    );*/
 
   return productDescription;
 

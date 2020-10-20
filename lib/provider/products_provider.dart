@@ -30,85 +30,137 @@ class ProductsProvider with ChangeNotifier {
       //print(res.body);
       if(res.statusCode == 200){
         List data = json.decode(res.body);
-       // db.productosWithColoresDao.truncateProductosWithColores();
-       // db.productosWithTallasDao.truncateProductosWithTallas();
-       // db.tallasDao.truncateTallas();
-       // db.coloresDao.truncateColores();
+        //db.productosWithColoresDao.truncateProductosWithColores();
+        //db.productosWithTallasDao.truncateProductosWithTallas();
+        //db.tallasDao.truncateTallas();
+        //db.coloresDao.truncateColores();
+       //db.productosDao.truncateProducto();
         data.forEach((element) async {
-         // print(element);
           var producto = Producto(
             idProducto: element['id'], 
             codigo: element['codigo'],
             existencia: element['existencia'],
             descripcion: (element['descripcion'] != null) ? element['descripcion'] : 'No disponible', 
-            specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
-            categoryId: element['category']['id'],
-            precio500U: (element['precio500U'] != null) ? double.parse(element['precio500U']) : 0.00,
-            precioMayorista: (element['precioMayorista'] != null) ? double.parse(element['precioMayorista']) : 0.00,
-            precioCaja: (element['precioCaja'] != null) ? double.parse(element['precioCaja']) : 0.00,
-            precioCien: (element['precioCien'] != null) ? double.parse(element['precioCien']) : 0.00,
-            precioDocena: (element['precioDocena'] != null) ? double.parse(element['precioDocena']) : 0.00,
-            precioFardo: (element['precioFardo'] != null) ? double.parse(element['precioFardo']) : 0.00,
-            precioRollo: (element['precioRollo'] != null) ? double.parse(element['precioRollo']) : 0.00,
-            precioUnitario: (element['precioUnitario'] != null) ? double.parse(element['precioUnitario']) : 0.00,
-            precioYarda: (element['precioYarda'] != null) ? double.parse(element['precioYarda']) : 0.00,
+            specifications: (element['specification'] != null) ? element['specification'] : 'No especificada',
             providerId: element['provider']['id'],
+            categoryId: element['category']['id'],
           );
 
-          List auxColores = element['colors'];
-         // auxColores.removeWhere((value) => value == null);
-
-          await db.productosDao.insertProducto(ProductosCompanion(
+           await db.productosDao.insertProducto(ProductosCompanion(
             categoryId: moor.Value(producto.categoryId),
             descripcion: moor.Value(producto.descripcion),
             idProducto: moor.Value(producto.idProducto),
             codigo: moor.Value(producto.codigo),
             existencia: moor.Value(producto.existencia),
-            precio500U: moor.Value(producto.precio500U),
-            precioCaja: moor.Value(producto.precioCaja),
-            precioCien: moor.Value(producto.precioCien),
-            precioDocena: moor.Value(producto.precioDocena),
-            precioFardo: moor.Value(producto.precioFardo),
-            precioMayorista: moor.Value(producto.precioMayorista),
-            precioRollo: moor.Value(producto.precioRollo),
-            precioUnitario: moor.Value(producto.precioUnitario),
-            precioYarda: moor.Value(producto.precioYarda),
             providerId: moor.Value(producto.providerId),
             specifications: moor.Value(producto.specifications),
           ));
 
+
+          List auxColores = element['colors'];
+
          if(auxColores.length > 0){
             List<Colore> colores = auxColores.map((color) => Colore(idColor: color['id'], name: color['name'], value: color['value'])).toList();
           
-          await db.productosWithColoresDao.truncateProductosWithColores();
           colores.forEach((c) async {
             await db.coloresDao.insertColor(ColoresCompanion(idColor: moor.Value(c.idColor), name: moor.Value(c.name), value: moor.Value(c.value)));
-            var pwc = ProductosWithColoresCompanion(color: moor.Value(c.idColor), producto: moor.Value(producto.idProducto));
-            await db.productosWithColoresDao.insertProductoWithColores(pwc);
            });
          }
 
           List auxTallas = element['sizes'];
-          //auxTallas.removeWhere((value) => value == null);
 
-          List<Talla> tallas = auxTallas.map((talla) => Talla(idTalla: talla['id'], size: talla['size'])).toList();
+         if(auxTallas.length > 0){
+            List<Talla> tallas = auxTallas.map((talla) => Talla(idTalla: talla['id'], size: talla['size'])).toList();
           
-          await db.productosWithTallasDao.truncateProductosWithTallas();
           tallas.forEach((t) async {
             await db.tallasDao.insertTalla(TallasCompanion(idTalla: moor.Value(t.idTalla), size: moor.Value(t.size)));
-            ProductosWithTallasCompanion pwt = ProductosWithTallasCompanion(talla: moor.Value(t.idTalla),producto: moor.Value(producto.idProducto));
-            await db.productosWithTallasDao.insertProductoWithTallas(pwt);
            });
+         }
 
-           db.proveedoresDao.insertProveedor(ProveedoresCompanion(
+          await db.proveedoresDao.insertProveedor(ProveedoresCompanion(
              idProveedor: moor.Value(element['provider']['id']),
              email: moor.Value(element['provider']['email'] ?? 'no especificado'),
              name: moor.Value(element['provider']['name'] ?? 'No especificado'),
              phone: moor.Value(element['provider']['phone'] ?? '22577777'),
            ));
+
+
+           List productoColors = element['producto_colors'];
+
+           if(productoColors.length > 0){
+             List<ProductosWithColore> pwcs = productoColors.map((e) => ProductosWithColore(idProductoWithColor: e['id'], producto: e['product_id'], color: e['color_id'])).toList();
+
+             pwcs.forEach((pwc) async {
+               ProductosWithColoresCompanion p = ProductosWithColoresCompanion(
+                 idProductoWithColor: moor.Value(pwc.idProductoWithColor),
+                 producto: moor.Value(pwc.producto),
+                 color: moor.Value(pwc.color)
+               ); 
+               await db.productosWithColoresDao.insertProductoWithColores(p);
+              });
+           }
+
+            List productoTallas = element['producto_sizes'];
+
+          if(productoTallas.length > 0){
+             List<ProductosWithTalla> pws = productoTallas.map((e) => ProductosWithTalla(idProductoWithTalla: e['id'], producto: e['product_id'], talla: e['size_id'])).toList();
+
+             pws.forEach((ps) async {
+               ProductosWithTallasCompanion p = ProductosWithTallasCompanion(
+                 idProductoWithTalla: moor.Value(ps.idProductoWithTalla),
+                 producto: moor.Value(ps.producto),
+                 talla: moor.Value(ps.talla)
+               ); 
+               await db.productosWithTallasDao.insertProductoWithTallas(p);
+              });
+           }
+
+
+            List productDetalles = element['product_details'];
+
+           if(productDetalles.length > 0){
+             List<ProductoDetalle> pds = productDetalles.map((e) => ProductoDetalle(idProductoDetalle: e['id'],
+              productId: e['product_id'],
+              colorId: e['color_id'],
+              tallaId: e['size_id'],
+              precioUnitario: (e['precioUnitario'] != null) ? double.parse(e['precioUnitario']) : 0.00,
+              precioDocena: (e['precioDocena'] != null) ? double.parse(e['precioDocena']) : 0.00,
+              precio500U: (e['precio500U'] != null) ? double.parse(e['precio500U']) : 0.00,
+            precioMayorista: (e['precioMayorista'] != null) ? double.parse(e['precioMayorista']) : 0.00,
+            precioCaja: (e['precioCaja'] != null) ? double.parse(e['precioCaja']) : 0.00,
+            precioCien: (e['precioCien'] != null) ? double.parse(e['precioCien']) : 0.00,
+            precioFardo: (e['precioFardo'] != null) ? double.parse(e['precioFardo']) : 0.00,
+            precioRollo: (e['precioRollo'] != null) ? double.parse(e['precioRollo']) : 0.00,
+            precioYarda: (e['precioYarda'] != null) ? double.parse(e['precioYarda']) : 0.00,
+            precioBolsa: (e['precioBolsa'] != null) ? double.parse(e['precioBolsa']) : 0.00,
+            precioGruesa: (e['precioGruesa'] != null) ? double.parse(e['precioGruesa']) : 0.00,
+            precioMillar: (e['precioMillar'] != null) ? double.parse(e['precioMillar']) : 0.00,
+             )).toList();
+
+             pds.forEach((pd) async {
+               ProductoDetallesCompanion p = ProductoDetallesCompanion(
+                 idProductoDetalle: moor.Value(pd.idProductoDetalle),
+                 productId: moor.Value(pd.productId),
+                 colorId: moor.Value(pd.colorId),
+                 tallaId: moor.Value(pd.tallaId),
+                 precioUnitario: moor.Value(pd.precioUnitario),
+                 precioDocena: moor.Value(pd.precioDocena),
+                 precioMayorista: moor.Value(pd.precioMayorista),
+                 precioYarda: moor.Value(pd.precioYarda),
+                 precioCien: moor.Value(pd.precioCien),
+                 precio500U: moor.Value(pd.precio500U),
+                 precioCaja: moor.Value(pd.precioCaja),
+                 precioFardo: moor.Value(pd.precioFardo),
+                 precioRollo: moor.Value(pd.precioRollo),
+                 precioGruesa: moor.Value(pd.precioGruesa),
+                 precioMillar: moor.Value(pd.precioMillar),
+                 precioBolsa: moor.Value(pd.precioBolsa),
+               ); 
+               await db.productoDetallesDao.insertProductoDetalle(p);
+              });
+           }
           
         });
-        //print(res.body);
       } else{
 
       }
@@ -136,15 +188,6 @@ class ProductsProvider with ChangeNotifier {
             descripcion: (element['descripcion'] != null) ? element['descripcion'] : 'No disponible', 
             specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
             categoryId: element['category']['id'],
-            precio500U: (element['precio500U'] != null) ? double.parse(element['precio500U']) : 0.00,
-            precioMayorista: (element['precioMayorista'] != null) ? double.parse(element['precioMayorista']) : 0.00,
-            precioCaja: (element['precioCaja'] != null) ? double.parse(element['precioCaja']) : 0.00,
-            precioCien: (element['precioCien'] != null) ? double.parse(element['precioCien']) : 0.00,
-            precioDocena: (element['precioDocena'] != null) ? double.parse(element['precioDocena']) : 0.00,
-            precioFardo: (element['precioFardo'] != null) ? double.parse(element['precioFardo']) : 0.00,
-            precioRollo: (element['precioRollo'] != null) ? double.parse(element['precioRollo']) : 0.00,
-            precioUnitario: (element['precioUnitario'] != null) ? double.parse(element['precioUnitario']) : 0.00,
-            precioYarda: (element['precioYarda'] != null) ? double.parse(element['precioYarda']) : 0.00,
             providerId: element['provider']['id'],
           );
           _productos.add(p);
@@ -153,6 +196,63 @@ class ProductsProvider with ChangeNotifier {
     return _productos;
     } catch (e) {
       return _productos;
+    }
+  }
+
+  Future<List<Producto>> getAllProducts(int idCategoria) async {
+    final _url = Uri.https(_urlBase, 'api/v1/categories/$idCategoria/products.json');
+    List<Producto> _productos = new List<Producto>();
+    try {
+      final res = await http.get(_url);
+      if(res.statusCode == 200){
+       _productos = new List<Producto>();
+       final List decodedData = json.decode(res.body);
+          decodedData.forEach((element) {
+          final Producto p = new Producto(
+            idProducto: element['id'], 
+            codigo: element['codigo'],
+            existencia: element['existencia'],
+            descripcion: (element['descripcion'] != null) ? element['descripcion'] : 'No disponible', 
+            specifications: (element['specification'] != null) ? element['specification'] : 'No especificada', 
+            categoryId: element['category']['id'],
+            providerId: element['provider']['id'],
+          );
+          _productos.add(p);
+        });
+    }
+    return _productos;
+    } catch (e) {
+      return _productos;
+    }
+  }
+
+
+  Future<bool> updateProduct(Producto p) async {
+    final _url = Uri.https(_urlBase, 'api/v1/categories/${p.categoryId}/products/${p.idProducto}.json',{
+      'product[codigo]': p.codigo,
+      'product[descripcion]': p.descripcion,
+      'product[existencia]': p.existencia.toString(),
+      'product[specification]': p.specifications,
+    });
+    try {
+      final res = await http.patch(_url);
+      if(res.statusCode == 200){
+       final decodedData = json.decode(res.body);
+       await db.productosDao.updateProducto(
+         ProductosCompanion(
+           idProducto: moor.Value(decodedData['id']),
+           codigo: moor.Value(decodedData['codigo']),
+           descripcion: moor.Value(decodedData['descripcion']),
+           existencia: moor.Value(decodedData['existencia']),
+           specifications: moor.Value(decodedData['specification']),
+           categoryId: moor.Value(decodedData['category']['id']),
+           providerId: moor.Value(decodedData['provider']['id'])
+         )
+       );
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

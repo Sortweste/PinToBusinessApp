@@ -795,42 +795,23 @@ class Producto extends DataClass implements Insertable<Producto> {
   final int idProducto;
   final String codigo;
   final String descripcion;
-  final double precioUnitario;
-  final double precioDocena;
-  final double precioMayorista;
-  final double precioYarda;
-  final double precioCien;
-  final double precio500U;
-  final double precioCaja;
-  final double precioFardo;
-  final double precioRollo;
+  final int existencia;
+  final String specifications;
   final int providerId;
   final int categoryId;
-  final String specifications;
-  final int existencia;
   Producto(
       {@required this.idProducto,
       @required this.codigo,
       this.descripcion,
-      this.precioUnitario,
-      this.precioDocena,
-      this.precioMayorista,
-      this.precioYarda,
-      this.precioCien,
-      this.precio500U,
-      this.precioCaja,
-      this.precioFardo,
-      this.precioRollo,
-      this.providerId,
-      this.categoryId,
+      this.existencia,
       this.specifications,
-      this.existencia});
+      this.providerId,
+      this.categoryId});
   factory Producto.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
-    final doubleType = db.typeSystem.forDartType<double>();
     return Producto(
       idProducto: intType
           .mapFromDatabaseResponse(data['${effectivePrefix}id_producto']),
@@ -838,32 +819,14 @@ class Producto extends DataClass implements Insertable<Producto> {
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}codigo']),
       descripcion: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}descripcion']),
-      precioUnitario: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_unitario']),
-      precioDocena: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_docena']),
-      precioMayorista: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_mayorista']),
-      precioYarda: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_yarda']),
-      precioCien: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_cien']),
-      precio500U: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio500_u']),
-      precioCaja: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_caja']),
-      precioFardo: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_fardo']),
-      precioRollo: doubleType
-          .mapFromDatabaseResponse(data['${effectivePrefix}precio_rollo']),
+      existencia:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}existencia']),
+      specifications: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}specifications']),
       providerId: intType
           .mapFromDatabaseResponse(data['${effectivePrefix}provider_id']),
       categoryId: intType
           .mapFromDatabaseResponse(data['${effectivePrefix}category_id']),
-      specifications: stringType
-          .mapFromDatabaseResponse(data['${effectivePrefix}specifications']),
-      existencia:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}existencia']),
     );
   }
   factory Producto.fromJson(Map<String, dynamic> json,
@@ -873,19 +836,10 @@ class Producto extends DataClass implements Insertable<Producto> {
       idProducto: serializer.fromJson<int>(json['idProducto']),
       codigo: serializer.fromJson<String>(json['codigo']),
       descripcion: serializer.fromJson<String>(json['descripcion']),
-      precioUnitario: serializer.fromJson<double>(json['precioUnitario']),
-      precioDocena: serializer.fromJson<double>(json['precioDocena']),
-      precioMayorista: serializer.fromJson<double>(json['precioMayorista']),
-      precioYarda: serializer.fromJson<double>(json['precioYarda']),
-      precioCien: serializer.fromJson<double>(json['precioCien']),
-      precio500U: serializer.fromJson<double>(json['precio500U']),
-      precioCaja: serializer.fromJson<double>(json['precioCaja']),
-      precioFardo: serializer.fromJson<double>(json['precioFardo']),
-      precioRollo: serializer.fromJson<double>(json['precioRollo']),
+      existencia: serializer.fromJson<int>(json['existencia']),
+      specifications: serializer.fromJson<String>(json['specifications']),
       providerId: serializer.fromJson<int>(json['providerId']),
       categoryId: serializer.fromJson<int>(json['categoryId']),
-      specifications: serializer.fromJson<String>(json['specifications']),
-      existencia: serializer.fromJson<int>(json['existencia']),
     );
   }
   @override
@@ -895,19 +849,10 @@ class Producto extends DataClass implements Insertable<Producto> {
       'idProducto': serializer.toJson<int>(idProducto),
       'codigo': serializer.toJson<String>(codigo),
       'descripcion': serializer.toJson<String>(descripcion),
-      'precioUnitario': serializer.toJson<double>(precioUnitario),
-      'precioDocena': serializer.toJson<double>(precioDocena),
-      'precioMayorista': serializer.toJson<double>(precioMayorista),
-      'precioYarda': serializer.toJson<double>(precioYarda),
-      'precioCien': serializer.toJson<double>(precioCien),
-      'precio500U': serializer.toJson<double>(precio500U),
-      'precioCaja': serializer.toJson<double>(precioCaja),
-      'precioFardo': serializer.toJson<double>(precioFardo),
-      'precioRollo': serializer.toJson<double>(precioRollo),
+      'existencia': serializer.toJson<int>(existencia),
+      'specifications': serializer.toJson<String>(specifications),
       'providerId': serializer.toJson<int>(providerId),
       'categoryId': serializer.toJson<int>(categoryId),
-      'specifications': serializer.toJson<String>(specifications),
-      'existencia': serializer.toJson<int>(existencia),
     };
   }
 
@@ -922,45 +867,18 @@ class Producto extends DataClass implements Insertable<Producto> {
       descripcion: descripcion == null && nullToAbsent
           ? const Value.absent()
           : Value(descripcion),
-      precioUnitario: precioUnitario == null && nullToAbsent
+      existencia: existencia == null && nullToAbsent
           ? const Value.absent()
-          : Value(precioUnitario),
-      precioDocena: precioDocena == null && nullToAbsent
+          : Value(existencia),
+      specifications: specifications == null && nullToAbsent
           ? const Value.absent()
-          : Value(precioDocena),
-      precioMayorista: precioMayorista == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precioMayorista),
-      precioYarda: precioYarda == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precioYarda),
-      precioCien: precioCien == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precioCien),
-      precio500U: precio500U == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precio500U),
-      precioCaja: precioCaja == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precioCaja),
-      precioFardo: precioFardo == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precioFardo),
-      precioRollo: precioRollo == null && nullToAbsent
-          ? const Value.absent()
-          : Value(precioRollo),
+          : Value(specifications),
       providerId: providerId == null && nullToAbsent
           ? const Value.absent()
           : Value(providerId),
       categoryId: categoryId == null && nullToAbsent
           ? const Value.absent()
           : Value(categoryId),
-      specifications: specifications == null && nullToAbsent
-          ? const Value.absent()
-          : Value(specifications),
-      existencia: existencia == null && nullToAbsent
-          ? const Value.absent()
-          : Value(existencia),
     );
   }
 
@@ -968,36 +886,18 @@ class Producto extends DataClass implements Insertable<Producto> {
           {int idProducto,
           String codigo,
           String descripcion,
-          double precioUnitario,
-          double precioDocena,
-          double precioMayorista,
-          double precioYarda,
-          double precioCien,
-          double precio500U,
-          double precioCaja,
-          double precioFardo,
-          double precioRollo,
-          int providerId,
-          int categoryId,
+          int existencia,
           String specifications,
-          int existencia}) =>
+          int providerId,
+          int categoryId}) =>
       Producto(
         idProducto: idProducto ?? this.idProducto,
         codigo: codigo ?? this.codigo,
         descripcion: descripcion ?? this.descripcion,
-        precioUnitario: precioUnitario ?? this.precioUnitario,
-        precioDocena: precioDocena ?? this.precioDocena,
-        precioMayorista: precioMayorista ?? this.precioMayorista,
-        precioYarda: precioYarda ?? this.precioYarda,
-        precioCien: precioCien ?? this.precioCien,
-        precio500U: precio500U ?? this.precio500U,
-        precioCaja: precioCaja ?? this.precioCaja,
-        precioFardo: precioFardo ?? this.precioFardo,
-        precioRollo: precioRollo ?? this.precioRollo,
+        existencia: existencia ?? this.existencia,
+        specifications: specifications ?? this.specifications,
         providerId: providerId ?? this.providerId,
         categoryId: categoryId ?? this.categoryId,
-        specifications: specifications ?? this.specifications,
-        existencia: existencia ?? this.existencia,
       );
   @override
   String toString() {
@@ -1005,19 +905,10 @@ class Producto extends DataClass implements Insertable<Producto> {
           ..write('idProducto: $idProducto, ')
           ..write('codigo: $codigo, ')
           ..write('descripcion: $descripcion, ')
-          ..write('precioUnitario: $precioUnitario, ')
-          ..write('precioDocena: $precioDocena, ')
-          ..write('precioMayorista: $precioMayorista, ')
-          ..write('precioYarda: $precioYarda, ')
-          ..write('precioCien: $precioCien, ')
-          ..write('precio500U: $precio500U, ')
-          ..write('precioCaja: $precioCaja, ')
-          ..write('precioFardo: $precioFardo, ')
-          ..write('precioRollo: $precioRollo, ')
-          ..write('providerId: $providerId, ')
-          ..write('categoryId: $categoryId, ')
+          ..write('existencia: $existencia, ')
           ..write('specifications: $specifications, ')
-          ..write('existencia: $existencia')
+          ..write('providerId: $providerId, ')
+          ..write('categoryId: $categoryId')
           ..write(')'))
         .toString();
   }
@@ -1030,32 +921,9 @@ class Producto extends DataClass implements Insertable<Producto> {
           $mrjc(
               descripcion.hashCode,
               $mrjc(
-                  precioUnitario.hashCode,
-                  $mrjc(
-                      precioDocena.hashCode,
-                      $mrjc(
-                          precioMayorista.hashCode,
-                          $mrjc(
-                              precioYarda.hashCode,
-                              $mrjc(
-                                  precioCien.hashCode,
-                                  $mrjc(
-                                      precio500U.hashCode,
-                                      $mrjc(
-                                          precioCaja.hashCode,
-                                          $mrjc(
-                                              precioFardo.hashCode,
-                                              $mrjc(
-                                                  precioRollo.hashCode,
-                                                  $mrjc(
-                                                      providerId.hashCode,
-                                                      $mrjc(
-                                                          categoryId.hashCode,
-                                                          $mrjc(
-                                                              specifications
-                                                                  .hashCode,
-                                                              existencia
-                                                                  .hashCode))))))))))))))));
+                  existencia.hashCode,
+                  $mrjc(specifications.hashCode,
+                      $mrjc(providerId.hashCode, categoryId.hashCode)))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -1063,108 +931,54 @@ class Producto extends DataClass implements Insertable<Producto> {
           other.idProducto == this.idProducto &&
           other.codigo == this.codigo &&
           other.descripcion == this.descripcion &&
-          other.precioUnitario == this.precioUnitario &&
-          other.precioDocena == this.precioDocena &&
-          other.precioMayorista == this.precioMayorista &&
-          other.precioYarda == this.precioYarda &&
-          other.precioCien == this.precioCien &&
-          other.precio500U == this.precio500U &&
-          other.precioCaja == this.precioCaja &&
-          other.precioFardo == this.precioFardo &&
-          other.precioRollo == this.precioRollo &&
-          other.providerId == this.providerId &&
-          other.categoryId == this.categoryId &&
+          other.existencia == this.existencia &&
           other.specifications == this.specifications &&
-          other.existencia == this.existencia);
+          other.providerId == this.providerId &&
+          other.categoryId == this.categoryId);
 }
 
 class ProductosCompanion extends UpdateCompanion<Producto> {
   final Value<int> idProducto;
   final Value<String> codigo;
   final Value<String> descripcion;
-  final Value<double> precioUnitario;
-  final Value<double> precioDocena;
-  final Value<double> precioMayorista;
-  final Value<double> precioYarda;
-  final Value<double> precioCien;
-  final Value<double> precio500U;
-  final Value<double> precioCaja;
-  final Value<double> precioFardo;
-  final Value<double> precioRollo;
+  final Value<int> existencia;
+  final Value<String> specifications;
   final Value<int> providerId;
   final Value<int> categoryId;
-  final Value<String> specifications;
-  final Value<int> existencia;
   const ProductosCompanion({
     this.idProducto = const Value.absent(),
     this.codigo = const Value.absent(),
     this.descripcion = const Value.absent(),
-    this.precioUnitario = const Value.absent(),
-    this.precioDocena = const Value.absent(),
-    this.precioMayorista = const Value.absent(),
-    this.precioYarda = const Value.absent(),
-    this.precioCien = const Value.absent(),
-    this.precio500U = const Value.absent(),
-    this.precioCaja = const Value.absent(),
-    this.precioFardo = const Value.absent(),
-    this.precioRollo = const Value.absent(),
+    this.existencia = const Value.absent(),
+    this.specifications = const Value.absent(),
     this.providerId = const Value.absent(),
     this.categoryId = const Value.absent(),
-    this.specifications = const Value.absent(),
-    this.existencia = const Value.absent(),
   });
   ProductosCompanion.insert({
     this.idProducto = const Value.absent(),
     @required String codigo,
     this.descripcion = const Value.absent(),
-    this.precioUnitario = const Value.absent(),
-    this.precioDocena = const Value.absent(),
-    this.precioMayorista = const Value.absent(),
-    this.precioYarda = const Value.absent(),
-    this.precioCien = const Value.absent(),
-    this.precio500U = const Value.absent(),
-    this.precioCaja = const Value.absent(),
-    this.precioFardo = const Value.absent(),
-    this.precioRollo = const Value.absent(),
+    this.existencia = const Value.absent(),
+    this.specifications = const Value.absent(),
     this.providerId = const Value.absent(),
     this.categoryId = const Value.absent(),
-    this.specifications = const Value.absent(),
-    this.existencia = const Value.absent(),
   }) : codigo = Value(codigo);
   ProductosCompanion copyWith(
       {Value<int> idProducto,
       Value<String> codigo,
       Value<String> descripcion,
-      Value<double> precioUnitario,
-      Value<double> precioDocena,
-      Value<double> precioMayorista,
-      Value<double> precioYarda,
-      Value<double> precioCien,
-      Value<double> precio500U,
-      Value<double> precioCaja,
-      Value<double> precioFardo,
-      Value<double> precioRollo,
-      Value<int> providerId,
-      Value<int> categoryId,
+      Value<int> existencia,
       Value<String> specifications,
-      Value<int> existencia}) {
+      Value<int> providerId,
+      Value<int> categoryId}) {
     return ProductosCompanion(
       idProducto: idProducto ?? this.idProducto,
       codigo: codigo ?? this.codigo,
       descripcion: descripcion ?? this.descripcion,
-      precioUnitario: precioUnitario ?? this.precioUnitario,
-      precioDocena: precioDocena ?? this.precioDocena,
-      precioMayorista: precioMayorista ?? this.precioMayorista,
-      precioYarda: precioYarda ?? this.precioYarda,
-      precioCien: precioCien ?? this.precioCien,
-      precio500U: precio500U ?? this.precio500U,
-      precioCaja: precioCaja ?? this.precioCaja,
-      precioFardo: precioFardo ?? this.precioFardo,
-      precioRollo: precioRollo ?? this.precioRollo,
+      existencia: existencia ?? this.existencia,
+      specifications: specifications ?? this.specifications,
       providerId: providerId ?? this.providerId,
       categoryId: categoryId ?? this.categoryId,
-      specifications: specifications ?? this.specifications,
-      existencia: existencia ?? this.existencia,
     );
   }
 }
@@ -1206,121 +1020,27 @@ class $ProductosTable extends Productos
     );
   }
 
-  final VerificationMeta _precioUnitarioMeta =
-      const VerificationMeta('precioUnitario');
-  GeneratedRealColumn _precioUnitario;
+  final VerificationMeta _existenciaMeta = const VerificationMeta('existencia');
+  GeneratedIntColumn _existencia;
   @override
-  GeneratedRealColumn get precioUnitario =>
-      _precioUnitario ??= _constructPrecioUnitario();
-  GeneratedRealColumn _constructPrecioUnitario() {
-    return GeneratedRealColumn(
-      'precio_unitario',
+  GeneratedIntColumn get existencia => _existencia ??= _constructExistencia();
+  GeneratedIntColumn _constructExistencia() {
+    return GeneratedIntColumn(
+      'existencia',
       $tableName,
       true,
     );
   }
 
-  final VerificationMeta _precioDocenaMeta =
-      const VerificationMeta('precioDocena');
-  GeneratedRealColumn _precioDocena;
+  final VerificationMeta _specificationsMeta =
+      const VerificationMeta('specifications');
+  GeneratedTextColumn _specifications;
   @override
-  GeneratedRealColumn get precioDocena =>
-      _precioDocena ??= _constructPrecioDocena();
-  GeneratedRealColumn _constructPrecioDocena() {
-    return GeneratedRealColumn(
-      'precio_docena',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precioMayoristaMeta =
-      const VerificationMeta('precioMayorista');
-  GeneratedRealColumn _precioMayorista;
-  @override
-  GeneratedRealColumn get precioMayorista =>
-      _precioMayorista ??= _constructPrecioMayorista();
-  GeneratedRealColumn _constructPrecioMayorista() {
-    return GeneratedRealColumn(
-      'precio_mayorista',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precioYardaMeta =
-      const VerificationMeta('precioYarda');
-  GeneratedRealColumn _precioYarda;
-  @override
-  GeneratedRealColumn get precioYarda =>
-      _precioYarda ??= _constructPrecioYarda();
-  GeneratedRealColumn _constructPrecioYarda() {
-    return GeneratedRealColumn(
-      'precio_yarda',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precioCienMeta = const VerificationMeta('precioCien');
-  GeneratedRealColumn _precioCien;
-  @override
-  GeneratedRealColumn get precioCien => _precioCien ??= _constructPrecioCien();
-  GeneratedRealColumn _constructPrecioCien() {
-    return GeneratedRealColumn(
-      'precio_cien',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precio500UMeta = const VerificationMeta('precio500U');
-  GeneratedRealColumn _precio500U;
-  @override
-  GeneratedRealColumn get precio500U => _precio500U ??= _constructPrecio500U();
-  GeneratedRealColumn _constructPrecio500U() {
-    return GeneratedRealColumn(
-      'precio500_u',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precioCajaMeta = const VerificationMeta('precioCaja');
-  GeneratedRealColumn _precioCaja;
-  @override
-  GeneratedRealColumn get precioCaja => _precioCaja ??= _constructPrecioCaja();
-  GeneratedRealColumn _constructPrecioCaja() {
-    return GeneratedRealColumn(
-      'precio_caja',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precioFardoMeta =
-      const VerificationMeta('precioFardo');
-  GeneratedRealColumn _precioFardo;
-  @override
-  GeneratedRealColumn get precioFardo =>
-      _precioFardo ??= _constructPrecioFardo();
-  GeneratedRealColumn _constructPrecioFardo() {
-    return GeneratedRealColumn(
-      'precio_fardo',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _precioRolloMeta =
-      const VerificationMeta('precioRollo');
-  GeneratedRealColumn _precioRollo;
-  @override
-  GeneratedRealColumn get precioRollo =>
-      _precioRollo ??= _constructPrecioRollo();
-  GeneratedRealColumn _constructPrecioRollo() {
-    return GeneratedRealColumn(
-      'precio_rollo',
+  GeneratedTextColumn get specifications =>
+      _specifications ??= _constructSpecifications();
+  GeneratedTextColumn _constructSpecifications() {
+    return GeneratedTextColumn(
+      'specifications',
       $tableName,
       true,
     );
@@ -1344,50 +1064,15 @@ class $ProductosTable extends Productos
         $customConstraints: 'NULL REFERENCES categories(id_category)');
   }
 
-  final VerificationMeta _specificationsMeta =
-      const VerificationMeta('specifications');
-  GeneratedTextColumn _specifications;
-  @override
-  GeneratedTextColumn get specifications =>
-      _specifications ??= _constructSpecifications();
-  GeneratedTextColumn _constructSpecifications() {
-    return GeneratedTextColumn(
-      'specifications',
-      $tableName,
-      true,
-    );
-  }
-
-  final VerificationMeta _existenciaMeta = const VerificationMeta('existencia');
-  GeneratedIntColumn _existencia;
-  @override
-  GeneratedIntColumn get existencia => _existencia ??= _constructExistencia();
-  GeneratedIntColumn _constructExistencia() {
-    return GeneratedIntColumn(
-      'existencia',
-      $tableName,
-      true,
-    );
-  }
-
   @override
   List<GeneratedColumn> get $columns => [
         idProducto,
         codigo,
         descripcion,
-        precioUnitario,
-        precioDocena,
-        precioMayorista,
-        precioYarda,
-        precioCien,
-        precio500U,
-        precioCaja,
-        precioFardo,
-        precioRollo,
-        providerId,
-        categoryId,
+        existencia,
         specifications,
-        existencia
+        providerId,
+        categoryId
       ];
   @override
   $ProductosTable get asDslTable => this;
@@ -1413,47 +1098,15 @@ class $ProductosTable extends Productos
       context.handle(_descripcionMeta,
           descripcion.isAcceptableValue(d.descripcion.value, _descripcionMeta));
     }
-    if (d.precioUnitario.present) {
+    if (d.existencia.present) {
+      context.handle(_existenciaMeta,
+          existencia.isAcceptableValue(d.existencia.value, _existenciaMeta));
+    }
+    if (d.specifications.present) {
       context.handle(
-          _precioUnitarioMeta,
-          precioUnitario.isAcceptableValue(
-              d.precioUnitario.value, _precioUnitarioMeta));
-    }
-    if (d.precioDocena.present) {
-      context.handle(
-          _precioDocenaMeta,
-          precioDocena.isAcceptableValue(
-              d.precioDocena.value, _precioDocenaMeta));
-    }
-    if (d.precioMayorista.present) {
-      context.handle(
-          _precioMayoristaMeta,
-          precioMayorista.isAcceptableValue(
-              d.precioMayorista.value, _precioMayoristaMeta));
-    }
-    if (d.precioYarda.present) {
-      context.handle(_precioYardaMeta,
-          precioYarda.isAcceptableValue(d.precioYarda.value, _precioYardaMeta));
-    }
-    if (d.precioCien.present) {
-      context.handle(_precioCienMeta,
-          precioCien.isAcceptableValue(d.precioCien.value, _precioCienMeta));
-    }
-    if (d.precio500U.present) {
-      context.handle(_precio500UMeta,
-          precio500U.isAcceptableValue(d.precio500U.value, _precio500UMeta));
-    }
-    if (d.precioCaja.present) {
-      context.handle(_precioCajaMeta,
-          precioCaja.isAcceptableValue(d.precioCaja.value, _precioCajaMeta));
-    }
-    if (d.precioFardo.present) {
-      context.handle(_precioFardoMeta,
-          precioFardo.isAcceptableValue(d.precioFardo.value, _precioFardoMeta));
-    }
-    if (d.precioRollo.present) {
-      context.handle(_precioRolloMeta,
-          precioRollo.isAcceptableValue(d.precioRollo.value, _precioRolloMeta));
+          _specificationsMeta,
+          specifications.isAcceptableValue(
+              d.specifications.value, _specificationsMeta));
     }
     if (d.providerId.present) {
       context.handle(_providerIdMeta,
@@ -1462,16 +1115,6 @@ class $ProductosTable extends Productos
     if (d.categoryId.present) {
       context.handle(_categoryIdMeta,
           categoryId.isAcceptableValue(d.categoryId.value, _categoryIdMeta));
-    }
-    if (d.specifications.present) {
-      context.handle(
-          _specificationsMeta,
-          specifications.isAcceptableValue(
-              d.specifications.value, _specificationsMeta));
-    }
-    if (d.existencia.present) {
-      context.handle(_existenciaMeta,
-          existencia.isAcceptableValue(d.existencia.value, _existenciaMeta));
     }
     return context;
   }
@@ -1496,47 +1139,18 @@ class $ProductosTable extends Productos
     if (d.descripcion.present) {
       map['descripcion'] = Variable<String, StringType>(d.descripcion.value);
     }
-    if (d.precioUnitario.present) {
-      map['precio_unitario'] =
-          Variable<double, RealType>(d.precioUnitario.value);
+    if (d.existencia.present) {
+      map['existencia'] = Variable<int, IntType>(d.existencia.value);
     }
-    if (d.precioDocena.present) {
-      map['precio_docena'] = Variable<double, RealType>(d.precioDocena.value);
-    }
-    if (d.precioMayorista.present) {
-      map['precio_mayorista'] =
-          Variable<double, RealType>(d.precioMayorista.value);
-    }
-    if (d.precioYarda.present) {
-      map['precio_yarda'] = Variable<double, RealType>(d.precioYarda.value);
-    }
-    if (d.precioCien.present) {
-      map['precio_cien'] = Variable<double, RealType>(d.precioCien.value);
-    }
-    if (d.precio500U.present) {
-      map['precio500_u'] = Variable<double, RealType>(d.precio500U.value);
-    }
-    if (d.precioCaja.present) {
-      map['precio_caja'] = Variable<double, RealType>(d.precioCaja.value);
-    }
-    if (d.precioFardo.present) {
-      map['precio_fardo'] = Variable<double, RealType>(d.precioFardo.value);
-    }
-    if (d.precioRollo.present) {
-      map['precio_rollo'] = Variable<double, RealType>(d.precioRollo.value);
+    if (d.specifications.present) {
+      map['specifications'] =
+          Variable<String, StringType>(d.specifications.value);
     }
     if (d.providerId.present) {
       map['provider_id'] = Variable<int, IntType>(d.providerId.value);
     }
     if (d.categoryId.present) {
       map['category_id'] = Variable<int, IntType>(d.categoryId.value);
-    }
-    if (d.specifications.present) {
-      map['specifications'] =
-          Variable<String, StringType>(d.specifications.value);
-    }
-    if (d.existencia.present) {
-      map['existencia'] = Variable<int, IntType>(d.existencia.value);
     }
     return map;
   }
@@ -1962,6 +1576,769 @@ class $ProductosWithTallasTable extends ProductosWithTallas
   }
 }
 
+class ProductoDetalle extends DataClass implements Insertable<ProductoDetalle> {
+  final int idProductoDetalle;
+  final int productId;
+  final int colorId;
+  final int tallaId;
+  final double precioUnitario;
+  final double precioDocena;
+  final double precioMayorista;
+  final double precioYarda;
+  final double precioCien;
+  final double precio500U;
+  final double precioCaja;
+  final double precioFardo;
+  final double precioRollo;
+  final double precioGruesa;
+  final double precioMillar;
+  final double precioBolsa;
+  ProductoDetalle(
+      {@required this.idProductoDetalle,
+      this.productId,
+      this.colorId,
+      this.tallaId,
+      this.precioUnitario,
+      this.precioDocena,
+      this.precioMayorista,
+      this.precioYarda,
+      this.precioCien,
+      this.precio500U,
+      this.precioCaja,
+      this.precioFardo,
+      this.precioRollo,
+      this.precioGruesa,
+      this.precioMillar,
+      this.precioBolsa});
+  factory ProductoDetalle.fromData(
+      Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final doubleType = db.typeSystem.forDartType<double>();
+    return ProductoDetalle(
+      idProductoDetalle: intType.mapFromDatabaseResponse(
+          data['${effectivePrefix}id_producto_detalle']),
+      productId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}product_id']),
+      colorId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}color_id']),
+      tallaId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}talla_id']),
+      precioUnitario: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_unitario']),
+      precioDocena: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_docena']),
+      precioMayorista: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_mayorista']),
+      precioYarda: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_yarda']),
+      precioCien: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_cien']),
+      precio500U: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio500_u']),
+      precioCaja: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_caja']),
+      precioFardo: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_fardo']),
+      precioRollo: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_rollo']),
+      precioGruesa: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_gruesa']),
+      precioMillar: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_millar']),
+      precioBolsa: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}precio_bolsa']),
+    );
+  }
+  factory ProductoDetalle.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return ProductoDetalle(
+      idProductoDetalle: serializer.fromJson<int>(json['idProductoDetalle']),
+      productId: serializer.fromJson<int>(json['productId']),
+      colorId: serializer.fromJson<int>(json['colorId']),
+      tallaId: serializer.fromJson<int>(json['tallaId']),
+      precioUnitario: serializer.fromJson<double>(json['precioUnitario']),
+      precioDocena: serializer.fromJson<double>(json['precioDocena']),
+      precioMayorista: serializer.fromJson<double>(json['precioMayorista']),
+      precioYarda: serializer.fromJson<double>(json['precioYarda']),
+      precioCien: serializer.fromJson<double>(json['precioCien']),
+      precio500U: serializer.fromJson<double>(json['precio500U']),
+      precioCaja: serializer.fromJson<double>(json['precioCaja']),
+      precioFardo: serializer.fromJson<double>(json['precioFardo']),
+      precioRollo: serializer.fromJson<double>(json['precioRollo']),
+      precioGruesa: serializer.fromJson<double>(json['precioGruesa']),
+      precioMillar: serializer.fromJson<double>(json['precioMillar']),
+      precioBolsa: serializer.fromJson<double>(json['precioBolsa']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'idProductoDetalle': serializer.toJson<int>(idProductoDetalle),
+      'productId': serializer.toJson<int>(productId),
+      'colorId': serializer.toJson<int>(colorId),
+      'tallaId': serializer.toJson<int>(tallaId),
+      'precioUnitario': serializer.toJson<double>(precioUnitario),
+      'precioDocena': serializer.toJson<double>(precioDocena),
+      'precioMayorista': serializer.toJson<double>(precioMayorista),
+      'precioYarda': serializer.toJson<double>(precioYarda),
+      'precioCien': serializer.toJson<double>(precioCien),
+      'precio500U': serializer.toJson<double>(precio500U),
+      'precioCaja': serializer.toJson<double>(precioCaja),
+      'precioFardo': serializer.toJson<double>(precioFardo),
+      'precioRollo': serializer.toJson<double>(precioRollo),
+      'precioGruesa': serializer.toJson<double>(precioGruesa),
+      'precioMillar': serializer.toJson<double>(precioMillar),
+      'precioBolsa': serializer.toJson<double>(precioBolsa),
+    };
+  }
+
+  @override
+  ProductoDetallesCompanion createCompanion(bool nullToAbsent) {
+    return ProductoDetallesCompanion(
+      idProductoDetalle: idProductoDetalle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idProductoDetalle),
+      productId: productId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(productId),
+      colorId: colorId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(colorId),
+      tallaId: tallaId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tallaId),
+      precioUnitario: precioUnitario == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioUnitario),
+      precioDocena: precioDocena == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioDocena),
+      precioMayorista: precioMayorista == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioMayorista),
+      precioYarda: precioYarda == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioYarda),
+      precioCien: precioCien == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioCien),
+      precio500U: precio500U == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precio500U),
+      precioCaja: precioCaja == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioCaja),
+      precioFardo: precioFardo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioFardo),
+      precioRollo: precioRollo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioRollo),
+      precioGruesa: precioGruesa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioGruesa),
+      precioMillar: precioMillar == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioMillar),
+      precioBolsa: precioBolsa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precioBolsa),
+    );
+  }
+
+  ProductoDetalle copyWith(
+          {int idProductoDetalle,
+          int productId,
+          int colorId,
+          int tallaId,
+          double precioUnitario,
+          double precioDocena,
+          double precioMayorista,
+          double precioYarda,
+          double precioCien,
+          double precio500U,
+          double precioCaja,
+          double precioFardo,
+          double precioRollo,
+          double precioGruesa,
+          double precioMillar,
+          double precioBolsa}) =>
+      ProductoDetalle(
+        idProductoDetalle: idProductoDetalle ?? this.idProductoDetalle,
+        productId: productId ?? this.productId,
+        colorId: colorId ?? this.colorId,
+        tallaId: tallaId ?? this.tallaId,
+        precioUnitario: precioUnitario ?? this.precioUnitario,
+        precioDocena: precioDocena ?? this.precioDocena,
+        precioMayorista: precioMayorista ?? this.precioMayorista,
+        precioYarda: precioYarda ?? this.precioYarda,
+        precioCien: precioCien ?? this.precioCien,
+        precio500U: precio500U ?? this.precio500U,
+        precioCaja: precioCaja ?? this.precioCaja,
+        precioFardo: precioFardo ?? this.precioFardo,
+        precioRollo: precioRollo ?? this.precioRollo,
+        precioGruesa: precioGruesa ?? this.precioGruesa,
+        precioMillar: precioMillar ?? this.precioMillar,
+        precioBolsa: precioBolsa ?? this.precioBolsa,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ProductoDetalle(')
+          ..write('idProductoDetalle: $idProductoDetalle, ')
+          ..write('productId: $productId, ')
+          ..write('colorId: $colorId, ')
+          ..write('tallaId: $tallaId, ')
+          ..write('precioUnitario: $precioUnitario, ')
+          ..write('precioDocena: $precioDocena, ')
+          ..write('precioMayorista: $precioMayorista, ')
+          ..write('precioYarda: $precioYarda, ')
+          ..write('precioCien: $precioCien, ')
+          ..write('precio500U: $precio500U, ')
+          ..write('precioCaja: $precioCaja, ')
+          ..write('precioFardo: $precioFardo, ')
+          ..write('precioRollo: $precioRollo, ')
+          ..write('precioGruesa: $precioGruesa, ')
+          ..write('precioMillar: $precioMillar, ')
+          ..write('precioBolsa: $precioBolsa')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      idProductoDetalle.hashCode,
+      $mrjc(
+          productId.hashCode,
+          $mrjc(
+              colorId.hashCode,
+              $mrjc(
+                  tallaId.hashCode,
+                  $mrjc(
+                      precioUnitario.hashCode,
+                      $mrjc(
+                          precioDocena.hashCode,
+                          $mrjc(
+                              precioMayorista.hashCode,
+                              $mrjc(
+                                  precioYarda.hashCode,
+                                  $mrjc(
+                                      precioCien.hashCode,
+                                      $mrjc(
+                                          precio500U.hashCode,
+                                          $mrjc(
+                                              precioCaja.hashCode,
+                                              $mrjc(
+                                                  precioFardo.hashCode,
+                                                  $mrjc(
+                                                      precioRollo.hashCode,
+                                                      $mrjc(
+                                                          precioGruesa.hashCode,
+                                                          $mrjc(
+                                                              precioMillar
+                                                                  .hashCode,
+                                                              precioBolsa
+                                                                  .hashCode))))))))))))))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is ProductoDetalle &&
+          other.idProductoDetalle == this.idProductoDetalle &&
+          other.productId == this.productId &&
+          other.colorId == this.colorId &&
+          other.tallaId == this.tallaId &&
+          other.precioUnitario == this.precioUnitario &&
+          other.precioDocena == this.precioDocena &&
+          other.precioMayorista == this.precioMayorista &&
+          other.precioYarda == this.precioYarda &&
+          other.precioCien == this.precioCien &&
+          other.precio500U == this.precio500U &&
+          other.precioCaja == this.precioCaja &&
+          other.precioFardo == this.precioFardo &&
+          other.precioRollo == this.precioRollo &&
+          other.precioGruesa == this.precioGruesa &&
+          other.precioMillar == this.precioMillar &&
+          other.precioBolsa == this.precioBolsa);
+}
+
+class ProductoDetallesCompanion extends UpdateCompanion<ProductoDetalle> {
+  final Value<int> idProductoDetalle;
+  final Value<int> productId;
+  final Value<int> colorId;
+  final Value<int> tallaId;
+  final Value<double> precioUnitario;
+  final Value<double> precioDocena;
+  final Value<double> precioMayorista;
+  final Value<double> precioYarda;
+  final Value<double> precioCien;
+  final Value<double> precio500U;
+  final Value<double> precioCaja;
+  final Value<double> precioFardo;
+  final Value<double> precioRollo;
+  final Value<double> precioGruesa;
+  final Value<double> precioMillar;
+  final Value<double> precioBolsa;
+  const ProductoDetallesCompanion({
+    this.idProductoDetalle = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.colorId = const Value.absent(),
+    this.tallaId = const Value.absent(),
+    this.precioUnitario = const Value.absent(),
+    this.precioDocena = const Value.absent(),
+    this.precioMayorista = const Value.absent(),
+    this.precioYarda = const Value.absent(),
+    this.precioCien = const Value.absent(),
+    this.precio500U = const Value.absent(),
+    this.precioCaja = const Value.absent(),
+    this.precioFardo = const Value.absent(),
+    this.precioRollo = const Value.absent(),
+    this.precioGruesa = const Value.absent(),
+    this.precioMillar = const Value.absent(),
+    this.precioBolsa = const Value.absent(),
+  });
+  ProductoDetallesCompanion.insert({
+    this.idProductoDetalle = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.colorId = const Value.absent(),
+    this.tallaId = const Value.absent(),
+    this.precioUnitario = const Value.absent(),
+    this.precioDocena = const Value.absent(),
+    this.precioMayorista = const Value.absent(),
+    this.precioYarda = const Value.absent(),
+    this.precioCien = const Value.absent(),
+    this.precio500U = const Value.absent(),
+    this.precioCaja = const Value.absent(),
+    this.precioFardo = const Value.absent(),
+    this.precioRollo = const Value.absent(),
+    this.precioGruesa = const Value.absent(),
+    this.precioMillar = const Value.absent(),
+    this.precioBolsa = const Value.absent(),
+  });
+  ProductoDetallesCompanion copyWith(
+      {Value<int> idProductoDetalle,
+      Value<int> productId,
+      Value<int> colorId,
+      Value<int> tallaId,
+      Value<double> precioUnitario,
+      Value<double> precioDocena,
+      Value<double> precioMayorista,
+      Value<double> precioYarda,
+      Value<double> precioCien,
+      Value<double> precio500U,
+      Value<double> precioCaja,
+      Value<double> precioFardo,
+      Value<double> precioRollo,
+      Value<double> precioGruesa,
+      Value<double> precioMillar,
+      Value<double> precioBolsa}) {
+    return ProductoDetallesCompanion(
+      idProductoDetalle: idProductoDetalle ?? this.idProductoDetalle,
+      productId: productId ?? this.productId,
+      colorId: colorId ?? this.colorId,
+      tallaId: tallaId ?? this.tallaId,
+      precioUnitario: precioUnitario ?? this.precioUnitario,
+      precioDocena: precioDocena ?? this.precioDocena,
+      precioMayorista: precioMayorista ?? this.precioMayorista,
+      precioYarda: precioYarda ?? this.precioYarda,
+      precioCien: precioCien ?? this.precioCien,
+      precio500U: precio500U ?? this.precio500U,
+      precioCaja: precioCaja ?? this.precioCaja,
+      precioFardo: precioFardo ?? this.precioFardo,
+      precioRollo: precioRollo ?? this.precioRollo,
+      precioGruesa: precioGruesa ?? this.precioGruesa,
+      precioMillar: precioMillar ?? this.precioMillar,
+      precioBolsa: precioBolsa ?? this.precioBolsa,
+    );
+  }
+}
+
+class $ProductoDetallesTable extends ProductoDetalles
+    with TableInfo<$ProductoDetallesTable, ProductoDetalle> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $ProductoDetallesTable(this._db, [this._alias]);
+  final VerificationMeta _idProductoDetalleMeta =
+      const VerificationMeta('idProductoDetalle');
+  GeneratedIntColumn _idProductoDetalle;
+  @override
+  GeneratedIntColumn get idProductoDetalle =>
+      _idProductoDetalle ??= _constructIdProductoDetalle();
+  GeneratedIntColumn _constructIdProductoDetalle() {
+    return GeneratedIntColumn('id_producto_detalle', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _productIdMeta = const VerificationMeta('productId');
+  GeneratedIntColumn _productId;
+  @override
+  GeneratedIntColumn get productId => _productId ??= _constructProductId();
+  GeneratedIntColumn _constructProductId() {
+    return GeneratedIntColumn('product_id', $tableName, true,
+        $customConstraints: 'NULL REFERENCES productos(id_producto)');
+  }
+
+  final VerificationMeta _colorIdMeta = const VerificationMeta('colorId');
+  GeneratedIntColumn _colorId;
+  @override
+  GeneratedIntColumn get colorId => _colorId ??= _constructColorId();
+  GeneratedIntColumn _constructColorId() {
+    return GeneratedIntColumn('color_id', $tableName, true,
+        $customConstraints: 'NULL REFERENCES colores(id_color)');
+  }
+
+  final VerificationMeta _tallaIdMeta = const VerificationMeta('tallaId');
+  GeneratedIntColumn _tallaId;
+  @override
+  GeneratedIntColumn get tallaId => _tallaId ??= _constructTallaId();
+  GeneratedIntColumn _constructTallaId() {
+    return GeneratedIntColumn('talla_id', $tableName, true,
+        $customConstraints: 'NULL REFERENCES tallas(id_talla)');
+  }
+
+  final VerificationMeta _precioUnitarioMeta =
+      const VerificationMeta('precioUnitario');
+  GeneratedRealColumn _precioUnitario;
+  @override
+  GeneratedRealColumn get precioUnitario =>
+      _precioUnitario ??= _constructPrecioUnitario();
+  GeneratedRealColumn _constructPrecioUnitario() {
+    return GeneratedRealColumn(
+      'precio_unitario',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioDocenaMeta =
+      const VerificationMeta('precioDocena');
+  GeneratedRealColumn _precioDocena;
+  @override
+  GeneratedRealColumn get precioDocena =>
+      _precioDocena ??= _constructPrecioDocena();
+  GeneratedRealColumn _constructPrecioDocena() {
+    return GeneratedRealColumn(
+      'precio_docena',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioMayoristaMeta =
+      const VerificationMeta('precioMayorista');
+  GeneratedRealColumn _precioMayorista;
+  @override
+  GeneratedRealColumn get precioMayorista =>
+      _precioMayorista ??= _constructPrecioMayorista();
+  GeneratedRealColumn _constructPrecioMayorista() {
+    return GeneratedRealColumn(
+      'precio_mayorista',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioYardaMeta =
+      const VerificationMeta('precioYarda');
+  GeneratedRealColumn _precioYarda;
+  @override
+  GeneratedRealColumn get precioYarda =>
+      _precioYarda ??= _constructPrecioYarda();
+  GeneratedRealColumn _constructPrecioYarda() {
+    return GeneratedRealColumn(
+      'precio_yarda',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioCienMeta = const VerificationMeta('precioCien');
+  GeneratedRealColumn _precioCien;
+  @override
+  GeneratedRealColumn get precioCien => _precioCien ??= _constructPrecioCien();
+  GeneratedRealColumn _constructPrecioCien() {
+    return GeneratedRealColumn(
+      'precio_cien',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precio500UMeta = const VerificationMeta('precio500U');
+  GeneratedRealColumn _precio500U;
+  @override
+  GeneratedRealColumn get precio500U => _precio500U ??= _constructPrecio500U();
+  GeneratedRealColumn _constructPrecio500U() {
+    return GeneratedRealColumn(
+      'precio500_u',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioCajaMeta = const VerificationMeta('precioCaja');
+  GeneratedRealColumn _precioCaja;
+  @override
+  GeneratedRealColumn get precioCaja => _precioCaja ??= _constructPrecioCaja();
+  GeneratedRealColumn _constructPrecioCaja() {
+    return GeneratedRealColumn(
+      'precio_caja',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioFardoMeta =
+      const VerificationMeta('precioFardo');
+  GeneratedRealColumn _precioFardo;
+  @override
+  GeneratedRealColumn get precioFardo =>
+      _precioFardo ??= _constructPrecioFardo();
+  GeneratedRealColumn _constructPrecioFardo() {
+    return GeneratedRealColumn(
+      'precio_fardo',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioRolloMeta =
+      const VerificationMeta('precioRollo');
+  GeneratedRealColumn _precioRollo;
+  @override
+  GeneratedRealColumn get precioRollo =>
+      _precioRollo ??= _constructPrecioRollo();
+  GeneratedRealColumn _constructPrecioRollo() {
+    return GeneratedRealColumn(
+      'precio_rollo',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioGruesaMeta =
+      const VerificationMeta('precioGruesa');
+  GeneratedRealColumn _precioGruesa;
+  @override
+  GeneratedRealColumn get precioGruesa =>
+      _precioGruesa ??= _constructPrecioGruesa();
+  GeneratedRealColumn _constructPrecioGruesa() {
+    return GeneratedRealColumn(
+      'precio_gruesa',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioMillarMeta =
+      const VerificationMeta('precioMillar');
+  GeneratedRealColumn _precioMillar;
+  @override
+  GeneratedRealColumn get precioMillar =>
+      _precioMillar ??= _constructPrecioMillar();
+  GeneratedRealColumn _constructPrecioMillar() {
+    return GeneratedRealColumn(
+      'precio_millar',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _precioBolsaMeta =
+      const VerificationMeta('precioBolsa');
+  GeneratedRealColumn _precioBolsa;
+  @override
+  GeneratedRealColumn get precioBolsa =>
+      _precioBolsa ??= _constructPrecioBolsa();
+  GeneratedRealColumn _constructPrecioBolsa() {
+    return GeneratedRealColumn(
+      'precio_bolsa',
+      $tableName,
+      true,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [
+        idProductoDetalle,
+        productId,
+        colorId,
+        tallaId,
+        precioUnitario,
+        precioDocena,
+        precioMayorista,
+        precioYarda,
+        precioCien,
+        precio500U,
+        precioCaja,
+        precioFardo,
+        precioRollo,
+        precioGruesa,
+        precioMillar,
+        precioBolsa
+      ];
+  @override
+  $ProductoDetallesTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'producto_detalles';
+  @override
+  final String actualTableName = 'producto_detalles';
+  @override
+  VerificationContext validateIntegrity(ProductoDetallesCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.idProductoDetalle.present) {
+      context.handle(
+          _idProductoDetalleMeta,
+          idProductoDetalle.isAcceptableValue(
+              d.idProductoDetalle.value, _idProductoDetalleMeta));
+    }
+    if (d.productId.present) {
+      context.handle(_productIdMeta,
+          productId.isAcceptableValue(d.productId.value, _productIdMeta));
+    }
+    if (d.colorId.present) {
+      context.handle(_colorIdMeta,
+          colorId.isAcceptableValue(d.colorId.value, _colorIdMeta));
+    }
+    if (d.tallaId.present) {
+      context.handle(_tallaIdMeta,
+          tallaId.isAcceptableValue(d.tallaId.value, _tallaIdMeta));
+    }
+    if (d.precioUnitario.present) {
+      context.handle(
+          _precioUnitarioMeta,
+          precioUnitario.isAcceptableValue(
+              d.precioUnitario.value, _precioUnitarioMeta));
+    }
+    if (d.precioDocena.present) {
+      context.handle(
+          _precioDocenaMeta,
+          precioDocena.isAcceptableValue(
+              d.precioDocena.value, _precioDocenaMeta));
+    }
+    if (d.precioMayorista.present) {
+      context.handle(
+          _precioMayoristaMeta,
+          precioMayorista.isAcceptableValue(
+              d.precioMayorista.value, _precioMayoristaMeta));
+    }
+    if (d.precioYarda.present) {
+      context.handle(_precioYardaMeta,
+          precioYarda.isAcceptableValue(d.precioYarda.value, _precioYardaMeta));
+    }
+    if (d.precioCien.present) {
+      context.handle(_precioCienMeta,
+          precioCien.isAcceptableValue(d.precioCien.value, _precioCienMeta));
+    }
+    if (d.precio500U.present) {
+      context.handle(_precio500UMeta,
+          precio500U.isAcceptableValue(d.precio500U.value, _precio500UMeta));
+    }
+    if (d.precioCaja.present) {
+      context.handle(_precioCajaMeta,
+          precioCaja.isAcceptableValue(d.precioCaja.value, _precioCajaMeta));
+    }
+    if (d.precioFardo.present) {
+      context.handle(_precioFardoMeta,
+          precioFardo.isAcceptableValue(d.precioFardo.value, _precioFardoMeta));
+    }
+    if (d.precioRollo.present) {
+      context.handle(_precioRolloMeta,
+          precioRollo.isAcceptableValue(d.precioRollo.value, _precioRolloMeta));
+    }
+    if (d.precioGruesa.present) {
+      context.handle(
+          _precioGruesaMeta,
+          precioGruesa.isAcceptableValue(
+              d.precioGruesa.value, _precioGruesaMeta));
+    }
+    if (d.precioMillar.present) {
+      context.handle(
+          _precioMillarMeta,
+          precioMillar.isAcceptableValue(
+              d.precioMillar.value, _precioMillarMeta));
+    }
+    if (d.precioBolsa.present) {
+      context.handle(_precioBolsaMeta,
+          precioBolsa.isAcceptableValue(d.precioBolsa.value, _precioBolsaMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {idProductoDetalle};
+  @override
+  ProductoDetalle map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return ProductoDetalle.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(ProductoDetallesCompanion d) {
+    final map = <String, Variable>{};
+    if (d.idProductoDetalle.present) {
+      map['id_producto_detalle'] =
+          Variable<int, IntType>(d.idProductoDetalle.value);
+    }
+    if (d.productId.present) {
+      map['product_id'] = Variable<int, IntType>(d.productId.value);
+    }
+    if (d.colorId.present) {
+      map['color_id'] = Variable<int, IntType>(d.colorId.value);
+    }
+    if (d.tallaId.present) {
+      map['talla_id'] = Variable<int, IntType>(d.tallaId.value);
+    }
+    if (d.precioUnitario.present) {
+      map['precio_unitario'] =
+          Variable<double, RealType>(d.precioUnitario.value);
+    }
+    if (d.precioDocena.present) {
+      map['precio_docena'] = Variable<double, RealType>(d.precioDocena.value);
+    }
+    if (d.precioMayorista.present) {
+      map['precio_mayorista'] =
+          Variable<double, RealType>(d.precioMayorista.value);
+    }
+    if (d.precioYarda.present) {
+      map['precio_yarda'] = Variable<double, RealType>(d.precioYarda.value);
+    }
+    if (d.precioCien.present) {
+      map['precio_cien'] = Variable<double, RealType>(d.precioCien.value);
+    }
+    if (d.precio500U.present) {
+      map['precio500_u'] = Variable<double, RealType>(d.precio500U.value);
+    }
+    if (d.precioCaja.present) {
+      map['precio_caja'] = Variable<double, RealType>(d.precioCaja.value);
+    }
+    if (d.precioFardo.present) {
+      map['precio_fardo'] = Variable<double, RealType>(d.precioFardo.value);
+    }
+    if (d.precioRollo.present) {
+      map['precio_rollo'] = Variable<double, RealType>(d.precioRollo.value);
+    }
+    if (d.precioGruesa.present) {
+      map['precio_gruesa'] = Variable<double, RealType>(d.precioGruesa.value);
+    }
+    if (d.precioMillar.present) {
+      map['precio_millar'] = Variable<double, RealType>(d.precioMillar.value);
+    }
+    if (d.precioBolsa.present) {
+      map['precio_bolsa'] = Variable<double, RealType>(d.precioBolsa.value);
+    }
+    return map;
+  }
+
+  @override
+  $ProductoDetallesTable createAlias(String alias) {
+    return $ProductoDetallesTable(_db, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $CategoriesTable _categories;
@@ -1980,6 +2357,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $ProductosWithTallasTable _productosWithTallas;
   $ProductosWithTallasTable get productosWithTallas =>
       _productosWithTallas ??= $ProductosWithTallasTable(this);
+  $ProductoDetallesTable _productoDetalles;
+  $ProductoDetallesTable get productoDetalles =>
+      _productoDetalles ??= $ProductoDetallesTable(this);
   CategoriesDao _categoriesDao;
   CategoriesDao get categoriesDao =>
       _categoriesDao ??= CategoriesDao(this as AppDatabase);
@@ -1999,6 +2379,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ProductosWithTallasDao _productosWithTallasDao;
   ProductosWithTallasDao get productosWithTallasDao =>
       _productosWithTallasDao ??= ProductosWithTallasDao(this as AppDatabase);
+  ProductoDetallesDao _productoDetallesDao;
+  ProductoDetallesDao get productoDetallesDao =>
+      _productoDetallesDao ??= ProductoDetallesDao(this as AppDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
@@ -2009,7 +2392,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         tallas,
         productos,
         productosWithColores,
-        productosWithTallas
+        productosWithTallas,
+        productoDetalles
       ];
 }
 
@@ -2134,6 +2518,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
       db.productosWithColores;
   $ProductosWithTallasTable get productosWithTallas => db.productosWithTallas;
   $TallasTable get tallas => db.tallas;
+  $ProductoDetallesTable get productoDetalles => db.productoDetalles;
   ProductColorsResult _rowToProductColorsResult(QueryRow row) {
     return ProductColorsResult(
       idColor: row.readInt('id_color'),
@@ -2147,7 +2532,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
 
   Selectable<ProductColorsResult> productColorsQuery(int idc) {
     return customSelectQuery(
-        'SELECT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc',
+        'SELECT DISTINCT * FROM colores INNER JOIN productos_with_colores ON productos_with_colores.color = colores.id_color AND productos_with_colores.producto = :idc GROUP BY name',
         variables: [
           Variable.withInt(idc)
         ],
@@ -2177,7 +2562,7 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
 
   Selectable<ProductSizesResult> productSizesQuery(int idc) {
     return customSelectQuery(
-        'SELECT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc',
+        'SELECT DISTINCT * FROM tallas INNER JOIN productos_with_tallas ON productos_with_tallas.talla = tallas.id_talla AND productos_with_tallas.producto = :idc GROUP BY size',
         variables: [Variable.withInt(idc)],
         readsFrom: {tallas, productosWithTallas}).map(_rowToProductSizesResult);
   }
@@ -2195,19 +2580,10 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
       idProducto: row.readInt('id_producto'),
       codigo: row.readString('codigo'),
       descripcion: row.readString('descripcion'),
-      precioUnitario: row.readDouble('precio_unitario'),
-      precioDocena: row.readDouble('precio_docena'),
-      precioMayorista: row.readDouble('precio_mayorista'),
-      precioYarda: row.readDouble('precio_yarda'),
-      precioCien: row.readDouble('precio_cien'),
-      precio500U: row.readDouble('precio500_u'),
-      precioCaja: row.readDouble('precio_caja'),
-      precioFardo: row.readDouble('precio_fardo'),
-      precioRollo: row.readDouble('precio_rollo'),
+      existencia: row.readInt('existencia'),
+      specifications: row.readString('specifications'),
       providerId: row.readInt('provider_id'),
       categoryId: row.readInt('category_id'),
-      specifications: row.readString('specifications'),
-      existencia: row.readInt('existencia'),
     );
   }
 
@@ -2264,6 +2640,48 @@ mixin _$ProductosDaoMixin on DatabaseAccessor<AppDatabase> {
   Stream<List<Proveedore>> watchProductProveedor(int id) {
     return productProveedorQuery(id).watch();
   }
+
+  ProductoDetalle _rowToProductoDetalle(QueryRow row) {
+    return ProductoDetalle(
+      idProductoDetalle: row.readInt('id_producto_detalle'),
+      productId: row.readInt('product_id'),
+      colorId: row.readInt('color_id'),
+      tallaId: row.readInt('talla_id'),
+      precioUnitario: row.readDouble('precio_unitario'),
+      precioDocena: row.readDouble('precio_docena'),
+      precioMayorista: row.readDouble('precio_mayorista'),
+      precioYarda: row.readDouble('precio_yarda'),
+      precioCien: row.readDouble('precio_cien'),
+      precio500U: row.readDouble('precio500_u'),
+      precioCaja: row.readDouble('precio_caja'),
+      precioFardo: row.readDouble('precio_fardo'),
+      precioRollo: row.readDouble('precio_rollo'),
+      precioGruesa: row.readDouble('precio_gruesa'),
+      precioMillar: row.readDouble('precio_millar'),
+      precioBolsa: row.readDouble('precio_bolsa'),
+    );
+  }
+
+  Selectable<ProductoDetalle> productPricesQuery(int idp, int idc, int idt) {
+    return customSelectQuery(
+        'SELECT * FROM producto_detalles WHERE product_id = :idp AND color_id = :idc AND talla_id = :idt',
+        variables: [
+          Variable.withInt(idp),
+          Variable.withInt(idc),
+          Variable.withInt(idt)
+        ],
+        readsFrom: {
+          productoDetalles
+        }).map(_rowToProductoDetalle);
+  }
+
+  Future<List<ProductoDetalle>> productPrices(int idp, int idc, int idt) {
+    return productPricesQuery(idp, idc, idt).get();
+  }
+
+  Stream<List<ProductoDetalle>> watchProductPrices(int idp, int idc, int idt) {
+    return productPricesQuery(idp, idc, idt).watch();
+  }
 }
 
 class ProductColorsResult {
@@ -2298,6 +2716,9 @@ class ProductSizesResult {
   });
 }
 
+mixin _$ProductoDetallesDaoMixin on DatabaseAccessor<AppDatabase> {
+  $ProductoDetallesTable get productoDetalles => db.productoDetalles;
+}
 mixin _$ProductosWithColoresDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProductosWithColoresTable get productosWithColores =>
       db.productosWithColores;

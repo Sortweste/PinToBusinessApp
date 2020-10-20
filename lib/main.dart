@@ -70,7 +70,8 @@ class _MateApp extends StatelessWidget {
          /*'list_products': (BuildContext context) => ListProductsPage()*/
       },
       theme: ThemeData.dark().copyWith(
-        primaryColor: Color.fromRGBO(143,65,61,1)
+        primaryColor: Color.fromRGBO(143,65,61,1),
+        
       ),
     );
   }
