@@ -6,6 +6,7 @@ import 'package:demo/provider/colores_provider.dart';
 import 'package:demo/provider/product_detail_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
 import 'package:demo/provider/products_provider.dart';
+import 'package:demo/provider/proveedor_provider.dart';
 import 'package:demo/provider/tallas_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,10 @@ class MyApp extends StatelessWidget {
          ChangeNotifierProvider<ProductDetail>(
           create: (context) => ProductDetail(),
         ),
+        ChangeNotifierProvider<ProveedorProvider>(
+          create: (context) => ProveedorProvider(db),
+        ),
+
 
       ],
       child: _MateApp(),

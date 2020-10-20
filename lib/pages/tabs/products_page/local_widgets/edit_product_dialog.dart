@@ -58,7 +58,7 @@ class _EditProductState extends State<EditProduct> {
 
      return RaisedButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        color: Theme.of(context).primaryColorLight,
+        color: Colors.blueGrey,
         padding: EdgeInsets.symmetric(vertical: 0),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10),

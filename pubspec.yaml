@@ -33,6 +33,7 @@ dependencies:
   provider:
   flutter_slidable:
   flutter_offline: "^0.3.0"
+  email_validator: '^1.0.0'
   cache_image: "^1.0.5"
   cached_network_image: ^2.3.2+1
   hexcolor: ^1.0.4

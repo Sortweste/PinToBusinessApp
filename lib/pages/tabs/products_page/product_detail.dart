@@ -1,6 +1,7 @@
 
 import 'package:demo/database/dtos/product_with_colors_and_sizes.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/edit_product_dialog.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/edit_provider_dialog.dart';
 import 'package:demo/provider/product_detail_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
 import 'package:demo/provider/products_provider.dart';
@@ -36,11 +37,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   scrollHandler(){
     _scrollController.addListener(() {
-        if (_scrollController.offset >= _scrollController.position.maxScrollExtent*0.9 && !_scrollController.position.outOfRange){
+        if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange){
           Future.delayed(Duration(milliseconds: 375), (){
              Provider.of<ProductDetail>(context, listen: false).setFondo(true);
           });
-        } else if  (_scrollController.offset <= _scrollController.position.minScrollExtent + 50 && !_scrollController.position.outOfRange) {
+        } else if  (_scrollController.offset <= _scrollController.position.minScrollExtent && !_scrollController.position.outOfRange) {
            Future.delayed(Duration(milliseconds: 375), () async {
              Provider.of<ProductDetail>(context, listen: false).setFondo(false);
           });
@@ -238,13 +239,33 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
               width: size.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Theme.of(context).primaryColor
               ),
-              child: Text('Tabla de precios', style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white), textAlign: TextAlign.center,),),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: Text('Tabla de precios', 
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white), textAlign: TextAlign.center,
+                ),
+                  ),
+                 Expanded(
+                   flex: 2,
+                      child: FlatButton(
+                      onPressed: (){},
+                      child: Icon(Icons.edit, color: Colors.white),
+                    ),
+                 ),
+                ],
+              ),
+            ),
             SizedBox(height: 10,),
             if(precios[0].precioUnitario != 0) priceField(context, 'Precio unitario', precios[0].precioUnitario),
             if(precios[0].precioDocena != 0) priceField(context, 'Precio docena', precios[0].precioDocena),
@@ -273,7 +294,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       children: <Widget>[
       Expanded(flex: 4, child: Text(name, style: Theme.of(context).textTheme.subtitle1, textAlign: TextAlign.center,),),
       SizedBox(width: 20,),
-      Expanded(flex: 2, child: Text('\$ ${price.toStringAsFixed(2)}', style: Theme.of(context).textTheme.subtitle1,)),
+      Expanded(flex: 2, child: Text('\$ ${price.toStringAsFixed(2)}', style: Theme.of(context).textTheme.subtitle1, textAlign: TextAlign.start,)),
     ],
   );
 }
@@ -291,12 +312,34 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                borderRadius: BorderRadius.circular(10),
             ),
             width: size.width,
-            padding: EdgeInsets.symmetric(vertical: 5), 
-            margin: EdgeInsets.symmetric(horizontal: 20), child: Text('Proveedor: ${proveedor.name}',style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white, fontSize: 16) ,textAlign: TextAlign.center,),),
+            padding: EdgeInsets.symmetric(vertical: 0), 
+            margin: EdgeInsets.symmetric(horizontal: 20), 
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: Text('Proveedor: ${proveedor.name}',style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.white, fontSize: 16) ,textAlign: TextAlign.center,),),
+                 Expanded(
+                   flex: 3,
+                      child: FlatButton(
+                      onPressed: (){
+                         showDialog(
+                            context: context,
+                            child: EditProvider(proveedor: proveedor,),
+                            barrierDismissible: false,
+                          );
+                      },
+                      child: Icon(Icons.edit, color: Colors.white,),
+                    ),
+                 ),
+              ],
+            ),),
         SizedBox(height: 10,),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 30),child: providerData(context, Icons.phone, proveedor.phone)),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 40),child: providerData(context, Icons.phone, proveedor.phone)),
          SizedBox(height: 10,),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 30),child: providerData(context, Icons.mail, proveedor.email)),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 40),child: providerData(context, Icons.mail, proveedor.email)),
       ],
     );
   }

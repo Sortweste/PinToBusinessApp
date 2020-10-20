@@ -54,7 +54,9 @@ class ProductSearch extends SearchDelegate{
     }
 
    @override
-   ThemeData appBarTheme(BuildContext context) => Theme.of(context);
+   ThemeData appBarTheme(BuildContext context) => ThemeData.dark().copyWith(
+     primaryColor: Theme.of(context).primaryColor
+   );
   
     @override
     Widget buildLeading(BuildContext context) {
