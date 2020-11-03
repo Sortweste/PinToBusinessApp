@@ -32,6 +32,7 @@ dependencies:
   moor_flutter: 
   provider:
   flutter_slidable:
+  url_launcher:
   flutter_offline: "^0.3.0"
   email_validator: '^1.0.0'
   cache_image: "^1.0.5"
@@ -43,6 +44,7 @@ dependencies:
   fluttertoast:
   rxdart:
   moor:
+  modal_bottom_sheet: ^0.2.2
 
 dev_dependencies:
   flutter_test:
@@ -63,9 +65,10 @@ flutter:
   uses-material-design: true
 
   assets:
-  - assets/sounds/speech_to_text_listening.m4r
-  - assets/sounds/speech_to_text_cancel.m4r
-  - assets/sounds/speech_to_text_stop.m4r
+    - assets/sounds/speech_to_text_listening.m4r
+    - assets/sounds/speech_to_text_cancel.m4r
+    - assets/sounds/speech_to_text_stop.m4r
+    - assets/images/profile-background.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

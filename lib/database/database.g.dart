@@ -1161,6 +1161,325 @@ class $ProductosTable extends Productos
   }
 }
 
+class Cliente extends DataClass implements Insertable<Cliente> {
+  final int idCliente;
+  final String nombre;
+  final String apellido;
+  final String telefono;
+  final String email;
+  final bool vigente;
+  Cliente(
+      {@required this.idCliente,
+      @required this.nombre,
+      @required this.apellido,
+      this.telefono,
+      this.email,
+      @required this.vigente});
+  factory Cliente.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    return Cliente(
+      idCliente:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}id_cliente']),
+      nombre:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}nombre']),
+      apellido: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}apellido']),
+      telefono: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}telefono']),
+      email:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}email']),
+      vigente:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}vigente']),
+    );
+  }
+  factory Cliente.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Cliente(
+      idCliente: serializer.fromJson<int>(json['idCliente']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      apellido: serializer.fromJson<String>(json['apellido']),
+      telefono: serializer.fromJson<String>(json['telefono']),
+      email: serializer.fromJson<String>(json['email']),
+      vigente: serializer.fromJson<bool>(json['vigente']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'idCliente': serializer.toJson<int>(idCliente),
+      'nombre': serializer.toJson<String>(nombre),
+      'apellido': serializer.toJson<String>(apellido),
+      'telefono': serializer.toJson<String>(telefono),
+      'email': serializer.toJson<String>(email),
+      'vigente': serializer.toJson<bool>(vigente),
+    };
+  }
+
+  @override
+  ClientesCompanion createCompanion(bool nullToAbsent) {
+    return ClientesCompanion(
+      idCliente: idCliente == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idCliente),
+      nombre:
+          nombre == null && nullToAbsent ? const Value.absent() : Value(nombre),
+      apellido: apellido == null && nullToAbsent
+          ? const Value.absent()
+          : Value(apellido),
+      telefono: telefono == null && nullToAbsent
+          ? const Value.absent()
+          : Value(telefono),
+      email:
+          email == null && nullToAbsent ? const Value.absent() : Value(email),
+      vigente: vigente == null && nullToAbsent
+          ? const Value.absent()
+          : Value(vigente),
+    );
+  }
+
+  Cliente copyWith(
+          {int idCliente,
+          String nombre,
+          String apellido,
+          String telefono,
+          String email,
+          bool vigente}) =>
+      Cliente(
+        idCliente: idCliente ?? this.idCliente,
+        nombre: nombre ?? this.nombre,
+        apellido: apellido ?? this.apellido,
+        telefono: telefono ?? this.telefono,
+        email: email ?? this.email,
+        vigente: vigente ?? this.vigente,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Cliente(')
+          ..write('idCliente: $idCliente, ')
+          ..write('nombre: $nombre, ')
+          ..write('apellido: $apellido, ')
+          ..write('telefono: $telefono, ')
+          ..write('email: $email, ')
+          ..write('vigente: $vigente')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      idCliente.hashCode,
+      $mrjc(
+          nombre.hashCode,
+          $mrjc(
+              apellido.hashCode,
+              $mrjc(telefono.hashCode,
+                  $mrjc(email.hashCode, vigente.hashCode))))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Cliente &&
+          other.idCliente == this.idCliente &&
+          other.nombre == this.nombre &&
+          other.apellido == this.apellido &&
+          other.telefono == this.telefono &&
+          other.email == this.email &&
+          other.vigente == this.vigente);
+}
+
+class ClientesCompanion extends UpdateCompanion<Cliente> {
+  final Value<int> idCliente;
+  final Value<String> nombre;
+  final Value<String> apellido;
+  final Value<String> telefono;
+  final Value<String> email;
+  final Value<bool> vigente;
+  const ClientesCompanion({
+    this.idCliente = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.apellido = const Value.absent(),
+    this.telefono = const Value.absent(),
+    this.email = const Value.absent(),
+    this.vigente = const Value.absent(),
+  });
+  ClientesCompanion.insert({
+    this.idCliente = const Value.absent(),
+    @required String nombre,
+    @required String apellido,
+    this.telefono = const Value.absent(),
+    this.email = const Value.absent(),
+    this.vigente = const Value.absent(),
+  })  : nombre = Value(nombre),
+        apellido = Value(apellido);
+  ClientesCompanion copyWith(
+      {Value<int> idCliente,
+      Value<String> nombre,
+      Value<String> apellido,
+      Value<String> telefono,
+      Value<String> email,
+      Value<bool> vigente}) {
+    return ClientesCompanion(
+      idCliente: idCliente ?? this.idCliente,
+      nombre: nombre ?? this.nombre,
+      apellido: apellido ?? this.apellido,
+      telefono: telefono ?? this.telefono,
+      email: email ?? this.email,
+      vigente: vigente ?? this.vigente,
+    );
+  }
+}
+
+class $ClientesTable extends Clientes with TableInfo<$ClientesTable, Cliente> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $ClientesTable(this._db, [this._alias]);
+  final VerificationMeta _idClienteMeta = const VerificationMeta('idCliente');
+  GeneratedIntColumn _idCliente;
+  @override
+  GeneratedIntColumn get idCliente => _idCliente ??= _constructIdCliente();
+  GeneratedIntColumn _constructIdCliente() {
+    return GeneratedIntColumn('id_cliente', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  GeneratedTextColumn _nombre;
+  @override
+  GeneratedTextColumn get nombre => _nombre ??= _constructNombre();
+  GeneratedTextColumn _constructNombre() {
+    return GeneratedTextColumn('nombre', $tableName, false,
+        minTextLength: 1, maxTextLength: 100);
+  }
+
+  final VerificationMeta _apellidoMeta = const VerificationMeta('apellido');
+  GeneratedTextColumn _apellido;
+  @override
+  GeneratedTextColumn get apellido => _apellido ??= _constructApellido();
+  GeneratedTextColumn _constructApellido() {
+    return GeneratedTextColumn('apellido', $tableName, false,
+        minTextLength: 1, maxTextLength: 100);
+  }
+
+  final VerificationMeta _telefonoMeta = const VerificationMeta('telefono');
+  GeneratedTextColumn _telefono;
+  @override
+  GeneratedTextColumn get telefono => _telefono ??= _constructTelefono();
+  GeneratedTextColumn _constructTelefono() {
+    return GeneratedTextColumn(
+      'telefono',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _emailMeta = const VerificationMeta('email');
+  GeneratedTextColumn _email;
+  @override
+  GeneratedTextColumn get email => _email ??= _constructEmail();
+  GeneratedTextColumn _constructEmail() {
+    return GeneratedTextColumn(
+      'email',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _vigenteMeta = const VerificationMeta('vigente');
+  GeneratedBoolColumn _vigente;
+  @override
+  GeneratedBoolColumn get vigente => _vigente ??= _constructVigente();
+  GeneratedBoolColumn _constructVigente() {
+    return GeneratedBoolColumn('vigente', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns =>
+      [idCliente, nombre, apellido, telefono, email, vigente];
+  @override
+  $ClientesTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'clientes';
+  @override
+  final String actualTableName = 'clientes';
+  @override
+  VerificationContext validateIntegrity(ClientesCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.idCliente.present) {
+      context.handle(_idClienteMeta,
+          idCliente.isAcceptableValue(d.idCliente.value, _idClienteMeta));
+    }
+    if (d.nombre.present) {
+      context.handle(
+          _nombreMeta, nombre.isAcceptableValue(d.nombre.value, _nombreMeta));
+    } else if (isInserting) {
+      context.missing(_nombreMeta);
+    }
+    if (d.apellido.present) {
+      context.handle(_apellidoMeta,
+          apellido.isAcceptableValue(d.apellido.value, _apellidoMeta));
+    } else if (isInserting) {
+      context.missing(_apellidoMeta);
+    }
+    if (d.telefono.present) {
+      context.handle(_telefonoMeta,
+          telefono.isAcceptableValue(d.telefono.value, _telefonoMeta));
+    }
+    if (d.email.present) {
+      context.handle(
+          _emailMeta, email.isAcceptableValue(d.email.value, _emailMeta));
+    }
+    if (d.vigente.present) {
+      context.handle(_vigenteMeta,
+          vigente.isAcceptableValue(d.vigente.value, _vigenteMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {idCliente};
+  @override
+  Cliente map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Cliente.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(ClientesCompanion d) {
+    final map = <String, Variable>{};
+    if (d.idCliente.present) {
+      map['id_cliente'] = Variable<int, IntType>(d.idCliente.value);
+    }
+    if (d.nombre.present) {
+      map['nombre'] = Variable<String, StringType>(d.nombre.value);
+    }
+    if (d.apellido.present) {
+      map['apellido'] = Variable<String, StringType>(d.apellido.value);
+    }
+    if (d.telefono.present) {
+      map['telefono'] = Variable<String, StringType>(d.telefono.value);
+    }
+    if (d.email.present) {
+      map['email'] = Variable<String, StringType>(d.email.value);
+    }
+    if (d.vigente.present) {
+      map['vigente'] = Variable<bool, BoolType>(d.vigente.value);
+    }
+    return map;
+  }
+
+  @override
+  $ClientesTable createAlias(String alias) {
+    return $ClientesTable(_db, alias);
+  }
+}
+
 class ProductosWithColore extends DataClass
     implements Insertable<ProductosWithColore> {
   final int idProductoWithColor;
@@ -2351,6 +2670,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $TallasTable get tallas => _tallas ??= $TallasTable(this);
   $ProductosTable _productos;
   $ProductosTable get productos => _productos ??= $ProductosTable(this);
+  $ClientesTable _clientes;
+  $ClientesTable get clientes => _clientes ??= $ClientesTable(this);
   $ProductosWithColoresTable _productosWithColores;
   $ProductosWithColoresTable get productosWithColores =>
       _productosWithColores ??= $ProductosWithColoresTable(this);
@@ -2373,6 +2694,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ProductosDao _productosDao;
   ProductosDao get productosDao =>
       _productosDao ??= ProductosDao(this as AppDatabase);
+  ClientesDao _clientesDao;
+  ClientesDao get clientesDao =>
+      _clientesDao ??= ClientesDao(this as AppDatabase);
   ProductosWithColoresDao _productosWithColoresDao;
   ProductosWithColoresDao get productosWithColoresDao =>
       _productosWithColoresDao ??= ProductosWithColoresDao(this as AppDatabase);
@@ -2391,6 +2715,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         proveedores,
         tallas,
         productos,
+        clientes,
         productosWithColores,
         productosWithTallas,
         productoDetalles
@@ -2716,6 +3041,34 @@ class ProductSizesResult {
   });
 }
 
+mixin _$ClientesDaoMixin on DatabaseAccessor<AppDatabase> {
+  $ClientesTable get clientes => db.clientes;
+  Cliente _rowToCliente(QueryRow row) {
+    return Cliente(
+      idCliente: row.readInt('id_cliente'),
+      nombre: row.readString('nombre'),
+      apellido: row.readString('apellido'),
+      telefono: row.readString('telefono'),
+      email: row.readString('email'),
+      vigente: row.readBool('vigente'),
+    );
+  }
+
+  Selectable<Cliente> findClienteQuery(int idc) {
+    return customSelectQuery(
+        'SELECT * FROM clientes WHERE clientes.id_cliente = :idc',
+        variables: [Variable.withInt(idc)],
+        readsFrom: {clientes}).map(_rowToCliente);
+  }
+
+  Future<List<Cliente>> findCliente(int idc) {
+    return findClienteQuery(idc).get();
+  }
+
+  Stream<List<Cliente>> watchFindCliente(int idc) {
+    return findClienteQuery(idc).watch();
+  }
+}
 mixin _$ProductoDetallesDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProductoDetallesTable get productoDetalles => db.productoDetalles;
 }

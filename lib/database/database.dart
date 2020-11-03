@@ -45,6 +45,15 @@ class Productos extends Table {
   IntColumn get categoryId => integer().nullable().customConstraint('NULL REFERENCES categories(id_category)')();
 }
 
+class Clientes extends Table {
+  IntColumn get idCliente => integer().autoIncrement()();
+  TextColumn get nombre => text().withLength(min: 1, max: 100)();
+  TextColumn get apellido => text().withLength(min: 1, max: 100)();
+  TextColumn get telefono => text().nullable()();
+  TextColumn get email => text().nullable()();
+  BoolColumn get vigente => boolean().withDefault(Constant(false))();
+}
+
 class ProductoDetalles extends Table{
   IntColumn get idProductoDetalle => integer().autoIncrement()();
   IntColumn get productId => integer().nullable().customConstraint('NULL REFERENCES productos(id_producto)')();
@@ -77,9 +86,9 @@ class ProductosWithTallas extends Table{
   IntColumn get talla => integer().customConstraint('NULL REFERENCES tallas(id_talla)')();
 }
 
-@UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, ProductosWithColores, ProductosWithTallas, ProductoDetalles], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ProductosWithColoresDao, ProductosWithTallasDao, ProductoDetallesDao])
+@UseMoor(tables: [Categories, Colores, Proveedores, Tallas, Productos, Clientes, ProductosWithColores, ProductosWithTallas, ProductoDetalles], daos: [CategoriesDao, ColoresDao, TallasDao, ProveedoresDao, ProductosDao, ClientesDao, ProductosWithColoresDao, ProductosWithTallasDao, ProductoDetallesDao])
 class AppDatabase extends _$AppDatabase {
-    AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite', logStatements: false));
+    AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db3.sqlite', logStatements: false));
 
     @override
     int get schemaVersion => 1;
@@ -221,6 +230,23 @@ class ProductosDao extends DatabaseAccessor<AppDatabase> with _$ProductosDaoMixi
       );
 
   }
+}
+
+@UseDao(tables: [Clientes], 
+queries: {
+   'findCliente': 'SELECT * FROM clientes WHERE clientes.id_cliente = :idc',
+})
+class ClientesDao extends DatabaseAccessor<AppDatabase> with _$ClientesDaoMixin {
+  final AppDatabase db;
+
+  ClientesDao(this.db) : super(db);
+
+  Future<List<Cliente>> getAllClientes() => select(clientes).get();
+  Stream<List<Cliente>> watchAllClientes() => select(clientes).watch();
+  Future insertCliente(Insertable<Cliente> cliente) => into(clientes).insert(cliente, orReplace: true);
+  Future updateCliente(Insertable<Cliente> cliente) => update(clientes).replace(cliente);
+  Future deleteCliente(Insertable<Cliente> cliente) => delete(clientes).delete(cliente);
+  Future truncateClientes() => delete(clientes).go();
 }
  
 @UseDao(tables: [ProductoDetalles])

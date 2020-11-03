@@ -40,6 +40,29 @@ class ProveedorProvider with ChangeNotifier{
     }
   }
 
+   Future<bool> getAllProveedores() async {
+    final _url = Uri.https(_urlBase, 'api/v1/providers.json');
+    try {
+      final res = await http.get(_url);
+      if(res.statusCode == 200){
+       final List decodedData = json.decode(res.body);
+        decodedData.forEach((element) async{
+           await _db.proveedoresDao.insertProveedor(
+         ProveedoresCompanion(
+           idProveedor: moor.Value(element['id']),
+           name: moor.Value(element['name']),
+           phone: moor.Value(element['phone']),
+           email: moor.Value(element['email'])
+         )
+       );
+         });
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 
 
 }

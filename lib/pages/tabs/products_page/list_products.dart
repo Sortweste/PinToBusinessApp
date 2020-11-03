@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:demo/database/database.dart';
+import 'package:demo/pages/tabs/products_page/add_product.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/search_product_delegate.dart';
 import 'package:demo/provider/products_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/widgets/internet_status_widget.dart';
 import 'package:demo/widgets/error_widget.dart';
@@ -90,6 +92,12 @@ class _ListProductsPageState extends State<ListProductsPage>{
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddProduct(categoryId: widget.category.idCategory,),));
+         },
+        child: Icon(CupertinoIcons.add, size: 24,),
       ),
     );
   }

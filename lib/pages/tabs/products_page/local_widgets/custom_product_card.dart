@@ -38,7 +38,7 @@ class CustomProductCard extends StatelessWidget {
         onTap: (){
          // final f = Provider.of<ProductDetail>(context, listen: false);
          // f.reset();
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductDetailPage(id: product.idProducto,),));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductDetailPage(id: product.idProducto, producto: product, categoryId: product.categoryId,),));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -2,6 +2,7 @@ import 'package:demo/database/database.dart';
 import 'package:demo/pages/bottom_nav_menu_page.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
+import 'package:demo/provider/clientes_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
 import 'package:demo/provider/product_detail_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
@@ -26,8 +27,11 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<CategoriesDao>(create: (_) => db.categoriesDao,),
         Provider<ProductosDao>(create: (_) => db.productosDao,),
+        Provider<ProveedoresDao>(create: (_) => db.proveedoresDao,),
         Provider<TallasDao>(create: (_) => db.tallasDao,),
         Provider<ColoresDao>(create: (_) => db.coloresDao,),
+        Provider<ClientesDao>(create: (_) => db.clientesDao,),
+        Provider<ClientesProvider>(create: (_) => ClientesProvider(db),),
         ChangeNotifierProvider(create: (_) => TabsNavigationProvider(),),
         ChangeNotifierProvider<CategoriesProvider>(
           create: (context) => CategoriesProvider(db.categoriesDao),

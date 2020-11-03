@@ -1,23 +1,28 @@
 
 import 'package:demo/database/dtos/product_with_colors_and_sizes.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/delete_product_dialog.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/edit_product_dialog.dart';
+import 'package:demo/pages/tabs/products_page/local_widgets/edit_product_prices_dialog.dart';
 import 'package:demo/pages/tabs/products_page/local_widgets/edit_provider_dialog.dart';
 import 'package:demo/provider/product_detail_provider.dart';
 import 'package:demo/provider/products_manager_provider.dart';
-import 'package:demo/provider/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cache_image/cache_image.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:demo/database/database.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class ProductDetailPage extends StatefulWidget { 
 
   final int id;
+  final int categoryId;
+  final Producto producto;
   
-  const ProductDetailPage({this.id});
+  const ProductDetailPage({this.id, this.producto, this.categoryId});
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
@@ -85,6 +90,45 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           iconTheme: IconThemeData(color: Colors.white),
           elevation: 0.0,
           brightness: Brightness.dark,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings, color: Colors.white,),
+              onPressed: () {
+                showMaterialModalBottomSheet(
+                context: context,
+                isDismissible: true,
+                builder: (context, scrollController) => Container(
+                  child: Wrap(
+                  children: [
+                  ListTile(leading: Icon(Icons.edit), title: Text('Editar Producto'),
+                      onTap: (){
+                        Navigator.of(context).pop();
+                          showDialog(
+                            context: context,
+                            child: EditProduct(id: widget.id,),
+                            barrierDismissible: false,
+                          );
+                      },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.delete),
+                    title: Text('Eliminar Producto'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      showDialog(
+                        context: context,
+                        builder: (context) => DeleteProduct(producto:  widget.producto,),
+                      );
+                    },
+                  ),
+
+                    ],
+                  ),
+                ),
+              );
+             },
+            ),
+          ],
         ),
         body: StreamBuilder<List<ProductWithColorsAndSizes>>(
           stream: productsDao.watchProductoWithColorsAndSizes(widget.id),
@@ -115,17 +159,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               body:  _buildDetails(context, snapshot.data[0], productsDao),
             );
           }
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            showDialog(
-              context: context,
-              child: EditProduct(id: widget.id,),
-              barrierDismissible: false,
-            );
-          },
-          tooltip: "Edita la información de este producto",
-          child: Icon(Icons.edit)
         ),
       );
   }
@@ -259,7 +292,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                  Expanded(
                    flex: 2,
                       child: FlatButton(
-                      onPressed: (){},
+                      onPressed: (){
+                         showDialog(
+                            context: context,
+                            child: EditPrices(productoDetalle: precios[0], categoryId: widget.categoryId,),
+                            barrierDismissible: true,
+                          );
+                      },
                       child: Icon(Icons.edit, color: Colors.white),
                     ),
                  ),
@@ -267,18 +306,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
             SizedBox(height: 10,),
-            if(precios[0].precioUnitario != 0) priceField(context, 'Precio unitario', precios[0].precioUnitario),
-            if(precios[0].precioDocena != 0) priceField(context, 'Precio docena', precios[0].precioDocena),
-           if(precios[0].precioMayorista != 0) priceField(context, 'Precio mayorista', precios[0].precioMayorista),
-           if(precios[0].precioYarda != 0) priceField(context, 'Precio yarda', precios[0].precioYarda),
-           if(precios[0].precioCien != 0) priceField(context, 'Precio 100', precios[0].precioCien),
-           if(precios[0].precio500U != 0) priceField(context, 'Precio 500', precios[0].precio500U),
-           if(precios[0].precioCaja != 0) priceField(context, 'Precio caja', precios[0].precioCaja),
-           if(precios[0].precioFardo != 0) priceField(context, 'Precio fardo', precios[0].precioFardo),
-           if(precios[0].precioRollo != 0) priceField(context, 'Precio rollo', precios[0].precioRollo),
-           if(precios[0].precioGruesa != 0) priceField(context, 'Precio gruesa', precios[0].precioGruesa),
-           if(precios[0].precioMillar != 0) priceField(context, 'Precio millar', precios[0].precioMillar),
-           if(precios[0].precioBolsa != 0) priceField(context, 'Precio bolsa', precios[0].precioBolsa),
+            if(widget.categoryId == 1 || widget.categoryId == 4 || widget.categoryId == 5 || widget.categoryId == 6) priceField(context, 'Precio unitario', precios[0].precioUnitario),
+            if(widget.categoryId == 3) priceField(context, 'Precio yarda', precios[0].precioYarda),
+            if((widget.categoryId == 2 || widget.categoryId == 4 ||  widget.categoryId == 5) && precios[0].precioDocena != 0) priceField(context, 'Precio docena', precios[0].precioDocena),
+           if(widget.categoryId == 2 && precios[0].precioCien != 0) priceField(context, 'Precio 100', precios[0].precioCien),
+           if(widget.categoryId == 2 && precios[0].precio500U != 0) priceField(context, 'Precio 500', precios[0].precio500U),
+           if(widget.categoryId == 2 && precios[0].precioCaja != 0) priceField(context, 'Precio caja', precios[0].precioCaja),
+           if(widget.categoryId == 2 && precios[0].precioFardo != 0) priceField(context, 'Precio fardo', precios[0].precioFardo),
+           if(widget.categoryId == 3) priceField(context, 'Precio rollo', precios[0].precioRollo),
+           if(widget.categoryId == 2 && precios[0].precioGruesa != 0) priceField(context, 'Precio gruesa', precios[0].precioGruesa),
+           if(widget.categoryId == 2 && precios[0].precioMillar != 0) priceField(context, 'Precio millar', precios[0].precioMillar),
+           if(widget.categoryId == 2 && precios[0].precioBolsa != 0) priceField(context, 'Precio bolsa', precios[0].precioBolsa),
+            if(precios[0].precioMayorista != 0) priceField(context, 'Precio mayorista', precios[0].precioMayorista),
            
           ],
         ),
@@ -337,9 +376,25 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ],
             ),),
         SizedBox(height: 10,),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 40),child: providerData(context, Icons.phone, proveedor.phone)),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 40),child: InkWell(
+          onTap: () async {
+            var url = 'tel:+503 ${proveedor.phone.toString()}';
+            if (await canLaunch(url)) {
+              await launch(url);
+            }
+          },
+          child: providerData(context, Icons.phone, proveedor.phone))),
          SizedBox(height: 10,),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 40),child: providerData(context, Icons.mail, proveedor.email)),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 40),child: InkWell(
+          onTap: () async {
+            var url = 'mailto: ${proveedor.email}';
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+          child: providerData(context, Icons.mail, proveedor.email))),
       ],
     );
   }

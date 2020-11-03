@@ -181,7 +181,7 @@ class ProductSearch extends SearchDelegate{
                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProductDetailPage(id: e.idProducto,),));
              },
           leading: Icon(Icons.search),
-          title: Text((e.descripcion == "No disponible") ? e.codigo : e.descripcion),
+          title: Text((e.descripcion == "No disponible") ? e.codigo : e.descripcion+' (${e.codigo})'),
         )
         ).toList(),
     );
@@ -200,7 +200,7 @@ class ProductSearch extends SearchDelegate{
             children: [
             Icon(Icons.youtube_searched_for, size: 64,),
             SizedBox(height: 20,),
-            Text('No se encontró ninguna producto que corresponda con \'$query\'', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline6,),
+            Text('No se encontró ningún producto que corresponda con \'$query\'', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headline6,),
          ],
         ),
           ),
