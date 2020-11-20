@@ -7,15 +7,24 @@ class SalesPage extends StatefulWidget {
   _SalesPageState createState() => _SalesPageState();
 }
 
-class _SalesPageState extends State<SalesPage> with AutomaticKeepAliveClientMixin {
-
+class _SalesPageState extends State<SalesPage>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Ventas'),
+      ),
       body: Center(
-         child: Text('Page'),
+        child: Text('Page'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () { 
+          Navigator.of(context).pushNamed('addSales');
+         },
+        heroTag: 'Ventas_fab',
+        child: Icon(Icons.add),
       ),
     );
   }

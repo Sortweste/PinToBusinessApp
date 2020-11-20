@@ -40,9 +40,10 @@ dependencies:
   hexcolor: ^1.0.4
   connectivity:
   speech_to_text:
+  rxdart:
   avatar_glow:
   fluttertoast:
-  rxdart:
+  shared_preferences:
   moor:
   modal_bottom_sheet: ^0.2.2
 

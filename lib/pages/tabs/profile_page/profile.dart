@@ -1,3 +1,4 @@
+import 'package:demo/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -13,7 +14,15 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: Colors.blue,
+      appBar: AppBar(title: Text('Perfil'),
+        actions: [
+          IconButton(icon: Icon(Icons.settings_power),
+          onPressed: (){
+            logout(context);
+          },
+          ),
+        ],
+      ),
       body: Center(
         child: Text('Page'),
       ),

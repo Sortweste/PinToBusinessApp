@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:demo/database/database.dart';
 import 'package:demo/database/dtos/producto_detalle_dto.dart' as dtos;
+import 'package:demo/models/productos_categoria_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -23,6 +24,24 @@ class ProductsProvider with ChangeNotifier {
   }*/
 
  // Future<List<Categorie>> get categories => this._categoriesFuture;
+
+  Future<List<ProductosCategoria>> getSalesProducts() async {
+     final _url = Uri.https(_urlBase, 'api/v1/categories/2/products/all');
+    List<ProductosCategoria> _productos = new List();
+    try {
+      final res = await http.get(_url);
+      print(res.statusCode);
+      if(res.statusCode == 200){
+       _productos = new List();
+       //final decodedData = json.decode(res.body);
+       _productos = productosCategoriaFromJson(res.body);
+       print(res.body);
+    }
+    return _productos;
+    } catch (e) {
+      return _productos;
+    }
+  }
 
   Future getProductos(int idCategoria) async {
     final _url = Uri.https(_urlBase, 'api/v1/categories/$idCategoria/products.json');
