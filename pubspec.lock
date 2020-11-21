@@ -268,7 +268,7 @@ packages:
     source: hosted
     version: "7.3.0"
   firebase_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
@@ -282,7 +282,7 @@ packages:
     source: hosted
     version: "1.0.4"
   firebase_core_web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
@@ -520,6 +520,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
+  open_file:
+    dependency: "direct main"
+    description:
+      name: open_file
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.3"
   package_config:
     dependency: transitive
     description:
@@ -535,7 +542,7 @@ packages:
     source: hosted
     version: "1.7.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
@@ -777,6 +784,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "18.3.50"
+  syncfusion_flutter_pdf:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_pdf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "18.3.50-beta"
   synchronized:
     dependency: transitive
     description:

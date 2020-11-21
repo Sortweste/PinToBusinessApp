@@ -42,7 +42,7 @@ class ProductosCategoria {
   List<ProductoSize> productoSizes;
   List<ProductDetail> productDetails;
   double precioSeleccionado;
-  double cantidad;
+  int cantidad;
   int colorId;
   int tallaId;
 

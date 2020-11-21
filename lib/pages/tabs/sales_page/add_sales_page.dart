@@ -1,83 +1,82 @@
 import 'package:demo/database/database.dart';
 import 'package:demo/models/productos_categoria_model.dart' as pcat;
 import 'package:demo/pages/tabs/sales_page/add_product_to_cart_dialog.dart';
+import 'package:demo/provider/cart_provider.dart';
 import 'package:demo/provider/products_provider.dart';
 import 'package:demo/provider/sales_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddSalesPage extends StatefulWidget {
-  AddSalesPage({Key key}) : super(key: key);
-
   @override
   _AddSalesPageState createState() => _AddSalesPageState();
 }
 
 class _AddSalesPageState extends State<AddSalesPage> {
-  SalesProvider salesProvider;
-  Duration _transition = Duration(milliseconds: 250);
+  final Duration _transition = Duration(milliseconds: 250);
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  SalesProvider salesProvider;
 
   @override
   Widget build(BuildContext context) {
+    // super.build(context);
+    final c = Provider.of<CarritoProvider>(context, listen: false);
     final size = MediaQuery.of(context).size.height;
     salesProvider = Provider.of<SalesProvider>(context);
-    return SafeArea(
-      child: AnimatedBuilder(
-        animation: salesProvider,
-        builder: (context, child) => Scaffold(
-          appBar: AppBar(
-            title: Text('Agregar Venta'),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () => {},
-              ),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Agregar Venta'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () => {},
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    AnimatedPositioned(
-                      duration: _transition,
-                      left: 0,
-                      right: 0,
-                      top: getTopCategoriesPanel(
-                          salesProvider.cartState, MediaQuery.of(context).size),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20)),
-                        height: size - 150,
-                        child: Column(
-                          children: [
-                            _buildProducts(context),
-                          ],
-                        ),
-                      ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                AnimatedPositioned(
+                  //key: widget.key,
+                  duration: _transition,
+                  left: 0,
+                  right: 0,
+                  top: getTopCategoriesPanel(
+                      salesProvider.cartState, MediaQuery.of(context).size),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                    height: size - 150,
+                    child: Column(
+                      children: [
+                        _buildProducts(context),
+                      ],
                     ),
-                    AnimatedPositioned(
-                      duration: _transition,
-                      left: 0,
-                      right: 0,
-                      top: getTopCartPanel(
-                          salesProvider.cartState, MediaQuery.of(context).size),
-                      child: Container(
-                        height: size,
-                        padding: EdgeInsets.only(bottom: 75),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            GestureDetector(
+                  ),
+                ),
+                AnimatedPositioned(
+                  duration: _transition,
+                  left: 0,
+                  right: 0,
+                  top: getTopCartPanel(
+                      salesProvider.cartState, MediaQuery.of(context).size),
+                  child: Container(
+                    height: size,
+                    padding: EdgeInsets.only(bottom: 75),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).backgroundColor,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Consumer<SalesProvider>(
+                          builder: (context, value, child) => AnimatedBuilder(
+                            animation: value,
+                            builder: (context, child) => GestureDetector(
                               onVerticalDragUpdate: _update,
+                              onTap: _actualizar,
                               child: Container(
                                 color: Theme.of(context).primaryColor,
                                 height: 50,
@@ -113,40 +112,46 @@ class _AddSalesPageState extends State<AddSalesPage> {
                                 ),
                               ),
                             ),
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: RaisedButton(
-                                    onPressed: () {},
-                                    child: Text('Eliminar todo'),
-                                    color: Colors.red,
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 5,
-                                  child: RaisedButton(
-                                    onPressed: () {},
-                                    color: Colors.blueGrey,
-                                    child: Text('Procesar venta'),
-                                  ),
-                                ),
-                              ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: RaisedButton(
+                                onPressed: () {
+                                  salesProvider.clearCart();
+                                },
+                                child: Text('Eliminar todo'),
+                                color: Colors.red,
+                              ),
                             ),
-                          _buildShoppingCart(context),
+                            Expanded(
+                              flex: 5,
+                              child: RaisedButton(
+                                onPressed: () {},
+                                color: Colors.blueGrey,
+                                child: Text('Procesar venta'),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
+                        _buildShoppingCart(context),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
+  }
+
+  void _actualizar() {
+    setState(() {});
   }
 
   void _update(DragUpdateDetails details) {
@@ -194,7 +199,8 @@ class _AddSalesPageState extends State<AddSalesPage> {
                     showDialog(
                       context: context,
                       barrierDismissible: true,
-                      builder: (context) => AddProductToCart(producto: snapshot.data[index]),
+                      builder: (context) =>
+                          AddProductToCart(producto: snapshot.data[index]),
                     );
                   },
                 );
@@ -210,20 +216,20 @@ class _AddSalesPageState extends State<AddSalesPage> {
     );
   }
 
-  Widget _buildShoppingCart(BuildContext context){
+  Widget _buildShoppingCart(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-        itemCount: 4,
+        itemCount: salesProvider.carrito.length,
         itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          title: Text('fdsas'),
-        );
-       },
+          return ListTile(
+            title: Text('${salesProvider.carrito[index].descripcion}'),
+            subtitle:
+                Text('Cantidad: ${salesProvider.carrito[index].cantidad}'),
+            trailing:
+                Text('\$${salesProvider.carrito[index].precioSeleccionado.toStringAsFixed(2)}'),
+          );
+        },
       ),
     );
   }
-
-
-
-
 }

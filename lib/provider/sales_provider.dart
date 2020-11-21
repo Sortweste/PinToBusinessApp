@@ -1,5 +1,4 @@
 import 'package:demo/models/productos_categoria_model.dart';
-import 'package:demo/pages/tabs/products_page/local_widgets/search_categories_delegate.dart';
 import 'package:flutter/material.dart';
 
 enum CartState {
@@ -7,34 +6,44 @@ enum CartState {
   cart,
 }
 
-class SalesProvider with ChangeNotifier {
+  int item = 0;
 
-  CartState cartState  = CartState.normal;
+
+class SalesProvider with ChangeNotifier {
+  CartState cartState = CartState.normal;
   List<ProductosCategoria> _carrito = new List();
 
-  addToCart(ProductosCategoria pc){
+  int get items => item;
+
+  void addToCart(ProductosCategoria pc) {
     this._carrito.add(pc);
+    item = this.carrito.length;
     notifyListeners();
   }
 
   List<ProductosCategoria> get carrito => this._carrito;
 
-  getTotalAmount(){
+  void clearCart(){
+    this._carrito = new List();
+    notifyListeners();
+  }
+
+
+  getTotalAmount() {
     double total = 0;
     this._carrito.forEach((element) {
       total += (element.cantidad * element.precioSeleccionado);
-     });
-     return total.toStringAsFixed(2);
+    });
+    return total.toStringAsFixed(2);
   }
 
-  void changeToNormal(){
+  void changeToNormal() {
     cartState = CartState.normal;
     notifyListeners();
   }
 
-  void changeToCart(){
+  void changeToCart() {
     cartState = CartState.cart;
     notifyListeners();
   }
-
 }

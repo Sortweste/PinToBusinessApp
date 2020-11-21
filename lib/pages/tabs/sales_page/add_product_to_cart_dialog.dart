@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:demo/database/database.dart';
 import 'package:demo/models/productos_categoria_model.dart' as PC;
+import 'package:demo/provider/cart_provider.dart';
 import 'package:demo/provider/products_provider.dart';
+import 'package:demo/provider/sales_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +27,14 @@ class _AddProductToCartState extends State<AddProductToCart> {
   List<int> colores_ids;
   String colorSeleccionado, tallaSeleccionada;
   double precioSeleccionado;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.producto.cantidad == null) {
+      widget.producto.cantidad = 1;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,15 +174,16 @@ class _AddProductToCartState extends State<AddProductToCart> {
     final List datos = new List();
     final precios = ps[0].toJson();
     precios.keys.forEach((element) {
-       if (double.parse(precios[element].toString()) > 0) {
-      datos.add([element, precios[element]]);
-       }
+      if (double.parse(precios[element].toString()) > 0) {
+        datos.add([element, precios[element]]);
+      }
     });
     print(datos);
 
-    datos.sublist(3).forEach((prov) {
+    datos.sublist(4).forEach((prov) {
       lista.add(DropdownMenuItem(
-        child: Text('${prov[0]} \$${double.parse(prov[1].toString()).toStringAsFixed(2)}'),
+        child: Text(
+            '${prov[0]} \$${double.parse(prov[1].toString()).toStringAsFixed(2)}'),
         value: double.parse(prov[1].toString()),
       ));
     });
@@ -210,7 +221,7 @@ class _AddProductToCartState extends State<AddProductToCart> {
       child: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          // _existenciaTextField(widget.producto.cantidad.toString(), focus),
+          _existenciaTextField(widget.producto.cantidad.toString(), focus),
           SizedBox(
             height: 10,
           ),
@@ -280,18 +291,19 @@ class _AddProductToCartState extends State<AddProductToCart> {
   }
 
   _submit(BuildContext context) async {
-    final productosProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
+    final carrito = Provider.of<SalesProvider>(context, listen: false);
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
-
-      /* if(ans){
-      Fluttertoast.showToast(msg: 'Producto creado exitosamente', toastLength: Toast.LENGTH_LONG);
-    }else{
-      Fluttertoast.showToast(msg: 'Ocurrió un problema, inténtalo más tarde', toastLength: Toast.LENGTH_LONG);
-    }
-    Navigator.of(context).pop();*/
-
+      widget.producto.colorId = int.parse(colorSeleccionado);
+      widget.producto.precioSeleccionado = double.parse(precioSeleccionado.toString());
+      widget.producto.tallaId = int.parse(tallaSeleccionada);
+      widget.producto.cantidad = int.parse(_existencia);
+      carrito.carrito.add(widget.producto);
+      Fluttertoast.showToast(
+          msg: '${colorSeleccionado} ${tallaSeleccionada} ${_existencia}',
+          toastLength: Toast.LENGTH_LONG);
+      // print('${colorSeleccionado} ${tallaSeleccionada} ${_existencia}');
+      Navigator.pop(context);
     }
   }
 }

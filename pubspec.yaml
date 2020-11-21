@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -29,12 +29,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
   http:
-  moor_flutter: 
+  moor_flutter:
   provider:
   flutter_slidable:
   url_launcher:
   flutter_offline: "^0.3.0"
-  email_validator: '^1.0.0'
+  email_validator: "^1.0.0"
   cache_image: "^1.0.5"
   cached_network_image: ^2.3.2+1
   hexcolor: ^1.0.4
@@ -46,6 +46,11 @@ dependencies:
   shared_preferences:
   moor:
   modal_bottom_sheet: ^0.2.2
+  syncfusion_flutter_pdf: ^18.3.50-beta
+  path_provider:
+  open_file:
+  firebase_core:
+  firebase_core_web:
 
 dev_dependencies:
   flutter_test:
@@ -53,13 +58,11 @@ dev_dependencies:
   moor_generator:
   build_runner:
 
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -3,6 +3,7 @@ import 'package:demo/pages/bottom_nav_menu_page.dart';
 import 'package:demo/pages/login_page.dart';
 import 'package:demo/pages/tabs/sales_page/add_sales_page.dart';
 import 'package:demo/provider/bottom_nav_menu_provider.dart';
+import 'package:demo/provider/cart_provider.dart';
 import 'package:demo/provider/categories_provider.dart';
 import 'package:demo/provider/clientes_provider.dart';
 import 'package:demo/provider/colores_provider.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         Provider<ProductosDao>(
           create: (_) => db.productosDao,
         ),
+        ChangeNotifierProvider(create: (context) => CarritoProvider(),),
         Provider<ProveedoresDao>(
           create: (_) => db.proveedoresDao,
         ),
