@@ -295,13 +295,12 @@ class _AddProductToCartState extends State<AddProductToCart> {
     if (formKey.currentState.validate()) {
       formKey.currentState.save();
       widget.producto.colorId = int.parse(colorSeleccionado);
-      widget.producto.precioSeleccionado = double.parse(precioSeleccionado.toString());
+      widget.producto.precioSeleccionado =
+          double.parse(precioSeleccionado.toString());
       widget.producto.tallaId = int.parse(tallaSeleccionada);
       widget.producto.cantidad = int.parse(_existencia);
       carrito.carrito.add(widget.producto);
-      Fluttertoast.showToast(
-          msg: '${colorSeleccionado} ${tallaSeleccionada} ${_existencia}',
-          toastLength: Toast.LENGTH_LONG);
+
       // print('${colorSeleccionado} ${tallaSeleccionada} ${_existencia}');
       Navigator.pop(context);
     }
