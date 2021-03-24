@@ -31,7 +31,7 @@ class _ClienteDetallePageState extends State<ClienteDetallePage> {
                 context: context,
                 isDismissible: true,
                // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular()),
-                builder: (context, scrollController) => Container(
+                builder: (context) => Container(
                   child: Wrap(
                   children: [
                   ListTile(leading: Icon(Icons.edit), title: Text('Editar Cliente'),
@@ -39,7 +39,7 @@ class _ClienteDetallePageState extends State<ClienteDetallePage> {
                       Navigator.of(context).pop();
                       showDialog(
                             context: context,
-                            child: EditCliente(c: widget.c,),
+                            builder: (_) => EditCliente(c: widget.c,),
                             barrierDismissible: false,
                           );
                     },
@@ -49,7 +49,7 @@ class _ClienteDetallePageState extends State<ClienteDetallePage> {
                       Navigator.of(context).pop();
                       showDialog(
                             context: context,
-                            child: DeleteCliente(cliente: widget.c,),
+                            builder: (_) => DeleteCliente(cliente: widget.c,),
                             barrierDismissible: false,
                           );
                       

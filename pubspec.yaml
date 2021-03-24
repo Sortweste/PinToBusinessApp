@@ -45,7 +45,7 @@ dependencies:
   fluttertoast:
   shared_preferences:
   moor:
-  modal_bottom_sheet: ^0.2.2
+  modal_bottom_sheet: ^2.0.0
   syncfusion_flutter_pdf: ^18.3.50-beta
   path_provider:
   open_file:

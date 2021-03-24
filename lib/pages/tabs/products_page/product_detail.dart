@@ -97,7 +97,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 showMaterialModalBottomSheet(
                 context: context,
                 isDismissible: true,
-                builder: (context, scrollController) => Container(
+                builder: (context) => Container(
                   child: Wrap(
                   children: [
                   ListTile(leading: Icon(Icons.edit), title: Text('Editar Producto'),
@@ -105,7 +105,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         Navigator.of(context).pop();
                           showDialog(
                             context: context,
-                            child: EditProduct(id: widget.id,),
+                            builder: (_) => EditProduct(id: widget.id,),
                             barrierDismissible: false,
                           );
                       },
@@ -295,7 +295,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       onPressed: (){
                          showDialog(
                             context: context,
-                            child: EditPrices(productoDetalle: precios[0], categoryId: widget.categoryId,),
+                            builder: (_) => EditPrices(productoDetalle: precios[0], categoryId: widget.categoryId,),
                             barrierDismissible: true,
                           );
                       },
@@ -366,7 +366,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       onPressed: (){
                          showDialog(
                             context: context,
-                            child: EditProvider(proveedor: proveedor,),
+                            builder: (_) => EditProvider(proveedor: proveedor,),
                             barrierDismissible: false,
                           );
                       },
